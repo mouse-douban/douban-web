@@ -27,6 +27,9 @@ type Template struct {
 	TencentSmsSdkAppId      string `json:"tencent_sms_sdk_app_id"`
 	TencentSignName         string `json:"tencent_sign_name"`
 	TencentTemplateId       string `json:"tencent_template_id"`
+	EmailAuthAccount        string `json:"email_auth_account"`
+	EmailAuthSender         string `json:"email_auth_sender"`
+	EmailAuthPassword       string `json:"email_auth_password"`
 }
 
 var Config Template
