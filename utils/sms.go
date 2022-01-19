@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"douban-webend/config"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
 	"log"
-	"regexp"
 )
 
 // SendSMS
@@ -17,19 +17,20 @@ import (
 //		- ServerError		发送失败
 func SendSMS(verifyCode string, phoneNumbers ...string) error {
 
-	r := regexp.MustCompile("\\d")
-	alls := r.FindAllStringSubmatch(verifyCode, -1)
-	if len(alls) != len(verifyCode) {
-		return ServerInternalError
-	}
-
-	for _, number := range phoneNumbers {
-		if ok, _ := regexp.MatchString("^\\+861[3-9][0-9]\\d{8}$", number); !ok { // todo 支持国际电话
-			queryParamError := QueryParamError.Copy()
-			queryParamError.Detail = "电话格式错误"
-			return queryParamError
-		}
-	}
+	// TODO 移到 controller 层
+	//r := regexp.MustCompile("\\d")
+	//alls := r.FindAllStringSubmatch(verifyCode, -1)
+	//if len(alls) != len(verifyCode) {
+	//	return ServerInternalError
+	//}
+	//
+	//for _, number := range phoneNumbers {
+	//	if ok, _ := regexp.MatchString("^\\+861[3-9][0-9]\\d{8}$", number); !ok { // todo 支持国际电话
+	//		queryParamError := QueryParamError.Copy()
+	//		queryParamError.Detail = "电话格式错误"
+	//		return queryParamError
+	//	}
+	//}
 
 	credential := common.NewCredential(
 		"SecretId",
@@ -42,9 +43,9 @@ func SendSMS(verifyCode string, phoneNumbers ...string) error {
 	request := sms.NewSendSmsRequest()
 
 	request.PhoneNumberSet = common.StringPtrs(phoneNumbers)
-	request.SmsSdkAppId = common.StringPtr("1400623650")
-	request.SignName = common.StringPtr("泡泡的泡个人网")
-	request.TemplateId = common.StringPtr("1281130")
+	request.SmsSdkAppId = common.StringPtr(config.Config.TencentSmsSdkAppId)
+	request.SignName = common.StringPtr(config.Config.TencentSignName)
+	request.TemplateId = common.StringPtr(config.Config.TencentTemplateId)
 	request.TemplateParamSet = common.StringPtrs([]string{verifyCode})
 
 	response, err := client.SendSms(request)

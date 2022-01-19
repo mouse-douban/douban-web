@@ -24,6 +24,9 @@ type Template struct {
 	TencentSecretId         string `json:"tencent_secret_id"`
 	TencentSecretKey        string `json:"tencent_secret_key"`
 	TencentLogBucketUrl     string `json:"tencent_log_bucket_url"`
+	TencentSmsSdkAppId      string `json:"tencent_sms_sdk_app_id"`
+	TencentSignName         string `json:"tencent_sign_name"`
+	TencentTemplateId       string `json:"tencent_template_id"`
 }
 
 var Config Template

@@ -8,7 +8,7 @@
 
 > 红岩寒假考核
 >
-> 一款仿豆瓣电影的后端 **RESTful API** 框架
+> 一款仿豆瓣电影的后端 **RESTful API** 项目
 >
 > 前端项目地址 [Click Me!!!](https://github.com/ColdRain-Moro/RedrockWinter_Frontend)
 
@@ -61,4 +61,3 @@
 ## 学习到的东西
 
 + 初探分布式
-+ 反射(用户实例化ServerError时分析传入error的类型)
