@@ -2,7 +2,9 @@ package test
 
 import (
 	"douban-webend/config"
+	"douban-webend/model"
 	"douban-webend/utils"
+	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"testing"
 	"time"
@@ -28,16 +30,12 @@ func TestVerifyEmailOk(t *testing.T) {
 	config.Init("../config/config.json")
 	utils.ConnectRedis()
 	rand.Seed(time.Now().Unix())
-	ruid := rand.Uint64()
 	vCode := "114514"
-	utils.SendVerifyCode(ruid, "email", "1545766400@qq.com", vCode)
+	utils.SendVerifyCode("email", "1545766400@qq.com", vCode)
 	<-time.NewTimer(time.Second * 5).C // 等五秒
-	ok, err := utils.VerifyInputCode(ruid, "email", vCode)
+	err := utils.VerifyInputCode("1545766400@qq.com", "email", vCode)
 	if err != nil {
 		panic(err)
-	}
-	if !ok {
-		panic("验证码错误")
 	}
 }
 
@@ -45,13 +43,21 @@ func TestVerifyEmailFailed(t *testing.T) {
 	config.Init("../config/config.json")
 	utils.ConnectRedis()
 	rand.Seed(time.Now().Unix())
-	ruid := rand.Uint64()
-	vCode := "114514"
-	vCodeFailed := "11451"
-	utils.SendVerifyCode(ruid, "email", "1545766400@qq.com", vCode)
+	vCode := "11451"
+	vCodeFailed := "114514"
+	utils.SendVerifyCode("email", "1545766400@qq.com", vCode)
 	<-time.NewTimer(time.Second * 5).C // 等五秒
-	ok, err := utils.VerifyInputCode(ruid, "email", vCodeFailed)
-	if err == nil || ok {
+	err := utils.VerifyInputCode("1545766400@qq.com", "email", vCodeFailed)
+	if err == nil {
 		panic("有很大问题")
+	}
+}
+
+func TestVerifyPassword(t *testing.T) {
+	user := model.User{PlaintPassword: "114514"}
+	hash := user.EncryptPassword()
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte("114514"))
+	if err != nil {
+		panic(err)
 	}
 }

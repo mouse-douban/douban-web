@@ -41,16 +41,16 @@ type VerifyInfo struct {
 
 // verifyMap
 // 集群
-var verifyMap = make(map[uint64]map[string]string)
+var verifyMap = make(map[string]map[string]string)
 
-func VerifyInputCode(uid uint64, cType, code string) (bool, error) {
+func VerifyInputCode(account string, cType, code string) error {
 	// 先在自己内存里找一找
-	if got, ok := verifyMap[uid][cType]; ok && got == code {
-		return true, nil
+	if got, ok := verifyMap[account][cType]; ok && got == code {
+		return nil
 	}
 
-	if got, ok := verifyMap[uid][cType]; ok && got != code {
-		return false, ServerError{
+	if got, ok := verifyMap[account][cType]; ok && got != code {
+		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40001,
 			Info:       "invalid verify code",
@@ -58,16 +58,21 @@ func VerifyInputCode(uid uint64, cType, code string) (bool, error) {
 		}
 	}
 	var info VerifyInfo
-	err := RedisGetStruct(strconv.Itoa(int(uid)), &info)
+	err := RedisGetStruct(account, &info)
 	if err != nil {
-		return false, ServerInternalError
+		return ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40001,
+			Info:       "invalid verify code",
+			Detail:     cType + "验证码过期",
+		}
 	}
 	switch cType {
 	case "email":
 		if info.EmailCode == code {
-			return true, nil
+			return nil
 		}
-		return false, ServerError{
+		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40001,
 			Info:       "invalid verify code",
@@ -75,20 +80,20 @@ func VerifyInputCode(uid uint64, cType, code string) (bool, error) {
 		}
 	case "sms":
 		if info.SmsCode == code {
-			return true, nil
+			return nil
 		}
-		return false, ServerError{
+		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40001,
 			Info:       "invalid verify code",
 			Detail:     "sms验证码错误",
 		}
 	}
-	return false, ServerInternalError
+	return ServerInternalError
 }
 
 // SendRandomVerifyCode 发送随机验证码
-func SendRandomVerifyCode(uid uint64, vType string, target string) {
+func SendRandomVerifyCode(vType string, target string) string {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var sum = 0
 	sum += 1 << 14 // 保证为5位数
@@ -96,17 +101,18 @@ func SendRandomVerifyCode(uid uint64, vType string, target string) {
 		sum += r.Intn(2) << i
 	}
 	var vCode = strconv.Itoa(sum)
-	SendVerifyCode(uid, vType, target, vCode)
+	SendVerifyCode(vType, target, vCode)
+	return vCode
 }
 
 // SendVerifyCode
 // 异步发送，以免卡 主goroutine
-func SendVerifyCode(uid uint64, vType, target, vCode string) {
+func SendVerifyCode(vType, target, vCode string) {
 	switch vType {
 	case "email":
-		verifyMap[uid] = map[string]string{"email": vCode}
+		verifyMap[target] = map[string]string{"email": vCode}
 		go func() {
-			err := RedisSetStruct(strconv.Itoa(int(uid)), VerifyInfo{
+			err := RedisSetStruct(target, VerifyInfo{
 				EmailCode: vCode,
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
@@ -125,12 +131,12 @@ func SendVerifyCode(uid uint64, vType, target, vCode string) {
 		// 两分钟后删掉
 		go func() {
 			<-time.NewTimer(time.Minute * 2).C
-			delete(verifyMap, uid)
+			delete(verifyMap, target)
 		}()
 	case "sms":
-		verifyMap[uid] = map[string]string{"sms": vCode}
+		verifyMap[target] = map[string]string{"sms": vCode}
 		go func() {
-			err := RedisSetStruct(strconv.Itoa(int(uid)), VerifyInfo{
+			err := RedisSetStruct(target, VerifyInfo{
 				SmsCode: vCode,
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
@@ -148,7 +154,7 @@ func SendVerifyCode(uid uint64, vType, target, vCode string) {
 		// 两分钟后删掉
 		go func() {
 			<-time.NewTimer(time.Minute * 2).C
-			delete(verifyMap, uid)
+			delete(verifyMap, target)
 		}()
 	}
 }

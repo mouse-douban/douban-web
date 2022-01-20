@@ -3,8 +3,8 @@ package utils
 // resp 返回工具类
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 )
 
 type ServerError struct {
@@ -16,6 +16,13 @@ type ServerError struct {
 
 type Detail struct {
 	Detail string `json:"detail"`
+}
+
+type RespData struct {
+	HttpStatus int         `json:"-"`
+	Status     int         `json:"status"`
+	Info       string      `json:"info"`
+	Data       interface{} `json:"data"` // Data 结构体信息
 }
 
 type RespDetail struct {
@@ -54,6 +61,15 @@ func (s ServerError) Error() string {
 	return fmt.Sprintf("Status: %d Info: %s Detail: %s", s.Status, s.Info, s.Detail)
 }
 
+func (s ServerError) CopyWithNewDetail(detail string) ServerError {
+	return ServerError{
+		HttpStatus: s.HttpStatus,
+		Status:     s.Status,
+		Detail:     detail,
+		Info:       s.Info,
+	}
+}
+
 func (s ServerError) Copy() ServerError {
 	return ServerError{
 		HttpStatus: s.HttpStatus,
@@ -63,18 +79,60 @@ func (s ServerError) Copy() ServerError {
 	}
 }
 
-func (r RespDetail) RespJSON() string {
-	marshal, err := json.Marshal(r)
-	if err != nil {
-		return ServerInternalErrorJSON
-	}
-	return string(marshal)
-}
-
-func (s ServerError) RespDetail() RespDetail {
+func (s ServerError) GetDetail() RespDetail {
 	var resp RespDetail
 	resp.Status = s.Status
 	resp.Info = s.Info
 	resp.Data.Detail = s.Detail
 	return resp
+}
+
+func RespWithError(ctx *gin.Context, error error) {
+	e, ok := error.(ServerError)
+	if ok {
+		ctx.JSON(e.HttpStatus, e.GetDetail())
+	} else {
+		e = ServerInternalError
+		ctx.JSON(e.HttpStatus, e.GetDetail())
+	}
+}
+
+func RespWithDetail(ctx *gin.Context, detail RespDetail) {
+	ctx.JSON(detail.HttpStatus, detail)
+}
+
+func RespWithData(ctx *gin.Context, data RespData) {
+	ctx.JSON(data.HttpStatus, data)
+}
+
+func AbortWithError(ctx *gin.Context, error error) {
+	RespWithError(ctx, error)
+	ctx.Abort()
+}
+
+func AbortWithDetail(ctx *gin.Context, detail RespDetail) {
+	ctx.JSON(detail.HttpStatus, detail)
+	ctx.Abort()
+}
+
+func AbortWithInternalError(ctx *gin.Context) {
+	ctx.JSON(ServerInternalError.HttpStatus, ServerInternalError.GetDetail())
+	ctx.Abort()
+}
+
+func SuccessWithNoContent(ctx *gin.Context) {
+	ctx.JSON(NoDetailSuccessResp.HttpStatus, NoDetailSuccessResp)
+}
+
+func AbortWithParamError(ctx *gin.Context, detail string) {
+	e := QueryParamError.Copy()
+	e.Detail = detail
+	RespWithError(ctx, e)
+	ctx.Abort()
+}
+
+func RespWithParamError(ctx *gin.Context, detail string) {
+	e := QueryParamError.Copy()
+	e.Detail = detail
+	RespWithError(ctx, e)
 }

@@ -21,12 +21,12 @@ const (
 
 // Claims Payload
 type Claims struct {
-	InterArrivalTime int64  `json:"iat"` // 到达时间
-	ExpirationDate   int64  `json:"exp"` // 认证时间
-	Uid              uint64 `json:"uid"` // 用户 id
+	InterArrivalTime int64 `json:"iat"` // 到达时间
+	ExpirationDate   int64 `json:"exp"` // 认证时间
+	Uid              int64 `json:"uid"` // 用户 id
 }
 
-func GenerateTokenPair(uid uint64) (accessToken, refreshToken string, err error) {
+func GenerateTokenPair(uid int64) (accessToken, refreshToken string, err error) {
 	now := time.Now().Unix()
 	tokenClaims := Claims{
 		InterArrivalTime: now,
@@ -76,12 +76,12 @@ func signJWT(header, payload string) string {
 
 // AuthorizeJWT 验证 JWT
 // 返回：
-// - true, nil  验证成功
+// - nil, uid 验证成功
 // - ServerInternalError 服务器错误
 // - ServerError
 // - 	- 40002 JWT 认证错误
 // -    - 40003 JWT 过期
-func AuthorizeJWT(jwtStr string) (bool, error) {
+func AuthorizeJWT(jwtStr string) (error, int64) {
 	claims := Claims{}
 
 	parts := strings.Split(jwtStr, ".")
@@ -90,27 +90,27 @@ func AuthorizeJWT(jwtStr string) (bool, error) {
 	signed := parts[2]
 	dSigned := strings.Split(signJWT(parts[0], parts[1]), ".")[2]
 	if signed != dSigned {
-		return false, ServerError{
+		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40002,
 			Info:       "invalid jwt",
 			Detail:     "JWT 认证错误!",
-		}
+		}, 0
 	}
 	err := json.Unmarshal(payload, &claims)
 	if err != nil {
-		return false, ServerInternalError
+		return ServerInternalError, 0
 	}
 	now := time.Now().Unix()
 
 	// 如果现在的时间减去上一次登录时间大于认证时间
 	if claims.ExpirationDate < now-claims.InterArrivalTime {
-		return false, ServerError{
+		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40003,
 			Info:       "invalid jwt",
 			Detail:     "JWT 过期!",
-		}
+		}, 0
 	}
-	return true, nil
+	return nil, claims.Uid
 }

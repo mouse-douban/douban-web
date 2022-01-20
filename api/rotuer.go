@@ -1,6 +1,8 @@
 package api
 
 import (
+	"douban-webend/api/middleware"
+	"douban-webend/api/users"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -24,7 +26,7 @@ var routes = Routes{
 			Name:             "外链跳转",
 			Method:           http.MethodGet,
 			Pattern:          "/wild",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{middleware.WildChecker(), handleWild},
 		},
 		{
 			Name:             "Swagger文档",
@@ -32,56 +34,62 @@ var routes = Routes{
 			Pattern:          "/swagger",
 			HandlerFunctions: HandleFunctions{},
 		},
+		{
+			Name:             "我的主页",
+			Method:           http.MethodGet,
+			Pattern:          "/mine",
+			HandlerFunctions: HandleFunctions{middleware.Auth()},
+		},
 	},
 	"/users": []Route{
 		{
-			Name: "用户登录",
-			Method: http.MethodPost,
-			Pattern: "/login",
+			Name:             "用户登录",
+			Method:           http.MethodPost,
+			Pattern:          "/login",
 			HandlerFunctions: HandleFunctions{},
 		},
 		{
-			Name: "OAuth登录",
-			Method: http.MethodGet,
-			Pattern: "/login",
+			Name:             "OAuth登录",
+			Method:           http.MethodGet,
+			Pattern:          "/login",
 			HandlerFunctions: HandleFunctions{},
 		},
 		{
-			Name: "用户注册",
-			Method: http.MethodPost,
-			Pattern: "/register",
+			Name:             "用户注册",
+			Method:           http.MethodPost,
+			Pattern:          "/register",
+			HandlerFunctions: HandleFunctions{users.HandleRegister},
+		},
+		{
+			Name:             "发送验证码",
+			Method:           http.MethodGet,
+			Pattern:          "/verify",
 			HandlerFunctions: HandleFunctions{},
 		},
 		{
-			Name: "发送验证码",
-			Method: http.MethodGet,
-			Pattern: "/verify",
+			Name:             "获取用户的主页信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{},
 		},
 		{
-			Name: "获取用户的主页信息",
-			Method: http.MethodGet,
-			Pattern: "/:id",
+			Name:             "获取用户的想看",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/before",
 			HandlerFunctions: HandleFunctions{},
 		},
 		{
-			Name: "获取用户的想看",
-			Method: http.MethodGet,
-			Pattern: "/:id/before",
-			HandlerFunctions: HandleFunctions{},
-		},
-		{
-			Name: "获取用户的看过",
-			Method: http.MethodGet,
-			Pattern: "/:id/after",
+			Name:             "获取用户的看过",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/after",
 			HandlerFunctions: HandleFunctions{},
 		},
 	},
 	"/subjects": []Route{
 		{
-			Name: "获取电影列表", // 该路由压力较大，考虑使用集群
-			Method: http.MethodGet,
-			Pattern: "/",
+			Name:             "获取电影列表", // 该路由压力较大，考虑使用集群
+			Method:           http.MethodGet,
+			Pattern:          "/",
 			HandlerFunctions: HandleFunctions{},
 		},
 	},
@@ -96,6 +104,8 @@ func newRouter() *gin.Engine {
 			engine.Handle(router.Method, relativePath, router.HandlerFunctions...)
 		}
 	}
+
+	engine.Use(middleware.Cors()) // 跨域
 
 	return engine
 }

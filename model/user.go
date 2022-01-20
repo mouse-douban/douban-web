@@ -1,0 +1,31 @@
+package model
+
+import (
+	"golang.org/x/crypto/bcrypt"
+)
+
+type MoveList struct { // 片单
+	Id   int64   `json:"id"`
+	Name string  `json:"name"`
+	List []int64 `json:"list"`
+}
+
+type User struct {
+	Username       string            `json:"username"`
+	Uid            int64             `json:"uid"` // 只读
+	GithubId       int64             `json:"github_id"`
+	GiteeId        int64             `json:"gitee_id"`
+	Email          string            `json:"email"`
+	Phone          string            `json:"phone"`
+	Avatar         string            `json:"avatar"`
+	Reviews        []ReviewSnapshot  `json:"reviews"`    // 可选
+	MovieList      []MoveList        `json:"movie_list"` // 可选
+	Before         []CommentSnapshot `json:"before"`     // 可选
+	After          []CommentSnapshot `json:"after"`      // 可选
+	PlaintPassword string            `json:"-"`          // 只写
+}
+
+func (u *User) EncryptPassword() string {
+	en, _ := bcrypt.GenerateFromPassword([]byte(u.PlaintPassword), bcrypt.DefaultCost)
+	return string(en)
+}

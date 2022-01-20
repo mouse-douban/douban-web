@@ -32,9 +32,9 @@
 >
 > service:：整体的服务逻辑层
 >
-> controller：路由入参检测｜service 选择层
+> controller：service 调度
 >
-> api：路由注册层
+> api：controller 调度｜入参检测
 
 ### Response
 

@@ -3,6 +3,7 @@ package main
 import (
 	"douban-webend/api"
 	"douban-webend/config"
+	"douban-webend/dao"
 	"douban-webend/utils"
 	"time"
 )
@@ -18,6 +19,8 @@ func main() {
 	<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
 
 	utils.ConnectRedis() // 连接 redis
+
+	dao.InitDao()
 
 	api.InitRouter()
 
