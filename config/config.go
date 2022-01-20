@@ -30,6 +30,9 @@ type Template struct {
 	EmailAuthAccount        string `json:"email_auth_account"`
 	EmailAuthSender         string `json:"email_auth_sender"`
 	EmailAuthPassword       string `json:"email_auth_password"`
+	RedisAddr               string `json:"redis_addr"`
+	RedisAddrInner          string `json:"redis_addr_inner"`
+	RedisPassword           string `json:"redis_password"`
 }
 
 var Config Template

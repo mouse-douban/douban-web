@@ -15,7 +15,9 @@ func main() {
 
 	utils.RegisterUploadLogTask(time.Hour * 4) // 每四个小时上传一次日志
 
-	<-time.NewTimer(time.Second * 3).C // 延迟 3s，让日志启动
+	<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
+
+	utils.ConnectRedis() // 连接 redis
 
 	api.InitRouter()
 
