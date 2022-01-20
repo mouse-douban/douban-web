@@ -13,7 +13,7 @@ type Template struct {
 	DefaultPassword         string `json:"default_password"`
 	DefaultCharset          string `json:"default_charset"`
 	JwtKey                  string `json:"jwt_key"`
-	JwtTimeOut              int    `json:"jwt_time_out"`
+	JwtTimeOut              int64  `json:"jwt_time_out"`
 	PasswordKey             string `json:"password_key"`
 	GithubOauthClientId     string `json:"github_oauth_client_id"`
 	GithubOauthClientSecret string `json:"github_oauth_client_secret"`
