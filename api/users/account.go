@@ -1,8 +1,10 @@
 package users
 
 import (
+	"douban-webend/config"
 	"douban-webend/controller"
 	"douban-webend/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -69,12 +71,52 @@ func HandleRegister(ctx *gin.Context) {
 		return
 	}
 
-	err, resp := controller.CtrlRegister(account, token, kind)
+	err, resp := controller.CtrlBaseRegister(account, token, kind)
 	if err != nil {
 		utils.RespWithError(ctx, err)
 		return
 	}
 	utils.RespWithData(ctx, resp)
+}
+
+func HandleOAuthRedirect(ctx *gin.Context) {
+	platform, ok := ctx.GetQuery("platform")
+	if !ok {
+		utils.AbortWithParamError(ctx, "platform 参数不能为空")
+	}
+	switch platform {
+	case "gitee":
+		link := "https://gitee.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code"
+		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GiteeOauthClientId, "http://"+config.Config.ServerIp+"/oauth/gitee"))
+	case "github":
+		link := ""
+		ctx.Redirect(http.StatusPermanentRedirect, link)
+	default:
+		utils.AbortWithParamError(ctx, "不支持这个平台")
+		return
+	}
+}
+
+func HandleOAuthLogin(ctx *gin.Context) {
+	platform := ctx.Param("platform")
+	if platform != "gitee" && platform != "github" {
+		utils.AbortWithParamError(ctx, "不支持这个平台")
+		return
+	}
+	code, ok := ctx.GetQuery("code") // code 不会进入dao层，不需要进行正则检测
+	if !ok {
+		utils.AbortWithError(ctx, utils.ServerInternalError)
+		return
+	}
+	err, resp := controller.CtrlOAuthLogin(code, platform)
+	if err != nil {
+		utils.AbortWithError(ctx, err)
+		return
+	}
+	utils.RespWithData(ctx, resp)
+}
+
+func HandleGithubLogin(ctx *gin.Context) {
 
 }
 

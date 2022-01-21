@@ -64,7 +64,7 @@ func VerifyInputCode(account string, cType, code string) error {
 			HttpStatus: http.StatusBadRequest,
 			Status:     40001,
 			Info:       "invalid verify code",
-			Detail:     cType + "验证码过期",
+			Detail:     cType + "验证码过期, 请重新发送",
 		}
 	}
 	switch cType {

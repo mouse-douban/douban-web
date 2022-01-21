@@ -52,7 +52,7 @@ var routes = Routes{
 			Name:             "OAuth登录",
 			Method:           http.MethodGet,
 			Pattern:          "/login",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleOAuthRedirect},
 		},
 		{
 			Name:             "用户注册",
@@ -91,6 +91,14 @@ var routes = Routes{
 			Method:           http.MethodGet,
 			Pattern:          "/",
 			HandlerFunctions: HandleFunctions{},
+		},
+	},
+	"/oauth": []Route{
+		{
+			Name:             "OAuth Redirect uri",
+			Method:           http.MethodGet,
+			Pattern:          "/:platform",
+			HandlerFunctions: HandleFunctions{users.HandleOAuthLogin},
 		},
 	},
 }

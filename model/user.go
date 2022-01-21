@@ -11,18 +11,26 @@ type MoveList struct { // 片单
 }
 
 type User struct {
-	Username       string            `json:"username"`
-	Uid            int64             `json:"uid"` // 只读
-	GithubId       int64             `json:"github_id"`
-	GiteeId        int64             `json:"gitee_id"`
-	Email          string            `json:"email"`
-	Phone          string            `json:"phone"`
-	Avatar         string            `json:"avatar"`
-	Reviews        []ReviewSnapshot  `json:"reviews"`    // 可选
-	MovieList      []MoveList        `json:"movie_list"` // 可选
-	Before         []CommentSnapshot `json:"before"`     // 可选
-	After          []CommentSnapshot `json:"after"`      // 可选
-	PlaintPassword string            `json:"-"`          // 只写
+	Username       string           `json:"username"`
+	Uid            int64            `json:"uid"` // 只读
+	GithubId       int64            `json:"github_id"`
+	GiteeId        int64            `json:"gitee_id"`
+	Email          string           `json:"email"`
+	Phone          string           `json:"phone"`
+	Avatar         string           `json:"avatar"`
+	Reviews        []ReviewSnapshot `json:"reviews"`    // 可选
+	MovieList      []MoveList       `json:"movie_list"` // 可选
+	Before         []Comment        `json:"before"`     // 可选
+	After          []Comment        `json:"after"`      // 可选
+	PlaintPassword string           `json:"-"`          // 只写
+}
+
+// OAuthInfo 需要得到的基础的信息
+type OAuthInfo struct {
+	Username string `json:"login"`
+	OAuthId  int64  `json:"id"`
+	Avatar   string `json:"avatar_url"`
+	PlatForm string `json:"-"`
 }
 
 func (u *User) EncryptPassword() string {

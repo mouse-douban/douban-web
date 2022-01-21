@@ -1,6 +1,6 @@
 package model
 
-type CommentSnapshot struct {
+type Comment struct {
 	Id       int64    `json:"-"`
 	Tag      []string `json:"tag"`
 	Content  string   `json:"content"`

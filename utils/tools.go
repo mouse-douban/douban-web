@@ -22,7 +22,7 @@ func GenerateRandomPassword() string {
 	return base64.StdEncoding.EncodeToString([]byte(hex.EncodeToString(hash.Sum(nil))))[0:8]
 }
 
-func GenerateRandomUserName() string {
+func GenerateRandomUUID() string {
 	rand.Seed(time.Now().Unix())
 	var randomBytes = make([]byte, 16)
 	for i := 0; i < 16; i++ {
@@ -32,6 +32,10 @@ func GenerateRandomUserName() string {
 	randomBytes[6] |= 0x40 /* set to version 4     */
 	randomBytes[8] &= 0x3f /* clear variant        */
 	randomBytes[8] |= 0x80 /* set to IETF variant  */
+	return hex.EncodeToString(randomBytes)
+}
+
+func GenerateRandomUserName() string {
 	subIndex := rand.Intn(8)
-	return "豆豆" + hex.EncodeToString(randomBytes)[subIndex:subIndex+8]
+	return "豆豆" + GenerateRandomUUID()[subIndex:subIndex+8]
 }
