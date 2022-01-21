@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // CtrlBaseRegister controller 层所有函数均返回 (err error, resp utils.RespData)
@@ -83,8 +84,8 @@ func CtrlLogin(account, token, kind string) (err error, resp utils.RespData) {
 }
 
 const (
-	GiteeCode  = "https://gitee.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope=user_info"
-	GitHubCode = ""
+	GithubToken       = "https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s"
+	GithubOpenAPIUser = "https://api.github.com/user"
 
 	GiteeToken       = "https://gitee.com/oauth/token?grant_type=authorization_code&code=%s&client_id=%s&redirect_uri=%s&client_secret=%s"
 	GiteeRedirectUri = "http://%s/oauth/gitee"
@@ -103,7 +104,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 	switch platform {
 	case "gitee":
 		postUrl := fmt.Sprintf(GiteeToken, code, config.Config.GiteeOauthClientId, fmt.Sprintf(GiteeRedirectUri, config.Config.ServerIp), config.Config.GiteeOauthClientSecret)
-		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl)
+		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl) // 请求token
 		var token struct {
 			AccessToken string `json:"access_token"`
 		}
@@ -127,6 +128,30 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 		info.PlatForm = platform
 		err, accessToken, refreshToken, uid = service.LoginAccountFromGitee(info)
 	case "github":
+		postUrl := fmt.Sprintf(GithubToken, config.Config.GithubOauthClientId, config.Config.GithubOauthClientSecret, code)
+		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl) // 请求 token
+
+		tokenB := <-tokenChan
+		if len(tokenB) == 0 {
+			return utils.ServerInternalError, utils.RespData{}
+		}
+		token := strings.Split(strings.Split(string(tokenB), "=")[1], "&")[0]
+
+		infoCh := utils.GetGETBytes(GithubOpenAPIUser, map[string]string{ // 请求数据
+			"Content-Type":  "application/json",
+			"Accept":        "application/json",
+			"Authorization": "token " + token,
+		})
+
+		infoJson := <-infoCh
+
+		if len(infoJson) == 0 {
+			return utils.ServerInternalError, utils.RespData{}
+		}
+		err = json.Unmarshal(infoJson, &info)
+		if err != nil || info.OAuthId == 0 {
+			return utils.ServerInternalError, utils.RespData{}
+		}
 
 		info.PlatForm = platform
 		err, accessToken, refreshToken, uid = service.LoginAccountFromGithub(info)

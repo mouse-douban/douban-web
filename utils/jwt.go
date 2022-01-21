@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -82,6 +83,18 @@ func signJWT(header, payload string) string {
 // - 	- 40002 JWT 认证错误
 // -    - 40003 JWT 过期
 func AuthorizeJWT(jwtStr string) (error, int64) {
+
+	reg := regexp.MustCompile(`\.`)
+	find := reg.FindAllString(jwtStr, -1)
+	if len(find) != 2 {
+		return ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40002,
+			Info:       "invalid jwt",
+			Detail:     "JWT 认证错误!",
+		}, 0
+	}
+
 	claims := Claims{}
 
 	parts := strings.Split(jwtStr, ".")

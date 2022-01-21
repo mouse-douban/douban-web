@@ -85,8 +85,8 @@ func HandleOAuthRedirect(ctx *gin.Context) {
 		link := "https://gitee.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code"
 		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GiteeOauthClientId, "http://"+config.Config.ServerIp+"/oauth/gitee"))
 	case "github":
-		link := ""
-		ctx.Redirect(http.StatusPermanentRedirect, link)
+		link := "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s"
+		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GithubOauthClientId, "http://"+config.Config.ServerIp+"/oauth/github"))
 	default:
 		utils.AbortWithParamError(ctx, "不支持这个平台")
 		return
@@ -101,15 +101,11 @@ func HandleOAuthLogin(ctx *gin.Context) {
 	}
 	code, ok := ctx.GetQuery("code") // code 不会进入dao层，不需要进行正则检测
 	if !ok {
-		utils.AbortWithError(ctx, utils.ServerInternalError)
+		utils.AbortWithError(ctx, utils.ServerInternalError) // 返回内部错误而不是参数错误
 		return
 	}
 	err, resp := controller.CtrlOAuthLogin(code, platform)
 	utils.Resp(ctx, err, resp)
-}
-
-func HandleGithubLogin(ctx *gin.Context) {
-
 }
 
 func HandleLogin(ctx *gin.Context) {
@@ -162,7 +158,26 @@ func HandleLogin(ctx *gin.Context) {
 			return
 		}
 	case "refresh":
-		// todo refresh token
+		err, uid := utils.AuthorizeJWT(token)
+		if err != nil {
+			utils.RespWithError(ctx, err)
+			return
+		}
+		accessToken, refreshToken, err := utils.GenerateTokenPair(uid)
+		utils.RespWithData(ctx, utils.RespData{
+			HttpStatus: http.StatusOK,
+			Status:     20000,
+			Info:       "success",
+			Data: struct {
+				AccessToken  string `json:"access_token"`
+				RefreshToken string `json:"refresh_token"`
+				Uid          int64  `json:"uid"`
+			}{
+				AccessToken:  accessToken,
+				RefreshToken: refreshToken,
+				Uid:          uid,
+			},
+		})
 		return
 	default:
 		utils.RespWithParamError(ctx, "type 参数错误, 只能取 password, email, sms, refresh")

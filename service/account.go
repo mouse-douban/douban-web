@@ -148,7 +148,20 @@ func LoginAccountFromSms(phone, verifyCode string) (err error, accessToken, refr
 }
 
 func LoginAccountFromGithub(info model.OAuthInfo) (err error, accessToken, refreshToken string, uid int64) {
-	panic("TODO")
+	err, uid = dao.SelectUidWithOAuthId(info.OAuthId, info.PlatForm)
+	if err != nil || uid <= 0 {
+		err, uid = dao.InsertUserFromGithubId(model.User{
+			Username:       info.Username,
+			GithubId:       info.OAuthId,
+			PlaintPassword: utils.GenerateRandomPassword(),
+			Avatar:         info.Avatar,
+		})
+		if err != nil {
+			return err, "", "", -1
+		}
+	}
+	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
+	return
 }
 
 func LoginAccountFromGitee(info model.OAuthInfo) (err error, accessToken, refreshToken string, uid int64) {
