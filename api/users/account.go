@@ -72,11 +72,7 @@ func HandleRegister(ctx *gin.Context) {
 	}
 
 	err, resp := controller.CtrlBaseRegister(account, token, kind)
-	if err != nil {
-		utils.RespWithError(ctx, err)
-		return
-	}
-	utils.RespWithData(ctx, resp)
+	utils.Resp(ctx, err, resp)
 }
 
 func HandleOAuthRedirect(ctx *gin.Context) {
@@ -109,11 +105,7 @@ func HandleOAuthLogin(ctx *gin.Context) {
 		return
 	}
 	err, resp := controller.CtrlOAuthLogin(code, platform)
-	if err != nil {
-		utils.AbortWithError(ctx, err)
-		return
-	}
-	utils.RespWithData(ctx, resp)
+	utils.Resp(ctx, err, resp)
 }
 
 func HandleGithubLogin(ctx *gin.Context) {
@@ -121,5 +113,62 @@ func HandleGithubLogin(ctx *gin.Context) {
 }
 
 func HandleLogin(ctx *gin.Context) {
+	kind, ok := ctx.GetPostForm("type")
+	if !ok || kind == "" {
+		utils.RespWithParamError(ctx, "type 参数不能为空")
+		return
+	}
+	token, ok := ctx.GetPostForm("token")
+	if !ok || kind == "" {
+		utils.RespWithParamError(ctx, "token 参数不能为空")
+		return
+	}
+	account, ok := ctx.GetPostForm("account")
+	if (!ok || account == "") && kind != "refresh" {
+		utils.RespWithParamError(ctx, "account 参数不能为空")
+		return
+	}
+	switch kind {
+	case "password":
+		if !utils.CheckUsername(account) {
+			utils.RespWithParamError(ctx, "用户名格式不支持")
+			return
+		}
+		if !utils.CheckPasswordStrength(token) {
+			utils.RespWithParamError(ctx, "密码格式不支持")
+			return
+		}
+	case "email":
+		if !utils.MatchEmailFormat(account) {
+			utils.RespWithParamError(ctx, "邮箱格式不支持")
+			return
+		}
+		if !utils.CheckPasswordStrength(token) {
+			utils.RespWithParamError(ctx, "密码格式不支持")
+			return
+		}
+	case "sms":
+		if !utils.MatchPhoneNumber(account) {
+			utils.RespWithParamError(ctx, "电话号码格式不支持")
+			return
+		}
+		if !utils.MatchVerifyCode(token) {
+			utils.RespWithError(ctx, utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40001,
+				Info:       "invalid verify code",
+				Detail:     "验证码格式有误",
+			})
+			return
+		}
+	case "refresh":
+		// todo refresh token
+		return
+	default:
+		utils.RespWithParamError(ctx, "type 参数错误, 只能取 password, email, sms, refresh")
+		return
+	}
 
+	err, resp := controller.CtrlLogin(account, token, kind)
+	utils.Resp(ctx, err, resp)
 }

@@ -12,7 +12,6 @@ import (
 
 // CtrlBaseRegister controller 层所有函数均返回 (err error, resp utils.RespData)
 func CtrlBaseRegister(account, token, kind string) (err error, resp utils.RespData) {
-	err = nil
 
 	var accessToken, refreshToken string
 	var uid int64
@@ -44,6 +43,42 @@ func CtrlBaseRegister(account, token, kind string) (err error, resp utils.RespDa
 			Uid:          uid,
 		},
 	}
+	return
+}
+
+func CtrlLogin(account, token, kind string) (err error, resp utils.RespData) {
+
+	var accessToken, refreshToken string
+	var uid int64
+
+	switch kind {
+	case "password":
+		err, accessToken, refreshToken, uid = service.LoginAccountFromUsername(account, token)
+	case "email":
+		err, accessToken, refreshToken, uid = service.LoginAccountFromEmail(account, token)
+	case "sms":
+		err, accessToken, refreshToken, uid = service.LoginAccountFromSms(account, token)
+	}
+
+	if err != nil {
+		return err, utils.RespData{}
+	}
+
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       "success",
+		Data: struct {
+			AccessToken  string `json:"access_token"`
+			RefreshToken string `json:"refresh_token"`
+			Uid          int64  `json:"uid"`
+		}{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+			Uid:          uid,
+		},
+	}
+
 	return
 }
 

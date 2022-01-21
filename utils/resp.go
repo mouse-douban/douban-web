@@ -87,6 +87,23 @@ func (s ServerError) GetDetail() RespDetail {
 	return resp
 }
 
+func Resp(ctx *gin.Context, err error, data RespData) {
+	if err != nil {
+		RespWithError(ctx, err)
+		return
+	}
+	RespWithData(ctx, data)
+}
+
+func Abort(ctx *gin.Context, err error, data RespData) {
+	if err != nil {
+		AbortWithError(ctx, err)
+		return
+	}
+	RespWithData(ctx, data)
+	ctx.Abort()
+}
+
 func RespWithError(ctx *gin.Context, error error) {
 	e, ok := error.(ServerError)
 	if ok {

@@ -8,8 +8,14 @@ import (
 
 // SelectUidFrom 只允许内部调用，不会出现sql注入
 func SelectUidFrom(accountType, account string) (err error, uid int64) {
-	sqlStr := "SELECT uid FROM user WHERE " + accountType + " = " + account + ";"
+	sqlStr := "SELECT uid FROM user WHERE " + accountType + " = '" + account + "'"
 	err = dB.QueryRow(sqlStr).Scan(&uid)
+	return
+}
+
+func SelectEncryptPassword(uid int64) (err error, encrypt string) {
+	sqlStr := "SELECT password FROM user WHERE uid = ?"
+	err = dB.QueryRow(sqlStr, uid).Scan(&encrypt)
 	return
 }
 
@@ -95,8 +101,8 @@ func InsertUserFromGiteeId(user model.User) (err error, uid int64) {
 }
 
 func InsertUserFromGithubId(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, phone, password, email, github_id) VALUES(?, ?, ?, ?, ?)"
-	_, err = dB.Exec(sqlStr, utils.GenerateRandomUserName(), utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GithubId)
+	sqlStr := "INSERT INTO user(username, phone, password, email, github_id, avatar) VALUES(?, ?, ?, ?, ?, ?)"
+	_, err = dB.Exec(sqlStr, user.Username+utils.GenerateRandomUUID()[:8], utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GithubId, user.Avatar)
 	if err != nil {
 		return
 	}

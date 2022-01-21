@@ -4,6 +4,7 @@ import (
 	"douban-webend/dao"
 	"douban-webend/model"
 	"douban-webend/utils"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -28,6 +29,33 @@ func RegisterAccountFromUsername(username, password string) (err error, accessTo
 	return
 }
 
+func LoginAccountFromUsername(username, password string) (err error, accessToken, refreshToken string, uid int64) {
+	err, uid = dao.SelectUidFrom("username", username)
+	if err != nil || uid <= 0 {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40006,
+			Info:       "invalid request",
+			Detail:     "这个账户没有注册",
+		}, "", "", -1
+	}
+	err, encrypt := dao.SelectEncryptPassword(uid)
+	if err != nil {
+		return
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(encrypt), []byte(password))
+	if err != nil {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40007,
+			Info:       "invalid request",
+			Detail:     "密码错误",
+		}, "", "", -1
+	}
+	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
+	return
+}
+
 func RegisterAccountFromEmail(email, password string) (err error, accessToken, refreshToken string, uid int64) {
 	err, got := dao.SelectUidFrom("email", email)
 	if err == nil || got > 0 {
@@ -44,6 +72,33 @@ func RegisterAccountFromEmail(email, password string) (err error, accessToken, r
 	})
 	if err != nil {
 		return
+	}
+	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
+	return
+}
+
+func LoginAccountFromEmail(email, password string) (err error, accessToken, refreshToken string, uid int64) {
+	err, uid = dao.SelectUidFrom("email", email)
+	if err != nil || uid <= 0 {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40006,
+			Info:       "invalid request",
+			Detail:     "这个账户没有注册",
+		}, "", "", -1
+	}
+	err, encrypt := dao.SelectEncryptPassword(uid)
+	if err != nil {
+		return
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(encrypt), []byte(password))
+	if err != nil {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40007,
+			Info:       "invalid request",
+			Detail:     "密码错误",
+		}, "", "", -1
 	}
 	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
 	return
@@ -74,6 +129,24 @@ func RegisterAccountFromSms(phone, verifyCode string) (err error, accessToken, r
 	return
 }
 
+func LoginAccountFromSms(phone, verifyCode string) (err error, accessToken, refreshToken string, uid int64) {
+	err = utils.VerifyInputCode(phone, "sms", verifyCode)
+	if err != nil {
+		return
+	}
+	err, uid = dao.SelectUidFrom("phone", phone)
+	if err != nil || uid <= 0 {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40006,
+			Info:       "invalid request",
+			Detail:     "这个账户没有注册",
+		}, "", "", -1
+	}
+	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
+	return
+}
+
 func LoginAccountFromGithub(info model.OAuthInfo) (err error, accessToken, refreshToken string, uid int64) {
 	panic("TODO")
 }
@@ -92,5 +165,16 @@ func LoginAccountFromGitee(info model.OAuthInfo) (err error, accessToken, refres
 		}
 	}
 	accessToken, refreshToken, err = utils.GenerateTokenPair(uid)
+	return
+}
+
+func GetAccountBaseInfo(uid int64) (err error, user model.User) {
+	err, user = dao.SelectBaseUserInfo(uid)
+	if !utils.MatchPhoneNumber(user.Phone) { // 排除 UUID 占位
+		user.Phone = ""
+	}
+	if !utils.MatchEmailFormat(user.Email) { // 排除 UUID 占位
+		user.Email = ""
+	}
 	return
 }

@@ -38,7 +38,7 @@ var routes = Routes{
 			Name:             "我的主页",
 			Method:           http.MethodGet,
 			Pattern:          "/mine",
-			HandlerFunctions: HandleFunctions{middleware.Auth()},
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMine},
 		},
 	},
 	"/users": []Route{
@@ -46,7 +46,7 @@ var routes = Routes{
 			Name:             "用户登录",
 			Method:           http.MethodPost,
 			Pattern:          "/login",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleLogin},
 		},
 		{
 			Name:             "OAuth登录",
