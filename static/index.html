@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
+    <title>豆瓣电影</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/index.js"></script>
+</head>
+<body>
+    <!--Header 耦合度爆炸-->
+    <div id="top-nav-items">
+        <ul id="top-nav-ul" style="display:inline-block;">
+            <li>
+                <span class="top-nav-item" onclick="alert('没有主页！哼😕')">豆瓣</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道读书！')">读书</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="window.location.href = './index.html'">电影</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道听音乐！')">音乐</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('啊这...我不好说了')">同城</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道小组！')">小组</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('跟读书有区别吗？哼😕')">阅读</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('什么年代了还听广播 原来我也听那没事了')">FM</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('没时间啦 万策尽啦！！！😱')">时间</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('拒绝超前消费!')">豆品</span>
+            </li>
+        </ul>
+        <div id="top-nav-right-items">
+            <ul id="top-nav-right-ul">
+                <li>
+                    <span class="top-nav-item" onclick="alert('flutter在学了😭')">下载豆瓣客户端</span>
+                </li>
+                <li>
+                    <span class="top-nav-item" onclick="window.location.href = 'html/login.html'">登录/注册</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--搜索栏-->
+    <div id="search-area">
+        <div id="search-content">
+            <div id="nav-logo" onclick="window.location.href = './index.html'"></div>
+            <div id="nav-search">
+                <form action="TODO Search" method="get">
+                    <fieldset style="display: inline-flex;border: 0px;">
+                        <label for="inp-query"></label>
+                        <div class="inp">
+                            <input id="inp-query" class="card" name="search_text"
+                                size="22" maxlength="60" placeholder="搜索电影、电视剧、综艺、影人"
+                                autocompelete="off">
+                        </div>
+                        <div class="inp-btn card">
+                            <input type="submit" value="搜索">
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="type-tab">
+        <ul id="type-tab-ul" style="display:inline-block;margin-left: 237px;">
+            <li>
+                <span class="top-nav-item" onclick="alert('未实现')">影讯&购票</span>
+            </li>
+            <li>
+                <span class="top-nav-item">选电影</span>
+            </li>
+            <li>
+                <span class="top-nav-item">电视剧</span>
+            </li>
+            <li>
+                <span class="top-nav-item">排行榜</span>
+            </li>
+            <li>
+                <span class="top-nav-item">分类</span>
+            </li>
+            <li>
+                <span class="top-nav-item">影评</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('未实现')">2021年度榜单</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('未实现')">2021书影音报告</span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

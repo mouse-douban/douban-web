@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
+    <title>登录豆瓣</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <div id="header">
+        <a href="../index.html">
+            <img src="https://img3.doubanio.com/f/accounts/4fd84763a74089b20eb02ba0225d6e7739d2c432/passport/pics/douban_logo@2x.png"
+             width="142"alt="豆瓣">
+        </a>
+    </div>
+    <div id="body">
+        <div id="login-left"></div>
+        <div id="login-right">
+            <div id="account-body-tabs">
+                <ul id="account-tab-ul">
+                    <li class="account-tab on">短信登录/注册</li>
+                    <li class="account-tab" style="padding: 0px 34.5px;">密码登录</li>
+                </ul>
+            </div>
+            <div id="fragment-container">
+                <!--选择短信登录/注册时显示内容-->
+
+                <p id="remind-content">请仔细阅读 <span style="color: #41ac52;cursor: pointer;" onclick="window.location.href = 'https://accounts.douban.com/passport/agreement'">豆瓣使用协议 豆瓣个人信息保护政策</span></p>
+                <div class="input-box">
+                    <div id="plus-86">+86</div>
+                    <input id="input-phone" style="width: 80%;"
+                        size="22" maxlength="60" placeholder="手机号">
+                </div>
+                <div class="input-box">
+                    <input id="input-verification-code" style="width: 73%;"
+                        size="22" maxlength="60" placeholder="输入验证码">
+                    <div id="get-verification-code">获取验证码</div>
+                </div>
+                <div id="submit-btn">
+                    登录豆瓣
+                </div>
+                <div style="width: 100%;height: fit-content;margin-top: 10px;display: flex;justify-content: end;">
+                    <div id="cannot-get-verification-code" style="color:#41ac52;cursor: pointer;">收不到验证码</div>
+                </div>
+                
+            </div>
+            <div id="account-from-3rd-hd">第三方登录</div>
+            <div id="account-from-3rd">
+                <embed src="../images/wechat.svg" type="image/svg+xml" />
+                <embed src="../images/xinglang.svg" type="image/svg+xml" />
+                <embed src="../images/qq.svg" type="image/svg+xml" />
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../js/login.js"></script>
+</body>
+</html>
