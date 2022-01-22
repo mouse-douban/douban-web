@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
     <title>豆瓣电影</title>
     <link rel="stylesheet" href="css/index.css">
-    <script src="js/index.js"></script>
+    <script type="module" src="js/index.js" defer></script>
 </head>
 <body>
     <!--Header 耦合度爆炸-->
@@ -50,7 +50,7 @@
                     <span class="top-nav-item" onclick="alert('flutter在学了😭')">下载豆瓣客户端</span>
                 </li>
                 <li>
-                    <span class="top-nav-item" onclick="window.location.href = 'html/login.html'">登录/注册</span>
+                    <span class="top-nav-item" id="login-nav-item">登录/注册</span>
                 </li>
             </ul>
         </div>

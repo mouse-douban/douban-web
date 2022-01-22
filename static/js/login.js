@@ -1,5 +1,5 @@
-// 等服务器部署之后补上
-const url = ""
+import { BASE_URL } from "./consts.js"
+
 // switch state
 const tabs = document.querySelectorAll('.account-tab')
 const fragContainer = document.querySelector("#fragment-container")
@@ -69,11 +69,11 @@ function setSubmitBtnListener() {
         if (isRegisterView) {
             const inputPhone = document.querySelector("#input-phone")
             const inputVerificationCode = document.querySelector("#input-verification-code")
-            register(inputPhone.content, inputVerificationCode.content, "sms")
+            register(inputPhone.value, inputVerificationCode.value, "sms")
         } else {
             const inputId = document.querySelector("#input-id")
             const inputPassword = document.querySelector("#input-password")
-            login(inputId.content, inputPassword.content, "password")
+            login(inputId.value, inputPassword.value, "password")
         }
     })
     getVerificationCode.addEventListener('click', () => {
@@ -91,7 +91,7 @@ async function login(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    const res = await fetch(url + "/user/login", {
+    const res = await fetch(BASE_URL + "/user/login", {
         method: "POST",
         body: formData,
     })
@@ -99,7 +99,8 @@ async function login(account, token, type) {
     switch (obj.status) {
         case 20000: {
             // 成功辣
-            localStorage.setItem("authorization", obj.data.access_token)
+            localStorage.setItem("access_token", obj.data.access_token)
+            localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('登录成功')
             window.location.href = '../index.html'
             break
@@ -122,7 +123,8 @@ async function register(account, token, type) {
     const obj = await res.json()
     switch (obj.status) {
         case 20000: {
-            localStorage.setItem("authorization", obj.data.access_token)
+            localStorage.setItem("access_token", obj.data.access_token)
+            localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('注册成功')
             window.location.href = '../index.html'
             break
