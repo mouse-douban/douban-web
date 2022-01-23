@@ -174,3 +174,19 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 
 	return
 }
+
+func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
+
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return err, utils.RespData{}
+	}
+
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user,
+	}
+	return
+}

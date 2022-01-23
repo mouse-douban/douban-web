@@ -1,9 +1,9 @@
 package api
 
 import (
+	"douban-webend/api/users"
 	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"regexp"
 )
@@ -21,6 +21,5 @@ func handleWild(ctx *gin.Context) {
 }
 
 func handleMine(ctx *gin.Context) {
-	uid := ctx.GetInt64("uid")
-	log.Println(uid)
+	users.HandleAccountBaseInfo(ctx)
 }

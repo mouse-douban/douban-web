@@ -70,19 +70,19 @@ var routes = Routes{
 			Name:             "获取用户的主页信息",
 			Method:           http.MethodGet,
 			Pattern:          "/:id",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleAccountIndexInfo},
 		},
 		{
 			Name:             "获取用户的想看",
 			Method:           http.MethodGet,
 			Pattern:          "/:id/before",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleUserBefore},
 		},
 		{
 			Name:             "获取用户的看过",
 			Method:           http.MethodGet,
 			Pattern:          "/:id/after",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleUserAfter},
 		},
 	},
 	"/subjects": []Route{

@@ -18,11 +18,11 @@ type User struct {
 	Email          string           `json:"email"`
 	Phone          string           `json:"phone"`
 	Avatar         string           `json:"avatar"`
-	Reviews        []ReviewSnapshot `json:"reviews"`    // 可选
-	MovieList      []MoveList       `json:"movie_list"` // 可选
-	Before         []Comment        `json:"before"`     // 可选
-	After          []Comment        `json:"after"`      // 可选
-	PlaintPassword string           `json:"-"`          // 只写
+	Reviews        []ReviewSnapshot `json:"reviews,omitempty"`    // 可选
+	MovieList      []MoveList       `json:"movie_list,omitempty"` // 可选
+	Before         []Comment        `json:"before,omitempty"`     // 可选
+	After          []Comment        `json:"after,omitempty"`      // 可选
+	PlaintPassword string           `json:"-"`                    // 只写
 }
 
 // OAuthInfo 需要得到的基础的信息
