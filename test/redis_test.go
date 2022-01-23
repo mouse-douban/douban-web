@@ -18,12 +18,12 @@ func TestSetterAndGetter(t *testing.T) {
 	utils.ConnectRedis()
 	err := utils.RedisSetString("hello", "world", time.Second*10)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 	log.Println("Set success")
 	ret, err := utils.RedisGetString("hello")
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 
 	log.Printf("Get %v", ret)

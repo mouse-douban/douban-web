@@ -14,7 +14,7 @@ func TestSms(t *testing.T) {
 	config.Init("../config/config.json")
 	////err := utils.SendSMS("114514", "+8617805621625") 短信好贵啊，还是不发了
 	//if err != nil {
-	//	panic(err)
+	//	t.Error(err)
 	//}
 }
 
@@ -22,7 +22,7 @@ func TestEmail(t *testing.T) {
 	config.Init("../config/config.json")
 	err := utils.SendEmail("114514", "1545766400@qq.com")
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 }
 
@@ -35,7 +35,7 @@ func TestVerifyEmailOk(t *testing.T) {
 	<-time.NewTimer(time.Second * 5).C // 等五秒
 	err := utils.VerifyInputCode("1545766400@qq.com", "email", vCode)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 }
 
@@ -49,7 +49,7 @@ func TestVerifyEmailFailed(t *testing.T) {
 	<-time.NewTimer(time.Second * 5).C // 等五秒
 	err := utils.VerifyInputCode("1545766400@qq.com", "email", vCodeFailed)
 	if err == nil {
-		panic("有很大问题")
+		t.Error(err)
 	}
 }
 
@@ -58,6 +58,6 @@ func TestVerifyPassword(t *testing.T) {
 	hash := user.EncryptPassword()
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte("114514"))
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 }
