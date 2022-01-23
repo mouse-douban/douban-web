@@ -12,6 +12,8 @@ func main() {
 
 	config.Init("config/config.json")
 
+	//config.InitWithCOS() 部署时换成这个
+
 	utils.RegisterLogFile() // 注册日志创建任务
 
 	utils.RegisterUploadLogTask(time.Hour * 4) // 每四个小时上传一次日志

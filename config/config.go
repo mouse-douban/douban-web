@@ -1,9 +1,16 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/tencentyun/cos-go-sdk-v5"
+	"io"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
+	"time"
 )
 
 type Template struct {
@@ -37,6 +44,7 @@ type Template struct {
 
 var Config Template
 
+// Init 保留从本地加载配置文件的方法
 func Init(configPath string) {
 	bytes, err := os.ReadFile(configPath)
 	if err != nil {
@@ -46,4 +54,39 @@ func Init(configPath string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+// InitWithCOS 配置文件保存在 COS 内，保证配置的唯一性
+func InitWithCOS() {
+	u, _ := url.Parse(os.Getenv("BUCKET_URL"))
+	b := &cos.BaseURL{BucketURL: u}
+	c := cos.NewClient(b, &http.Client{
+		//设置超时时间
+		Timeout: 30 * time.Second,
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  os.Getenv("TENCENT_SECRET_ID"),
+			SecretKey: os.Getenv("TENCENT_SECRET_KEY"),
+		},
+	})
+
+	resp, err := c.Object.Get(context.Background(), "config.json", nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(resp.Body)
+
+	jsonB, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = json.Unmarshal(jsonB, &Config)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 }
