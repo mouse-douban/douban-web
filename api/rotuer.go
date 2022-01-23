@@ -64,7 +64,7 @@ var routes = Routes{
 			Name:             "发送验证码",
 			Method:           http.MethodGet,
 			Pattern:          "/verify",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{users.HandleVerify},
 		},
 		{
 			Name:             "获取用户的主页信息",

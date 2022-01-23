@@ -39,17 +39,17 @@ type VerifyInfo struct {
 	SmsCode   string `json:"sms_code,omitempty"`
 }
 
-// verifyMap
+// VerifyMap
 // 集群
-var verifyMap = make(map[string]map[string]string)
+var VerifyMap = make(map[string]map[string]string)
 
 func VerifyInputCode(account string, cType, code string) error {
 	// 先在自己内存里找一找
-	if got, ok := verifyMap[account][cType]; ok && got == code {
+	if got, ok := VerifyMap[account][cType]; ok && got == code {
 		return nil
 	}
 
-	if got, ok := verifyMap[account][cType]; ok && got != code {
+	if got, ok := VerifyMap[account][cType]; ok && got != code {
 		return ServerError{
 			HttpStatus: http.StatusBadRequest,
 			Status:     40001,
@@ -110,7 +110,7 @@ func SendRandomVerifyCode(vType string, target string) string {
 func SendVerifyCode(vType, target, vCode string) {
 	switch vType {
 	case "email":
-		verifyMap[target] = map[string]string{"email": vCode}
+		VerifyMap[target] = map[string]string{"email": vCode}
 		go func() {
 			err := RedisSetStruct(target, VerifyInfo{
 				EmailCode: vCode,
@@ -128,13 +128,13 @@ func SendVerifyCode(vType, target, vCode string) {
 
 		}()
 
-		// 两分钟后删掉
+		// 一分钟后删掉
 		go func() {
-			<-time.NewTimer(time.Minute * 2).C
-			delete(verifyMap, target)
+			<-time.NewTimer(time.Minute).C
+			delete(VerifyMap, target)
 		}()
 	case "sms":
-		verifyMap[target] = map[string]string{"sms": vCode}
+		VerifyMap[target] = map[string]string{"sms": vCode}
 		go func() {
 			err := RedisSetStruct(target, VerifyInfo{
 				SmsCode: vCode,
@@ -151,10 +151,10 @@ func SendVerifyCode(vType, target, vCode string) {
 			}
 		}()
 
-		// 两分钟后删掉
+		// 一分钟后删掉
 		go func() {
-			<-time.NewTimer(time.Minute * 2).C
-			delete(verifyMap, target)
+			<-time.NewTimer(time.Minute).C
+			delete(VerifyMap, target)
 		}()
 	}
 }
@@ -166,21 +166,6 @@ func SendVerifyCode(vType, target, vCode string) {
 //      - nil				发送成功
 //		- ServerError		发送失败
 func SendSMS(verifyCode string, phoneNumbers ...string) error {
-
-	// TODO 移到 controller 层
-	//r := regexp.MustCompile("\\d")
-	//alls := r.FindAllStringSubmatch(verifyCode, -1)
-	//if len(alls) != len(verifyCode) {
-	//	return ServerInternalError
-	//}
-	//
-	//for _, number := range phoneNumbers {
-	//	if ok, _ := regexp.MatchString("^\\+861[3-9][0-9]\\d{8}$", number); !ok { // todo 支持国际电话
-	//		queryParamError := QueryParamError.Copy()
-	//		queryParamError.Detail = "电话格式错误"
-	//		return queryParamError
-	//	}
-	//}
 
 	credential := common.NewCredential(
 		config.Config.TencentSecretId,
