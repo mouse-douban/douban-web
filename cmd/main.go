@@ -24,6 +24,6 @@ func main() {
 
 	dao.InitDao()
 
-	api.InitRouter(false)
+	api.InitRouter(config.Config.UseTLS)
 
 }

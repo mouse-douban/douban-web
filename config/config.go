@@ -40,6 +40,7 @@ type Template struct {
 	RedisAddr               string `json:"redis_addr"`
 	RedisAddrInner          string `json:"redis_addr_inner"`
 	RedisPassword           string `json:"redis_password"`
+	UseTLS                  bool   `json:"use_tls"`
 }
 
 var Config Template
