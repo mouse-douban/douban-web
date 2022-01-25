@@ -108,17 +108,17 @@ var routes = Routes{
 func newRouter(useTLS bool) *gin.Engine {
 	engine := gin.Default()
 
+	engine.Use(middleware.Cors()) // 跨域，放在服务路由加载前
+
+	if useTLS {
+		engine.Use(middleware.TLSHandle(Addr)) // TLS
+	}
+
 	for k, v := range routes {
 		for _, router := range v {
 			relativePath := k + router.Pattern
 			engine.Handle(router.Method, relativePath, router.HandlerFunctions...)
 		}
-	}
-
-	engine.Use(middleware.Cors()) // 跨域
-
-	if useTLS {
-		engine.Use(middleware.TLSHandle(Addr))
 	}
 
 	return engine
