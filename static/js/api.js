@@ -9,7 +9,7 @@ import { get, post } from './utils.js'
  * @returns 
  */
 async function getUserInfo(id, scope = "") {
-    return await get(`/user/${id}`, { scope })
+    return await get(`/users/${id}`, { scope })
 }
 
 /**
@@ -24,7 +24,7 @@ async function login(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    return await post("/user/login", formData)
+    return await post("/users/login", formData)
 }
 
 export { getUserInfo, login }

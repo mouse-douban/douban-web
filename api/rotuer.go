@@ -21,6 +21,8 @@ type Route struct {
 	HandlerFunctions HandleFunctions `json:"-"`
 }
 
+// 这种路由注册的设计是从 Apifox 自动生成的 mock 代码里学到的，并且改了一点来适配分级路由
+// TODO 设计 Group 的注册方式
 // 所有路由
 var routes = Routes{
 	"/": []Route{

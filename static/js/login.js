@@ -91,7 +91,7 @@ async function login(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    const res = await fetch(BASE_URL + "/user/login", {
+    const res = await fetch(BASE_URL + "/users/login", {
         method: "POST",
         body: formData,
     })
@@ -102,7 +102,7 @@ async function login(account, token, type) {
             localStorage.setItem("access_token", obj.data.access_token)
             localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('登录成功')
-            window.location.href = '../index.html'
+            window.location.href = '../'
             break
         }
         default: {
@@ -116,7 +116,7 @@ async function register(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    const res = await fetch(url + "/user/register", {
+    const res = await fetch(url + "/users/register", {
         method: "POST",
         body: formData,
     })
@@ -126,7 +126,7 @@ async function register(account, token, type) {
             localStorage.setItem("access_token", obj.data.access_token)
             localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('注册成功')
-            window.location.href = '../index.html'
+            window.location.href = '../'
             break
         }
         default: {
