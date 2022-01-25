@@ -158,9 +158,18 @@ func HandleLogin(ctx *gin.Context) {
 			return
 		}
 	case "refresh":
-		err, uid := utils.AuthorizeJWT(token)
+		err, uid, tokenType := utils.AuthorizeJWT(token)
 		if err != nil {
 			utils.RespWithError(ctx, err)
+			return
+		}
+		if tokenType != utils.RefreshTokenType {
+			utils.RespWithError(ctx, utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40008,
+				Info:       "invalid token",
+				Detail:     "请不要使用 access_token 来刷新",
+			})
 			return
 		}
 		accessToken, refreshToken, err := utils.GenerateTokenPair(uid)

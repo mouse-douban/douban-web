@@ -9,27 +9,21 @@ import (
 func Auth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		accessToken := ctx.GetHeader("Authorization")
-		err, uid := utils.AuthorizeJWT(accessToken)
+		err, uid, kind := utils.AuthorizeJWT(accessToken)
 		if err != nil {
 			utils.AbortWithError(ctx, err)
 			return
 		}
-		ctx.Set("uid", uid)
-		ctx.Next()
-	}
-}
-
-func WildChecker() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		accessToken := ctx.GetHeader("Authorization")
-		if accessToken != "" { // 不允许外链跳转带 Authorization
+		if kind != utils.AccessTokenType {
 			utils.AbortWithError(ctx, utils.ServerError{
 				HttpStatus: http.StatusBadRequest,
-				Status:     40004,
-				Info:       "invalid request",
-				Detail:     "can not go wild",
+				Status:     40008,
+				Info:       "invalid token",
+				Detail:     "请不要使用 refresh_token 认证",
 			})
 			return
 		}
+		ctx.Set("uid", uid)
+		ctx.Next()
 	}
 }
