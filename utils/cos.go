@@ -66,3 +66,21 @@ func DeleteFile(bucketUrl string, path string) {
 		log.Println(err)
 	}
 }
+
+func DownloadFile(bucketUrl string, path string, savePath string) {
+	u, _ := url.Parse(bucketUrl)
+	b := &cos.BaseURL{BucketURL: u}
+	c := cos.NewClient(b, &http.Client{
+		//设置超时时间
+		Timeout: 30 * time.Second,
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  config.Config.TencentSecretId,
+			SecretKey: config.Config.TencentSecretKey,
+		},
+	})
+
+	_, err := c.Object.GetToFile(context.Background(), path, savePath, nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
