@@ -17,14 +17,14 @@ func TestJWTSignAndAuthorization(t *testing.T) {
 		if err != nil {
 			t.Error("Error in signing jwt, uid = ", input)
 		}
-		err, uid := utils.AuthorizeJWT(accessToken)
+		err, uid, _ := utils.AuthorizeJWT(accessToken)
 		if err != nil {
 			t.Error("Error in authorizing access jwt")
 		}
 		if uid != input {
 			t.Error("Error in authorizing access jwt, uid = ", input)
 		}
-		err, uid = utils.AuthorizeJWT(refreshToken)
+		err, uid, _ = utils.AuthorizeJWT(refreshToken)
 		if err != nil {
 			t.Error("Error in authorizing refresh jwt")
 		}

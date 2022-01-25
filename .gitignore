@@ -62,3 +62,5 @@ Temporary Items
 .idea
 config/config.json
 /logs/
+config/*.key
+config/*.pem

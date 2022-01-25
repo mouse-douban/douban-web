@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+var Addr = ":8080"
+
 type HandleFunctions []gin.HandlerFunc
 type Routes map[string][]Route // Routes	group(key) => []Route
 
@@ -103,7 +105,7 @@ var routes = Routes{
 	},
 }
 
-func newRouter() *gin.Engine {
+func newRouter(useTLS bool) *gin.Engine {
 	engine := gin.Default()
 
 	for k, v := range routes {
@@ -115,13 +117,22 @@ func newRouter() *gin.Engine {
 
 	engine.Use(middleware.Cors()) // 跨域
 
+	if useTLS {
+		engine.Use(middleware.TLSHandle(Addr))
+	}
+
 	return engine
 }
 
-func InitRouter() {
+func InitRouter(useTLS bool) {
 	log.Println("Server started!")
 
-	router := newRouter()
+	router := newRouter(useTLS)
 
-	log.Fatalln(router.Run(":8080"))
+	if useTLS {
+		log.Fatalln(router.RunTLS(Addr, "config/api.pem", "config/api.key"))
+	} else {
+		log.Fatalln(router.Run(Addr))
+	}
+
 }

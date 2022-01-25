@@ -53,8 +53,7 @@ var (
 		},
 	}
 
-	ServerInternalErrorJSON = "{\n  \"status\": 50000,\n  \"info\": \"server error\",\n  \"data\": {\n    \"detail\": \"no detail message\"\n  }\n}"
-	InfoSuccess             = "success"
+	InfoSuccess = "success"
 )
 
 func (s ServerError) Error() string {

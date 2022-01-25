@@ -20,10 +20,10 @@ func main() {
 
 	<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
 
-	utils.ConnectRedis() // 连接 redis
+	utils.ConnectRedis() // 连接 redisK
 
 	dao.InitDao()
 
-	api.InitRouter()
+	api.InitRouter(false)
 
 }
