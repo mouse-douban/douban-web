@@ -106,6 +106,12 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountEXInfoUpdate},
 		},
 		{
+			Name:             "销毁账户",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountDelete},
+		},
+		{
 			Name:             "发送用户验证码",
 			Method:           http.MethodGet,
 			Pattern:          "/:id/verify",

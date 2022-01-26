@@ -207,3 +207,7 @@ func UpdateUserInfo(uid int64, params map[string]string) (err error) {
 	}
 	return
 }
+
+func DeleteUser(uid int64) (err error) {
+	return dao.DeleteUser(uid)
+}

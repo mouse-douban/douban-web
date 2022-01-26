@@ -136,3 +136,22 @@ func HandleAccountEXInfoUpdate(ctx *gin.Context) {
 	err, resp := controller.CtrlAccountEXInfoUpdate(uid, params, verifyAccount, verify, verifyType)
 	utils.Resp(ctx, err, resp)
 }
+
+func HandleAccountDelete(ctx *gin.Context) {
+	uid := ctx.GetInt64("uid")
+	verify := ctx.PostForm("verify") // 验证码
+	if !utils.MatchVerifyCode(verify) {
+		utils.AbortWithParamError(ctx, "验证码格式不支持")
+		return
+	}
+	verifyType := ctx.PostForm("verify_type") // 验证方式
+	switch verifyType {
+	case "sms", "email":
+		err, resp := controller.CtrlAccountDelete(uid, verify, verifyType)
+		utils.Resp(ctx, err, resp)
+		return
+	default:
+		utils.AbortWithParamError(ctx, "verify_type 格式错误")
+		return
+	}
+}

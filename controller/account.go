@@ -252,3 +252,37 @@ func CtrlResetPwd(uid int64, verifyCode, verifyType, newPwd string) (err error, 
 	}
 	return nil, utils.NoDetailSuccessResp
 }
+
+func CtrlAccountDelete(uid int64, verifyCode, verifyType string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	var account string
+	switch verifyType {
+	case "sms":
+		account = user.Phone
+	case "email":
+		account = user.Email
+	}
+	if account == "" {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40010,
+			Info:       "invalid request",
+			Detail:     "验证码账户不存在",
+		}, utils.RespData{}
+	}
+
+	err = utils.VerifyInputCode(account, verifyType, verifyCode)
+	if err != nil {
+		return
+	}
+
+	err = service.DeleteUser(uid)
+	if err != nil {
+		return
+	}
+
+	return nil, utils.NoDetailSuccessResp
+}

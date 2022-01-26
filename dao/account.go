@@ -118,3 +118,9 @@ func RawUpdateUserInfo(uid int64, which, what string) (err error) {
 	_, err = dB.Exec(sqlStr, what, uid)
 	return
 }
+
+func DeleteUser(uid int64) (err error) {
+	sqlStr := "DELETE FROM user WHERE uid = ?"
+	_, err = dB.Exec(sqlStr, uid)
+	return
+}
