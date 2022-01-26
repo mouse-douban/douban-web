@@ -1,4 +1,5 @@
 import { BASE_URL } from "./consts.js"
+import { getVerifyCode } from "./api.js"
 
 // switch state
 const tabs = document.querySelectorAll('.account-tab')
@@ -69,19 +70,30 @@ function setSubmitBtnListener() {
         if (isRegisterView) {
             const inputPhone = document.querySelector("#input-phone")
             const inputVerificationCode = document.querySelector("#input-verification-code")
-            register(inputPhone.value, inputVerificationCode.value, "sms")
+            register("+86" + inputPhone.value, inputVerificationCode.value, "sms")
         } else {
             const inputId = document.querySelector("#input-id")
             const inputPassword = document.querySelector("#input-password")
-            login(inputId.value, inputPassword.value, "password")
+            login("+86" + inputId.value, inputPassword.value, "password")
         }
     })
-    getVerificationCode.addEventListener('click', () => {
+    getVerificationCode.addEventListener('click', async () => {
         if (isRegisterView) {
-            // TODO 发送验证码
-            alert('验证码已发送!')
+            // 发送验证码
+            const inputPhone = document.querySelector("#input-phone")
+            const res = await getVerifyCode("sms", "%2B86" + inputPhone.value)
+            switch (res.status) {
+                case 20001: {
+                    alert('验证码已发送!')
+                    break
+                }
+                default: {
+                    alert('输入的手机号不正确')
+                }
+            }
         } else {
             // 忘记密码
+            
         }
     })
 }
@@ -91,7 +103,7 @@ async function login(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    const res = await fetch(BASE_URL + "/user/login", {
+    const res = await fetch(BASE_URL + "/users/login", {
         method: "POST",
         body: formData,
     })
@@ -116,7 +128,7 @@ async function register(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    const res = await fetch(url + "/user/register", {
+    const res = await fetch(BASE_URL + "/users/register", {
         method: "POST",
         body: formData,
     })

@@ -9,7 +9,7 @@ import { get, post } from './utils.js'
  * @returns 
  */
 async function getUserInfo(id, scope = "") {
-    return await get(`/user/${id}`, { scope })
+    return await get(`/users/${id}`, { scope })
 }
 
 /**
@@ -24,7 +24,20 @@ async function login(account, token, type) {
     formData.append("account", account)
     formData.append("token", token)
     formData.append("type", type)
-    return await post("/user/login", formData)
+    return await post("/users/login", formData)
 }
 
-export { getUserInfo, login }
+/**
+ * 获取验证码
+ * 
+ * @param {string} type 验证码种类 sms(短信) / email(邮件)
+ * @param {string} value 值 电话号码 / 邮箱
+ */
+async function getVerifyCode(type, value) {
+    return await get("/users/verify", {
+        type,
+        value
+    })
+}
+
+export { getUserInfo, login, getVerifyCode }

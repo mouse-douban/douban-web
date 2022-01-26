@@ -5,10 +5,11 @@ import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from './consts.js'
 const loginProfileElement = document.querySelector("#login-nav-item")
 let access_token = localStorage.getItem(ACCESS_TOKEN)
 const refresh_token = localStorage.getItem(REFRESH_TOKEN)
+let tokenLifeCycleObj
 
 // 自动登录部分
 if (access_token != null) {
-    const tokenLifeCycleObj = getTokenInfoObj(access_token)
+    tokenLifeCycleObj = getTokenInfoObj(access_token)
     const isTokenAvaliable = new Date().getTime() - tokenLifeCycleObj.iat < tokenLifeCycleObj.exp
     // token有效 获取用户信息
     if (isTokenAvaliable) {
@@ -33,7 +34,7 @@ async function doGetUserInfo() {
 
 function setUpLoginButton() {
     loginProfileElement.addEventListener('click', () => {
-        window.location.href = "./html/login.html"
+        window.location.href = "./login/index.html"
     })
 }
 
