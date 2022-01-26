@@ -3,10 +3,12 @@ package users
 import (
 	"douban-webend/config"
 	"douban-webend/controller"
+	"douban-webend/service"
 	"douban-webend/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func HandleRegister(ctx *gin.Context) {
@@ -252,6 +254,85 @@ func HandleVerify(ctx *gin.Context) {
 		})
 	default:
 		utils.RespWithParamError(ctx, "type 只能为 email 和 sms")
+		return
+	}
+}
+
+func HandleVerifyAccount(ctx *gin.Context) {
+	kind := ctx.Query("type")
+	id := ctx.Param("id")
+	uid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		utils.RespWithParamError(ctx, "id 格式不支持")
+		return
+	}
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	switch kind {
+	case "sms":
+		if user.Phone == "" {
+			utils.RespWithError(ctx, utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40010,
+				Info:       "invalid request",
+				Detail:     "验证码账户不存在",
+			})
+			return
+		}
+		utils.SendRandomVerifyCode("sms", user.Phone)
+	case "email":
+		if user.Email == "" {
+			utils.RespWithError(ctx, utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40010,
+				Info:       "invalid request",
+				Detail:     "验证码账户不存在",
+			})
+			return
+		}
+		utils.SendRandomVerifyCode("email", user.Email)
+	default:
+		utils.RespWithParamError(ctx, "type 只能为 email 和 sms")
+		return
+	}
+	utils.RespWithDetail(ctx, utils.RespDetail{
+		HttpStatus: http.StatusOK,
+		Info:       utils.InfoSuccess,
+		Status:     20002,
+		Data: utils.Detail{
+			Detail: "sending " + kind + " success",
+		},
+	})
+}
+
+func HandleForgetPwd(ctx *gin.Context) {
+	id := ctx.PostForm("uid")
+	uid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		utils.RespWithParamError(ctx, "id 格式不支持")
+		return
+	}
+	verify := ctx.PostForm("verify")
+	if !utils.MatchVerifyCode(verify) {
+		utils.RespWithParamError(ctx, "验证码格式不支持")
+		return
+	}
+	newPwd := ctx.PostForm("new_pwd")
+	if !utils.CheckPasswordStrength(newPwd) {
+		utils.RespWithParamError(ctx, "新密码格式不支持")
+		return
+	}
+	verifyType := ctx.PostForm("verify_type")
+	switch verifyType {
+	case "sms", "email":
+		err, resp := controller.CtrlResetPwd(uid, verify, verifyType, newPwd)
+		utils.Resp(ctx, err, resp)
+		return
+	default:
+		utils.RespWithParamError(ctx, "verify_type 格式不支持")
 		return
 	}
 }

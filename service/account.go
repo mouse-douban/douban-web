@@ -6,6 +6,7 @@ import (
 	"douban-webend/utils"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strings"
 )
 
 func RegisterAccountFromUsername(username, password string) (err error, accessToken, refreshToken string, uid int64) {
@@ -183,7 +184,8 @@ func LoginAccountFromGitee(info model.OAuthInfo) (err error, accessToken, refres
 
 func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	err, user = dao.SelectBaseUserInfo(uid)
-	if !utils.MatchPhoneNumber(user.Phone) { // 排除 UUID 占位
+	user.Phone = strings.Replace(user.Phone, "%2B", "+", -1) // + 转义
+	if !utils.MatchPhoneNumber(user.Phone) {                 // 排除 UUID 占位
 		user.Phone = ""
 	}
 	if !utils.MatchEmailFormat(user.Email) { // 排除 UUID 占位
@@ -194,7 +196,11 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 
 func UpdateUserInfo(uid int64, params map[string]string) (err error) {
 	for key, value := range params {
-		err = dao.UpdateUserInfo(uid, key, value)
+		if key == "password" { // 加密
+			user := model.User{PlaintPassword: value}
+			value = user.EncryptPassword()
+		}
+		err = dao.RawUpdateUserInfo(uid, key, value)
 		if err != nil {
 			return
 		}

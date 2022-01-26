@@ -112,7 +112,8 @@ func InsertUserFromGithubId(user model.User) (err error, uid int64) {
 	return
 }
 
-func UpdateUserInfo(uid int64, which, what string) (err error) {
+// RawUpdateUserInfo 不建议引用
+func RawUpdateUserInfo(uid int64, which, what string) (err error) {
 	sqlStr := fmt.Sprintf("UPDATE user SET %s=? WHERE uid = ?", which)
 	_, err = dB.Exec(sqlStr, what, uid)
 	return

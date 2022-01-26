@@ -196,13 +196,7 @@ func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
 	return
 }
 
-func CtrlAccountInfoUpdate(uid int64, params map[string]string, useVerify bool, verifyAccount, verifyCode, verifyType string) (err error, resp utils.RespData) {
-	if useVerify {
-		err = utils.VerifyInputCode(verifyAccount, verifyType, verifyCode)
-		if err != nil {
-			return
-		}
-	}
+func CtrlAccountInfoUpdate(uid int64, params map[string]string) (err error, resp utils.RespData) {
 	err = service.UpdateUserInfo(uid, params)
 	if err != nil {
 		return
@@ -215,7 +209,44 @@ func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount,
 	if err != nil {
 		return
 	}
+	var kind = verifyType
+	if verifyType == "sms" {
+		kind = "phone"
+	}
+	params[kind] = verifyAccount // 替换
 	err = service.UpdateUserInfo(uid, params)
+	if err != nil {
+		return
+	}
+	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlResetPwd(uid int64, verifyCode, verifyType, newPwd string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	var account string
+	switch verifyType {
+	case "sms":
+		account = user.Phone
+	case "email":
+		account = user.Email
+	}
+	if account == "" {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40010,
+			Info:       "invalid request",
+			Detail:     "验证码账户不存在",
+		}, utils.RespData{}
+	}
+
+	err = utils.VerifyInputCode(account, verifyType, verifyCode)
+	if err != nil {
+		return
+	}
+	err = service.UpdateUserInfo(uid, map[string]string{"password": newPwd})
 	if err != nil {
 		return
 	}
