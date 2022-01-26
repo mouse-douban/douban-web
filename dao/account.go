@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
+	"fmt"
 )
 
 // SelectUidFrom 只允许内部调用，不会出现sql注入
@@ -108,5 +109,11 @@ func InsertUserFromGithubId(user model.User) (err error, uid int64) {
 	}
 	row := dB.QueryRow("SELECT uid FROM user WHERE github_id = ?", user.GithubId)
 	err = row.Scan(&uid)
+	return
+}
+
+func UpdateUserInfo(uid int64, which, what string) (err error) {
+	sqlStr := fmt.Sprintf("UPDATE user SET %s=? WHERE uid = ?", which)
+	_, err = dB.Exec(sqlStr, what, uid)
 	return
 }

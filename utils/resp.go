@@ -44,9 +44,9 @@ var (
 		Status:     42200,
 		Info:       "invalid params",
 	}
-	NoDetailSuccessResp = RespDetail{
+	NoDetailSuccessResp = RespData{
 		HttpStatus: 200,
-		Status:     22222,
+		Status:     20220,
 		Info:       InfoSuccess,
 		Data: Detail{
 			Detail: "no detail message",

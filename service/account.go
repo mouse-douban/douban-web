@@ -191,3 +191,13 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	}
 	return
 }
+
+func UpdateUserInfo(uid int64, params map[string]string) (err error) {
+	for key, value := range params {
+		err = dao.UpdateUserInfo(uid, key, value)
+		if err != nil {
+			return
+		}
+	}
+	return
+}

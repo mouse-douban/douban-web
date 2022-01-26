@@ -53,7 +53,7 @@ var routes = Routes{
 			Name:             "我的主页",
 			Method:           http.MethodGet,
 			Pattern:          "/mine",
-			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMine},
+			HandlerFunctions: HandleFunctions{middleware.Auth0(), handleMine},
 		},
 	},
 	"/users": []Route{
@@ -86,6 +86,18 @@ var routes = Routes{
 			Method:           http.MethodGet,
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{users.HandleAccountIndexInfo},
+		},
+		{
+			Name:             "更新用户非重要信息",
+			Method:           http.MethodPut,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth1(), users.HandleAccountInfoUpdate},
+		},
+		{
+			Name:             "更新用户重要信息",
+			Method:           http.MethodPatch,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth0(), users.HandleAccountEXInfoUpdate},
 		},
 		{
 			Name:             "获取用户的想看",
