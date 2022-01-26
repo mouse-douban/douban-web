@@ -57,7 +57,7 @@ async function post(path, body, params = null) {
  * @returns 
  */
 function getTokenInfoObj(access_token) {
-    return JSON.parse(window.btoa(access_token.split(".")[1]))
+    return JSON.parse(window.atob(access_token.split(".")[1]))
 }
 
 export { get, post, getTokenInfoObj }
