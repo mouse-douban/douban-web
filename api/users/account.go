@@ -222,7 +222,7 @@ func HandleVerify(ctx *gin.Context) {
 	}
 
 	switch kind {
-	case "sms":
+	case "sms": // + 号会转译，发请求时使用 %2B
 		if !utils.MatchPhoneNumber(target) {
 			utils.RespWithParamError(ctx, "value 格式不支持")
 			return

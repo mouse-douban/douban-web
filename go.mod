@@ -9,6 +9,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.332
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.332
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.33
+	github.com/unrolled/secure v1.0.9
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 )
 
@@ -29,7 +30,6 @@ require (
 	github.com/onsi/gomega v1.17.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
-	github.com/unrolled/secure v1.0.9 // indirect
 	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

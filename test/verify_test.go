@@ -46,7 +46,7 @@ func TestVerifyEmailFailed(t *testing.T) {
 	vCode := "11451"
 	vCodeFailed := "114514"
 	utils.SendVerifyCode("email", "1545766400@qq.com", vCode)
-	<-time.NewTimer(time.Second * 5).C // 等五秒
+	<-time.NewTimer(time.Second * 3).C // 等三秒
 	err := utils.VerifyInputCode("1545766400@qq.com", "email", vCodeFailed)
 	if err == nil {
 		t.Error(err)

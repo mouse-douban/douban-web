@@ -35,6 +35,7 @@ func TestMatchPhone(t *testing.T) {
 		"+8611134712830",
 		"+325134712830",
 		"+8625134712830",
+		"+8615683055233",
 	}
 	var outputs = []bool{
 		true,
@@ -43,6 +44,7 @@ func TestMatchPhone(t *testing.T) {
 		false,
 		false,
 		false,
+		true,
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.MatchPhoneNumber(input) {
