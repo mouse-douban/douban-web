@@ -12,7 +12,8 @@ echo "Setting goproxy..."
 /usr/local/go/bin/go mod tidy
 
 echo "Testing ..."
-
+/usr/local/go/bin/go env -w GOARCH=amd64
+/usr/local/go/bin/go env -w GOOS=linux
 /usr/local/go/bin/go test -v test/*.go
 
 echo "Building package ..."
