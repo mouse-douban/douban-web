@@ -8,7 +8,7 @@ import (
 )
 
 func TestSms(t *testing.T) {
-	config.Init("../config/config.json")
+	config.Init("config/config.json")
 	////err := utils.SendSMS("114514", "+8617805621625") 短信好贵啊，还是不发了
 	//if err != nil {
 	//	t.Error(err)
@@ -16,7 +16,7 @@ func TestSms(t *testing.T) {
 }
 
 func TestEmail(t *testing.T) {
-	//config.Init("../config/config.json")
+	//config.Init("config/config.json")
 	//err := utils.SendEmail("114514", "1545766400@qq.com")
 	//if err != nil {
 	//	t.Error(err)
@@ -24,7 +24,7 @@ func TestEmail(t *testing.T) {
 }
 
 func TestVerifyEmailOk(t *testing.T) {
-	//config.Init("../config/config.json")
+	//config.Init("config/config.json")
 	//utils.ConnectRedis()
 	//rand.Seed(time.Now().Unix())
 	//vCode := "114514"
@@ -37,7 +37,7 @@ func TestVerifyEmailOk(t *testing.T) {
 }
 
 func TestVerifyEmailFailed(t *testing.T) {
-	//config.Init("../config/config.json")
+	//config.Init("config/config.json")
 	//utils.ConnectRedis()
 	//rand.Seed(time.Now().Unix())
 	//vCode := "11451"
