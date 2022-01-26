@@ -88,7 +88,7 @@ const (
 	GithubOpenAPIUser = "https://api.github.com/user"
 
 	GiteeToken       = "https://gitee.com/oauth/token?grant_type=authorization_code&code=%s&client_id=%s&redirect_uri=%s&client_secret=%s"
-	GiteeRedirectUri = "http://%s/oauth/gitee"
+	GiteeRedirectUri = "https://%s/oauth/gitee"
 	GiteeOpenAPIUser = "https://gitee.com/api/v5/user/"
 )
 

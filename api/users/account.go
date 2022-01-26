@@ -85,10 +85,10 @@ func HandleOAuthRedirect(ctx *gin.Context) {
 	switch platform {
 	case "gitee":
 		link := "https://gitee.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code"
-		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GiteeOauthClientId, "http://"+config.Config.ServerIp+"/oauth/gitee"))
+		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GiteeOauthClientId, "https://"+config.Config.ServerIp+"/oauth/gitee"))
 	case "github":
 		link := "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s"
-		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GithubOauthClientId, "http://"+config.Config.ServerIp+"/oauth/github"))
+		ctx.Redirect(http.StatusPermanentRedirect, fmt.Sprintf(link, config.Config.GithubOauthClientId, "https://"+config.Config.ServerIp+"/oauth/github"))
 	default:
 		utils.AbortWithParamError(ctx, "不支持这个平台")
 		return
