@@ -27,7 +27,7 @@ func UploadFile(bucketUrl string, path string, r io.Reader) {
 
 	_, err := c.Object.Put(context.Background(), path, r, nil)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
 	}
 }
 
@@ -45,7 +45,7 @@ func UploadFileFromLocal(bucketUrl, toPath, filePath string) {
 
 	_, err := c.Object.PutFromFile(context.Background(), toPath, filePath, nil)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
 	}
 }
 
@@ -63,6 +63,24 @@ func DeleteFile(bucketUrl string, path string) {
 
 	_, err := c.Object.Delete(context.Background(), path, nil)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+	}
+}
+
+func DownloadFile(bucketUrl string, path string, savePath string) {
+	u, _ := url.Parse(bucketUrl)
+	b := &cos.BaseURL{BucketURL: u}
+	c := cos.NewClient(b, &http.Client{
+		//设置超时时间
+		Timeout: 30 * time.Second,
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  config.Config.TencentSecretId,
+			SecretKey: config.Config.TencentSecretKey,
+		},
+	})
+
+	_, err := c.Object.GetToFile(context.Background(), path, savePath, nil)
+	if err != nil {
+		log.Println(err)
 	}
 }

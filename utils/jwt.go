@@ -16,23 +16,29 @@ import (
 // 又到了经典的造轮子环节
 // 签名算法使用的是 HMAC SHA256
 
+type TokenType bool
+
 const (
-	HeaderPlain = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}"
+	HeaderPlain                = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}"
+	AccessTokenType  TokenType = true
+	RefreshTokenType TokenType = false
 )
 
 // Claims Payload
 type Claims struct {
-	InterArrivalTime int64 `json:"iat"` // 到达时间
-	ExpirationDate   int64 `json:"exp"` // 认证时间
-	Uid              int64 `json:"uid"` // 用户 id
+	InterArrivalTime int64     `json:"iat"` // 到达时间
+	ExpirationDate   int64     `json:"exp"` // 认证时间
+	Uid              int64     `json:"uid"` // 用户 id
+	Type             TokenType `json:"is_access_token"`
 }
 
 func GenerateTokenPair(uid int64) (accessToken, refreshToken string, err error) {
 	now := time.Now().Unix()
-	tokenClaims := Claims{
+	accessTokenClaims := Claims{
 		InterArrivalTime: now,
 		ExpirationDate:   config.Config.JwtTimeOut,
 		Uid:              uid,
+		Type:             AccessTokenType,
 	}
 
 	// refreshToken时间会比token要长
@@ -40,9 +46,10 @@ func GenerateTokenPair(uid int64) (accessToken, refreshToken string, err error) 
 		InterArrivalTime: now,
 		ExpirationDate:   config.Config.JwtTimeOut * 10,
 		Uid:              uid,
+		Type:             RefreshTokenType,
 	}
 
-	accessToken, err = generateByClaims(tokenClaims)
+	accessToken, err = generateByClaims(accessTokenClaims)
 	if err != nil {
 		return "", "", ServerInternalError
 	}
@@ -77,12 +84,12 @@ func signJWT(header, payload string) string {
 
 // AuthorizeJWT 验证 JWT
 // 返回：
-// - nil, uid 验证成功
+// - nil, uid, type 验证成功
 // - ServerInternalError 服务器错误
 // - ServerError
 // - 	- 40002 JWT 认证错误
 // -    - 40003 JWT 过期
-func AuthorizeJWT(jwtStr string) (error, int64) {
+func AuthorizeJWT(jwtStr string) (error, int64, TokenType) {
 
 	reg := regexp.MustCompile(`\.`)
 	find := reg.FindAllString(jwtStr, -1)
@@ -92,7 +99,7 @@ func AuthorizeJWT(jwtStr string) (error, int64) {
 			Status:     40002,
 			Info:       "invalid jwt",
 			Detail:     "JWT 认证错误!",
-		}, 0
+		}, 0, false
 	}
 
 	claims := Claims{}
@@ -108,11 +115,11 @@ func AuthorizeJWT(jwtStr string) (error, int64) {
 			Status:     40002,
 			Info:       "invalid jwt",
 			Detail:     "JWT 认证错误!",
-		}, 0
+		}, 0, false
 	}
 	err := json.Unmarshal(payload, &claims)
 	if err != nil {
-		return ServerInternalError, 0
+		return ServerInternalError, 0, false
 	}
 	now := time.Now().Unix()
 
@@ -123,7 +130,7 @@ func AuthorizeJWT(jwtStr string) (error, int64) {
 			Status:     40003,
 			Info:       "invalid jwt",
 			Detail:     "JWT 过期!",
-		}, 0
+		}, 0, false
 	}
-	return nil, claims.Uid
+	return nil, claims.Uid, claims.Type
 }

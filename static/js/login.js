@@ -93,7 +93,7 @@ function setSubmitBtnListener() {
             }
         } else {
             // 忘记密码
-            
+
         }
     })
 }
@@ -114,7 +114,7 @@ async function login(account, token, type) {
             localStorage.setItem("access_token", obj.data.access_token)
             localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('登录成功')
-            window.location.href = '../index.html'
+            window.location.href = '../'
             break
         }
         default: {
@@ -138,7 +138,7 @@ async function register(account, token, type) {
             localStorage.setItem("access_token", obj.data.access_token)
             localStorage.setItem("refresh_token", obj.data.refresh_token)
             alert('注册成功')
-            window.location.href = '../index.html'
+            window.location.href = '../'
             break
         }
         default: {

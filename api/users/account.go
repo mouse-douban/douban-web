@@ -158,9 +158,18 @@ func HandleLogin(ctx *gin.Context) {
 			return
 		}
 	case "refresh":
-		err, uid := utils.AuthorizeJWT(token)
+		err, uid, tokenType := utils.AuthorizeJWT(token)
 		if err != nil {
 			utils.RespWithError(ctx, err)
+			return
+		}
+		if tokenType != utils.RefreshTokenType {
+			utils.RespWithError(ctx, utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40008,
+				Info:       "invalid token",
+				Detail:     "请不要使用 access_token 来刷新",
+			})
 			return
 		}
 		accessToken, refreshToken, err := utils.GenerateTokenPair(uid)
@@ -186,4 +195,63 @@ func HandleLogin(ctx *gin.Context) {
 
 	err, resp := controller.CtrlLogin(account, token, kind)
 	utils.Resp(ctx, err, resp)
+}
+
+func HandleVerify(ctx *gin.Context) {
+	kind, ok := ctx.GetQuery("type")
+	if !ok || kind == "" {
+		utils.RespWithParamError(ctx, "type 参数不能为空")
+		return
+	}
+
+	target, ok := ctx.GetQuery("value")
+	if !ok || kind == "" {
+		utils.RespWithParamError(ctx, "value 参数不能为空")
+		return
+	}
+
+	_, ok = utils.VerifyMap[target]
+	if ok {
+		utils.RespWithError(ctx, utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40000,
+			Info:       "invalid sending",
+			Detail:     "请求太频繁",
+		})
+		return
+	}
+
+	switch kind {
+	case "sms": // + 号会转译，发请求时使用 %2B
+		if !utils.MatchPhoneNumber(target) {
+			utils.RespWithParamError(ctx, "value 格式不支持")
+			return
+		}
+		utils.SendRandomVerifyCode("sms", target)
+		utils.RespWithDetail(ctx, utils.RespDetail{
+			HttpStatus: http.StatusOK,
+			Info:       utils.InfoSuccess,
+			Status:     20001,
+			Data: utils.Detail{
+				Detail: "sending sms success",
+			},
+		})
+	case "email":
+		if !utils.MatchEmailFormat(target) {
+			utils.RespWithParamError(ctx, "value 格式不支持")
+			return
+		}
+		utils.SendRandomVerifyCode("email", target)
+		utils.RespWithDetail(ctx, utils.RespDetail{
+			HttpStatus: http.StatusOK,
+			Info:       utils.InfoSuccess,
+			Status:     20002,
+			Data: utils.Detail{
+				Detail: "sending email success",
+			},
+		})
+	default:
+		utils.RespWithParamError(ctx, "type 只能为 email 和 sms")
+		return
+	}
 }

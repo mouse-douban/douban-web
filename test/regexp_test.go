@@ -22,7 +22,7 @@ func TestMatchEmail(t *testing.T) {
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.MatchEmailFormat(input) {
-			panic("出大问题")
+			t.Error("Error in utils.MatchEmailFormat(" + input + ")")
 		}
 	}
 }
@@ -35,6 +35,7 @@ func TestMatchPhone(t *testing.T) {
 		"+8611134712830",
 		"+325134712830",
 		"+8625134712830",
+		"+8615683055233",
 	}
 	var outputs = []bool{
 		true,
@@ -43,10 +44,11 @@ func TestMatchPhone(t *testing.T) {
 		false,
 		false,
 		false,
+		true,
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.MatchPhoneNumber(input) {
-			panic("出大问题")
+			t.Error("Error in utils.MatchPhoneNumber(" + input + ")")
 		}
 	}
 }
@@ -70,7 +72,7 @@ func TestUserName(t *testing.T) {
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.CheckUsername(input) {
-			panic("出大问题")
+			t.Error("Error in utils.CheckUsername(" + input + ")")
 		}
 	}
 }
@@ -98,7 +100,7 @@ func TestCheckPassword(t *testing.T) {
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.CheckPasswordStrength(input) {
-			panic("出大问题")
+			t.Error("Error in utils.CheckPasswordStrength(" + input + ")")
 		}
 	}
 }

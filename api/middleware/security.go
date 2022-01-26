@@ -3,21 +3,9 @@ package middleware
 import (
 	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 	"net/http"
 )
-
-func Auth() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		accessToken := ctx.GetHeader("Authorization")
-		err, uid := utils.AuthorizeJWT(accessToken)
-		if err != nil {
-			utils.AbortWithError(ctx, err)
-			return
-		}
-		ctx.Set("uid", uid)
-		ctx.Next()
-	}
-}
 
 func WildChecker() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -31,5 +19,22 @@ func WildChecker() gin.HandlerFunc {
 			})
 			return
 		}
+	}
+}
+
+// TLSHandle TLS 证书
+func TLSHandle(port string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     port,
+		})
+		err := secureMiddleware.Process(ctx.Writer, ctx.Request)
+
+		if err != nil {
+			return
+		}
+
+		ctx.Next()
 	}
 }

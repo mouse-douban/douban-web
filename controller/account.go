@@ -174,3 +174,50 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 
 	return
 }
+
+func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
+
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40009,
+			Info:       "invalid request",
+			Detail:     "没有这个账户",
+		}, utils.RespData{}
+	}
+
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user,
+	}
+	return
+}
+
+func CtrlAccountInfoUpdate(uid int64, params map[string]string, useVerify bool, verifyAccount, verifyCode, verifyType string) (err error, resp utils.RespData) {
+	if useVerify {
+		err = utils.VerifyInputCode(verifyAccount, verifyType, verifyCode)
+		if err != nil {
+			return
+		}
+	}
+	err = service.UpdateUserInfo(uid, params)
+	if err != nil {
+		return
+	}
+	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount, verifyCode, verifyType string) (err error, resp utils.RespData) {
+	err = utils.VerifyInputCode(verifyAccount, verifyType, verifyCode)
+	if err != nil {
+		return
+	}
+	err = service.UpdateUserInfo(uid, params)
+	if err != nil {
+		return
+	}
+	return nil, utils.NoDetailSuccessResp
+}
