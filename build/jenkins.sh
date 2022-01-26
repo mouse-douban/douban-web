@@ -7,28 +7,28 @@ echo "Local dir $PWD"
 
 echo "Setting goproxy..."
 
-go env -w GOPROXY=https://goproxy.cn,direct
-go env -w GO111MODULE=on
-go mod tidy
+/usr/local/go/bin/go env -w GOPROXY=https://goproxy.cn,direct
+/usr/local/go/bin/go env -w GO111MODULE=on
+/usr/local/go/bin/go mod tidy
 
 echo "Testing ..."
 
-go test -v test/*.go
+/usr/local/go/bin/go test -v test/*.go
 
 echo "Building package ..."
 
 echo "Build linux..."
-go env -w GOARCH=amd64
-go env -w GOOS=linux
-go build -o target/linux/bin/gin ./cmd/main.go
+/usr/local/go/bin/go env -w GOARCH=amd64
+/usr/local/go/bin/go env -w GOOS=linux
+/usr/local/go/bin/go build -o target/linux/bin/gin ./cmd/main.go
 
 echo "Build macos..."
-go env -w GOOS=darwin
-go build -o target/macos_amd64/bin/gin ./cmd/main.go
+/usr/local/go/bin/go env -w GOOS=darwin
+/usr/local/go/bin/go build -o target/macos_amd64/bin/gin ./cmd/main.go
 
-go env -w GOARCH=arm64
-go build -o target/macos_arm64/bin/gin ./cmd/main.go
+/usr/local/go/bin/go env -w GOARCH=arm64
+/usr/local/go/bin/go build -o target/macos_arm64/bin/gin ./cmd/main.go
 
 echo "Back to normal..."
-go env -w GOARCH=amd64
-go env -w GOOS=linux
+/usr/local/go/bin/go env -w GOARCH=amd64
+/usr/local/go/bin/go env -w GOOS=linux
