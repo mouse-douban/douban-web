@@ -18,21 +18,39 @@ func RegisterLogFile() {
 	go func(ticker *time.Ticker) {
 
 		for true {
-			now := time.Now().Format("2006-01-02")
-
-			os.MkdirAll("logs/"+now, os.ModePerm) // 创建一次日志文件夹
-
-			ginLog, _ := os.Create("./logs/" + now + "/gin-" + now + ".log") // 创建gin日志文件
-
-			loggerLog, _ := os.Create("./logs/" + now + "/logger-" + now + ".log") // 创建logger日志文件
-
-			gin.DefaultWriter = io.MultiWriter(ginLog, os.Stdout) // 设置gin log输出
-			log.SetOutput(io.MultiWriter(loggerLog, os.Stdout))   // 设置logger输出
+			createLogFile()
 			<-t.C
 		}
 
 	}(t)
 
+}
+
+func createLogFile() {
+
+	now := time.Now().Format("2006-01-02")
+	log.Printf("正在创建今日: %v 的日志文件\n", now)
+
+	err := os.MkdirAll("logs/"+now, os.ModePerm) // 创建一次日志文件夹
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	ginLog, err := os.Create("./logs/" + now + "/gin-" + now + ".log") // 创建gin日志文件
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	loggerLog, err := os.Create("./logs/" + now + "/logger-" + now + ".log") // 创建logger日志文件
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	gin.DefaultWriter = io.MultiWriter(ginLog, os.Stdout) // 设置gin log输出
+	log.SetOutput(io.MultiWriter(loggerLog, os.Stdout))   // 设置logger输出
 }
 
 func RegisterUploadLogTask(duration time.Duration) {
@@ -43,6 +61,8 @@ func RegisterUploadLogTask(duration time.Duration) {
 			<-t.C // 并非启动就上传日志
 
 			now := time.Now().Format("2006-01-02")
+			log.Printf("正在上传今日: %v 的日志文件\n", now)
+
 			src := "./logs/" + now // 今日日志文件夹
 			target := src + "/log-" + now + ".zip"
 			res, err := os.Open(target)
@@ -51,7 +71,7 @@ func RegisterUploadLogTask(duration time.Duration) {
 			} else {
 				err = os.Remove(target)
 				if err != nil {
-					log.Panicln(err)
+					log.Println(err)
 				}
 				res, _ = os.Create(target)
 			}
@@ -60,7 +80,7 @@ func RegisterUploadLogTask(duration time.Duration) {
 
 			upload, err := os.Open(target)
 			if err != nil {
-				log.Panicln(err)
+				log.Println(err)
 			}
 			UploadFile(config.Config.TencentLogBucketUrl, "/log-"+now+".zip", upload) // 上传到 cos
 			err = upload.Close()
@@ -72,11 +92,28 @@ func RegisterUploadLogTask(duration time.Duration) {
 
 // compressedLog 压缩日志文件
 func compressedLog(src, now string, zw *zip.Writer) {
-	ginLog, _ := os.Open(src + "/gin-" + now + ".log")
-	loggerLog, _ := os.Open(src + "/logger-" + now + ".log")
+	ginLog, err := os.Open(src + "/gin-" + now + ".log")
+	if err != nil {
+		createLogFile()
+	}
+	loggerLog, err := os.Open(src + "/logger-" + now + ".log")
+	if err != nil {
+		log.Printf("上传日志失败!! 原因: %v", err)
+		return
+	}
 
-	defer ginLog.Close()
-	defer loggerLog.Close()
+	defer func(ginLog *os.File) {
+		err := ginLog.Close()
+		if err != nil {
+			log.Println("关闭ginLog文件失败！", err)
+		}
+	}(ginLog)
+	defer func(loggerLog *os.File) {
+		err := loggerLog.Close()
+		if err != nil {
+			log.Println("关闭logger文件失败！", err)
+		}
+	}(loggerLog)
 
 	defer func() {
 		// 如果没有正常关闭就写入日志
@@ -85,6 +122,7 @@ func compressedLog(src, now string, zw *zip.Writer) {
 		}
 	}()
 
+	// 一路梭哈
 	info, _ := ginLog.Stat()
 	header, _ := zip.FileInfoHeader(info)
 	writer, _ := zw.CreateHeader(header)
