@@ -117,18 +117,6 @@ var routes = Routes{
 			Pattern:          "/:id/verify",
 			HandlerFunctions: HandleFunctions{users.HandleVerifyAccount},
 		},
-		{
-			Name:             "获取用户的想看",
-			Method:           http.MethodGet,
-			Pattern:          "/:id/before",
-			HandlerFunctions: HandleFunctions{users.HandleUserBefore},
-		},
-		{
-			Name:             "获取用户的看过",
-			Method:           http.MethodGet,
-			Pattern:          "/:id/after",
-			HandlerFunctions: HandleFunctions{users.HandleUserAfter},
-		},
 	},
 	"/subjects": []Route{
 		{

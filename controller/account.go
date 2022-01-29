@@ -23,6 +23,7 @@ func CtrlBaseRegister(account, token, kind string) (err error, resp utils.RespDa
 	case "email":
 		err, accessToken, refreshToken, uid = service.RegisterAccountFromEmail(account, token)
 	case "sms":
+		account = strings.Replace(account, "%2B", "+", -1) // 替换 url_encode
 		err, accessToken, refreshToken, uid = service.RegisterAccountFromSms(account, token)
 	}
 
@@ -285,4 +286,24 @@ func CtrlAccountDelete(uid int64, verifyCode, verifyType string) (err error, res
 	}
 
 	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlAccountScopeInfo(uid int64, scopes string) (err error, resp utils.RespData) {
+
+	var user model.User
+	for _, s := range strings.Split(scopes, `,`) {
+		s = strings.TrimSpace(s)
+		err = service.GetAccountReviewSnapshots(uid, s, &user)
+		if err != nil {
+			return
+		}
+	}
+
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user,
+	}
+	return
 }

@@ -194,6 +194,21 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	return
 }
 
+func GetAccountReviewSnapshots(uid int64, scope string, user *model.User) (err error) {
+	switch scope {
+	case "reviews":
+		return dao.SelectUserReviewSnapshot(uid, user)
+	case "movie_list":
+		return
+	case "before":
+		return dao.SelectUserComments(uid, scope, user)
+	case "after":
+		return dao.SelectUserComments(uid, scope, user)
+	default:
+		return utils.ServerInternalError
+	}
+}
+
 func UpdateUserInfo(uid int64, params map[string]string) (err error) {
 	for key, value := range params {
 		if key == "password" { // 加密
@@ -209,5 +224,6 @@ func UpdateUserInfo(uid int64, params map[string]string) (err error) {
 }
 
 func DeleteUser(uid int64) (err error) {
+	// todo 先删除 user 的所有子表
 	return dao.DeleteUser(uid)
 }

@@ -35,27 +35,14 @@ func HandleAccountIndexInfo(ctx *gin.Context) {
 			return
 		}
 	}
-
-	ctx.Set("scope", scope)
-	handleAccountScopeInfo(ctx)
+	err, resp := controller.CtrlAccountScopeInfo(uid, scope)
+	utils.Resp(ctx, err, resp)
 }
 
 func HandleAccountBaseInfo(ctx *gin.Context) {
 	uid := ctx.GetInt64("uid")
 	err, resp := controller.CtrlAccountBaseInfo(uid)
 	utils.Resp(ctx, err, resp)
-}
-
-func handleAccountScopeInfo(ctx *gin.Context) {
-
-}
-
-func HandleUserBefore(ctx *gin.Context) {
-
-}
-
-func HandleUserAfter(ctx *gin.Context) {
-
 }
 
 func HandleAccountInfoUpdate(ctx *gin.Context) {

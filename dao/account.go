@@ -5,6 +5,8 @@ import (
 	"douban-webend/model"
 	"douban-webend/utils"
 	"fmt"
+	"log"
+	"strings"
 )
 
 // SelectUidFrom 只允许内部调用，不会出现sql注入
@@ -20,8 +22,81 @@ func SelectEncryptPassword(uid int64) (err error, encrypt string) {
 	return
 }
 
-func SelectUserSnapshot(uid int64, scope []string) (err error, user model.User) {
-	panic("TODO")
+func SelectUserReviewSnapshot(uid int64, user *model.User) (err error) {
+	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.brief, u.avatar, u.username FROM review r JOIN user u ON r.uid = ? AND u.uid = ?"
+	rows, err := dB.Query(sqlStr, uid, uid)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		var review model.ReviewSnapshot
+		err = rows.Scan(
+			&review.Id,
+			&review.Uid,
+			&review.Name,
+			&review.Score,
+			&review.Date,
+			&review.Stars,
+			&review.Bads,
+			&review.ReplyCnt,
+			&review.Brief,
+			&review.Avatar,
+			&review.Username,
+		)
+		if err != nil {
+			return
+		}
+		user.Reviews = append(user.Reviews, review)
+	}
+	return
+}
+
+func SelectUserComments(uid int64, kind string, user *model.User) (err error) {
+	sqlStr := "SELECT c.id, c.uid, c.content, c.date, c.score, c.tag, c.type, c.stars, u.username FROM comment c JOIN user u ON c.uid = ? AND u.uid = ? AND c.type = ?"
+	rows, err := dB.Query(sqlStr, uid, uid, kind)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		var comment model.Comment
+		var tag string
+		err = rows.Scan(
+			&comment.Id,
+			&comment.Uid,
+			&comment.Content,
+			&comment.Date,
+			&comment.Score,
+			&tag,
+			&comment.Type,
+			&comment.Stars,
+			&comment.Username,
+		)
+		if err != nil {
+			return
+		}
+		comment.Tag = strings.Split(tag, ",")
+		switch comment.Type {
+		case "before":
+			user.Before = append(user.Before, comment)
+		case "after":
+			user.After = append(user.After, comment)
+		}
+	}
+	return
 }
 
 func SelectUidWithOAuthId(oauthID int64, platform string) (err error, uid int64) {
