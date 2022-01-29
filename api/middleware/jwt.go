@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-// Auth0 jwt 必须认证正确
-func Auth0() gin.HandlerFunc {
+// Auth jwt 必须认证正确
+func Auth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		accessToken := ctx.GetHeader("Authorization")
 		err, uid, kind := utils.AuthorizeJWT(accessToken)
@@ -26,17 +26,5 @@ func Auth0() gin.HandlerFunc {
 		}
 		ctx.Set("uid", uid)
 		ctx.Next()
-	}
-}
-
-// Auth1 可以没有 Authorization，有则认证
-func Auth1() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		accessToken := ctx.GetHeader("Authorization")
-		if accessToken == "" {
-			ctx.Next()
-			return
-		}
-		Auth0()(ctx)
 	}
 }

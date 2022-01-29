@@ -53,7 +53,7 @@ var routes = Routes{
 			Name:             "我的主页",
 			Method:           http.MethodGet,
 			Pattern:          "/mine",
-			HandlerFunctions: HandleFunctions{middleware.Auth0(), handleMine},
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMine},
 		},
 	},
 	"/users": []Route{
@@ -76,10 +76,16 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{users.HandleRegister},
 		},
 		{
-			Name:             "发送验证码",
+			Name:             "发送邮箱|电话号码验证码",
 			Method:           http.MethodGet,
 			Pattern:          "/verify",
 			HandlerFunctions: HandleFunctions{users.HandleVerify},
+		},
+		{
+			Name:             "忘记密码/重置密码",
+			Method:           http.MethodPost,
+			Pattern:          "/forget",
+			HandlerFunctions: HandleFunctions{middleware.WildChecker(), users.HandleForgetPwd},
 		},
 		{
 			Name:             "获取用户的主页信息",
@@ -91,25 +97,25 @@ var routes = Routes{
 			Name:             "更新用户非重要信息",
 			Method:           http.MethodPut,
 			Pattern:          "/:id",
-			HandlerFunctions: HandleFunctions{middleware.Auth1(), users.HandleAccountInfoUpdate},
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountInfoUpdate},
 		},
 		{
 			Name:             "更新用户重要信息",
 			Method:           http.MethodPatch,
 			Pattern:          "/:id",
-			HandlerFunctions: HandleFunctions{middleware.Auth0(), users.HandleAccountEXInfoUpdate},
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountEXInfoUpdate},
 		},
 		{
-			Name:             "获取用户的想看",
-			Method:           http.MethodGet,
-			Pattern:          "/:id/before",
-			HandlerFunctions: HandleFunctions{users.HandleUserBefore},
+			Name:             "销毁账户",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountDelete},
 		},
 		{
-			Name:             "获取用户的看过",
+			Name:             "发送用户验证码",
 			Method:           http.MethodGet,
-			Pattern:          "/:id/after",
-			HandlerFunctions: HandleFunctions{users.HandleUserAfter},
+			Pattern:          "/:id/verify",
+			HandlerFunctions: HandleFunctions{users.HandleVerifyAccount},
 		},
 	},
 	"/subjects": []Route{
@@ -179,12 +185,12 @@ func InitRouter(useTLS bool) {
 	go func() { //不要阻塞主 goroutine
 		if useTLS {
 			err = server.ServeTLS(listener, "config/api.pem", "config/api.key")
-			if err != nil {
+			if err != nil && err != http.ErrServerClosed { // 排除 http.ErrServerClosed ，这是正常关闭
 				log.Fatalf("serve err %v\n", err)
 			}
 		} else {
 			err = server.Serve(listener)
-			if err != nil {
+			if err != nil && err != http.ErrServerClosed {
 				log.Fatalf("serve err %v\n", err)
 			}
 		}

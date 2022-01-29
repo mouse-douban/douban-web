@@ -35,9 +35,8 @@ func HandleAccountIndexInfo(ctx *gin.Context) {
 			return
 		}
 	}
-
-	ctx.Set("scope", scope)
-	handleAccountScopeInfo(ctx)
+	err, resp := controller.CtrlAccountScopeInfo(uid, scope)
+	utils.Resp(ctx, err, resp)
 }
 
 func HandleAccountBaseInfo(ctx *gin.Context) {
@@ -46,55 +45,8 @@ func HandleAccountBaseInfo(ctx *gin.Context) {
 	utils.Resp(ctx, err, resp)
 }
 
-func handleAccountScopeInfo(ctx *gin.Context) {
-
-}
-
-func HandleUserBefore(ctx *gin.Context) {
-
-}
-
-func HandleUserAfter(ctx *gin.Context) {
-
-}
-
 func HandleAccountInfoUpdate(ctx *gin.Context) {
-	_, ok := ctx.Get("uid")
-	verify := ctx.PostForm("verify")          // 验证码
-	verifyType := ctx.PostForm("verify_type") // 验证方式
-	verifyAccount := ctx.PostForm("verify_account")
-
-	if !ok && (verify == "" || verifyType == "" || verifyAccount == "") {
-		utils.AbortWithParamError(ctx, "无法通过 jwt 认证且验证码认证信息为空")
-		return
-	}
-
-	switch verifyType {
-	case "sms":
-		if !utils.MatchPhoneNumber(verifyAccount) {
-			utils.AbortWithParamError(ctx, "电话号码格式不支持")
-			return
-		}
-		if !utils.MatchVerifyCode(verify) {
-			utils.AbortWithParamError(ctx, "验证码格式不支持")
-			return
-		}
-	case "email":
-		if !utils.MatchEmailFormat(verifyAccount) {
-			utils.AbortWithParamError(ctx, "邮箱格式不支持")
-			return
-		}
-		if !utils.MatchVerifyCode(verify) {
-			utils.AbortWithParamError(ctx, "验证码格式不支持")
-			return
-		}
-	default:
-		if ok {
-			break
-		}
-		utils.AbortWithParamError(ctx, "verify_type 格式错误")
-		return
-	}
+	uid := ctx.GetInt64("uid")
 
 	scope := ctx.PostForm("scope")
 
@@ -113,14 +65,8 @@ func HandleAccountInfoUpdate(ctx *gin.Context) {
 		}
 		params[s] = value
 	}
-	id := ctx.Param("id")
-	uid, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		utils.RespWithParamError(ctx, "id 格式不支持")
-		return
-	}
 
-	err, resp := controller.CtrlAccountInfoUpdate(uid, params, !ok, verifyAccount, verify, verifyType)
+	err, resp := controller.CtrlAccountInfoUpdate(uid, params)
 	utils.Resp(ctx, err, resp)
 
 }
@@ -176,4 +122,23 @@ func HandleAccountEXInfoUpdate(ctx *gin.Context) {
 
 	err, resp := controller.CtrlAccountEXInfoUpdate(uid, params, verifyAccount, verify, verifyType)
 	utils.Resp(ctx, err, resp)
+}
+
+func HandleAccountDelete(ctx *gin.Context) {
+	uid := ctx.GetInt64("uid")
+	verify := ctx.PostForm("verify") // 验证码
+	if !utils.MatchVerifyCode(verify) {
+		utils.AbortWithParamError(ctx, "验证码格式不支持")
+		return
+	}
+	verifyType := ctx.PostForm("verify_type") // 验证方式
+	switch verifyType {
+	case "sms", "email":
+		err, resp := controller.CtrlAccountDelete(uid, verify, verifyType)
+		utils.Resp(ctx, err, resp)
+		return
+	default:
+		utils.AbortWithParamError(ctx, "verify_type 格式错误")
+		return
+	}
 }

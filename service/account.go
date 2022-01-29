@@ -6,6 +6,7 @@ import (
 	"douban-webend/utils"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strings"
 )
 
 func RegisterAccountFromUsername(username, password string) (err error, accessToken, refreshToken string, uid int64) {
@@ -183,7 +184,8 @@ func LoginAccountFromGitee(info model.OAuthInfo) (err error, accessToken, refres
 
 func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	err, user = dao.SelectBaseUserInfo(uid)
-	if !utils.MatchPhoneNumber(user.Phone) { // 排除 UUID 占位
+	user.Phone = strings.Replace(user.Phone, "%2B", "+", -1) // + 转义
+	if !utils.MatchPhoneNumber(user.Phone) {                 // 排除 UUID 占位
 		user.Phone = ""
 	}
 	if !utils.MatchEmailFormat(user.Email) { // 排除 UUID 占位
@@ -192,12 +194,36 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	return
 }
 
+func GetAccountReviewSnapshots(uid int64, scope string, user *model.User) (err error) {
+	switch scope {
+	case "reviews":
+		return dao.SelectUserReviewSnapshot(uid, user)
+	case "movie_list":
+		return
+	case "before":
+		return dao.SelectUserComments(uid, scope, user)
+	case "after":
+		return dao.SelectUserComments(uid, scope, user)
+	default:
+		return utils.ServerInternalError
+	}
+}
+
 func UpdateUserInfo(uid int64, params map[string]string) (err error) {
 	for key, value := range params {
-		err = dao.UpdateUserInfo(uid, key, value)
+		if key == "password" { // 加密
+			user := model.User{PlaintPassword: value}
+			value = user.EncryptPassword()
+		}
+		err = dao.RawUpdateUserInfo(uid, key, value)
 		if err != nil {
 			return
 		}
 	}
 	return
+}
+
+func DeleteUser(uid int64) (err error) {
+	// todo 先删除 user 的所有子表
+	return dao.DeleteUser(uid)
 }

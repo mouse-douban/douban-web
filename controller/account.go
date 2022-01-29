@@ -23,6 +23,7 @@ func CtrlBaseRegister(account, token, kind string) (err error, resp utils.RespDa
 	case "email":
 		err, accessToken, refreshToken, uid = service.RegisterAccountFromEmail(account, token)
 	case "sms":
+		account = strings.Replace(account, "%2B", "+", -1) // 替换 url_encode
 		err, accessToken, refreshToken, uid = service.RegisterAccountFromSms(account, token)
 	}
 
@@ -88,7 +89,7 @@ const (
 	GithubOpenAPIUser = "https://api.github.com/user"
 
 	GiteeToken       = "https://gitee.com/oauth/token?grant_type=authorization_code&code=%s&client_id=%s&redirect_uri=%s&client_secret=%s"
-	GiteeRedirectUri = "http://%s/oauth/gitee"
+	GiteeRedirectUri = "https://%s/oauth/gitee"
 	GiteeOpenAPIUser = "https://gitee.com/api/v5/user/"
 )
 
@@ -196,13 +197,7 @@ func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
 	return
 }
 
-func CtrlAccountInfoUpdate(uid int64, params map[string]string, useVerify bool, verifyAccount, verifyCode, verifyType string) (err error, resp utils.RespData) {
-	if useVerify {
-		err = utils.VerifyInputCode(verifyAccount, verifyType, verifyCode)
-		if err != nil {
-			return
-		}
-	}
+func CtrlAccountInfoUpdate(uid int64, params map[string]string) (err error, resp utils.RespData) {
 	err = service.UpdateUserInfo(uid, params)
 	if err != nil {
 		return
@@ -215,9 +210,100 @@ func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount,
 	if err != nil {
 		return
 	}
+	var kind = verifyType
+	if verifyType == "sms" {
+		kind = "phone"
+	}
+	params[kind] = verifyAccount // 替换
 	err = service.UpdateUserInfo(uid, params)
 	if err != nil {
 		return
 	}
 	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlResetPwd(uid int64, verifyCode, verifyType, newPwd string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	var account string
+	switch verifyType {
+	case "sms":
+		account = user.Phone
+	case "email":
+		account = user.Email
+	}
+	if account == "" {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40010,
+			Info:       "invalid request",
+			Detail:     "验证码账户不存在",
+		}, utils.RespData{}
+	}
+
+	err = utils.VerifyInputCode(account, verifyType, verifyCode)
+	if err != nil {
+		return
+	}
+	err = service.UpdateUserInfo(uid, map[string]string{"password": newPwd})
+	if err != nil {
+		return
+	}
+	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlAccountDelete(uid int64, verifyCode, verifyType string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	var account string
+	switch verifyType {
+	case "sms":
+		account = user.Phone
+	case "email":
+		account = user.Email
+	}
+	if account == "" {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40010,
+			Info:       "invalid request",
+			Detail:     "验证码账户不存在",
+		}, utils.RespData{}
+	}
+
+	err = utils.VerifyInputCode(account, verifyType, verifyCode)
+	if err != nil {
+		return
+	}
+
+	err = service.DeleteUser(uid)
+	if err != nil {
+		return
+	}
+
+	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlAccountScopeInfo(uid int64, scopes string) (err error, resp utils.RespData) {
+
+	var user model.User
+	for _, s := range strings.Split(scopes, `,`) {
+		s = strings.TrimSpace(s)
+		err = service.GetAccountReviewSnapshots(uid, s, &user)
+		if err != nil {
+			return
+		}
+	}
+
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user,
+	}
+	return
 }
