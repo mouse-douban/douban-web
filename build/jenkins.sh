@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # jenkins 的持续集成
-# 因为使用来热重载，将不再构建 windows 版本
+# 因为使用了热重载，将不再构建 windows 版本
 
 echo "Local dir $PWD"
 
@@ -21,14 +21,14 @@ echo "Building package ..."
 echo "Build linux..."
 /usr/local/go/bin/go env -w GOARCH=amd64
 /usr/local/go/bin/go env -w GOOS=linux
-/usr/local/go/bin/go build -o target/linux/bin/gin ./cmd/main.go
+/usr/local/go/bin/go build -o target/linux_gin ./cmd/main.go
 
-echo "Build macos..."
+echo "Build darwin..."
 /usr/local/go/bin/go env -w GOOS=darwin
-/usr/local/go/bin/go build -o target/macos_amd64/bin/gin ./cmd/main.go
+/usr/local/go/bin/go build -o target/darwin_amd64_gin ./cmd/main.go
 
 /usr/local/go/bin/go env -w GOARCH=arm64
-/usr/local/go/bin/go build -o target/macos_arm64/bin/gin ./cmd/main.go
+/usr/local/go/bin/go build -o target/darwin_arm64_gin ./cmd/main.go
 
 echo "Back to normal..."
 /usr/local/go/bin/go env -w GOARCH=amd64
