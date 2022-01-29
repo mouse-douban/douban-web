@@ -1,4 +1,4 @@
-import { get, post } from './utils.js'
+import { get, post, put } from './utils.js'
 // ApiService
 
 /**
@@ -40,4 +40,29 @@ async function getVerifyCode(type, value) {
     })
 }
 
-export { getUserInfo, login, getVerifyCode }
+/**
+ * 获取自身信息，需要jwt鉴权
+ * 
+ * @param {string} scope 需求的详细信息 从reviews|movie_list|before|after中选取，多个用 , 隔开
+ * @returns 
+ */
+async function getMineInfo(scope = "") {
+    return await get("/mine", { scope })
+}
+
+/**
+ * 修改不重要信息，需要jwt鉴权
+ * 
+ * @param {int} id 
+ * @param {string} username 
+ * @param {string} avatar 
+ * @param {string} scope 更新范围｜从username|github_id|gitee_id|avatar 中选取，多个用 , 隔开
+ */
+async function putUserInfo(id, username, avatar, scope = "username, avatar") {
+    const data = new FormData()
+    data.append("username", username)
+    data.append("avatar", avatar)
+    return await put(`/users/${id}`, data, { scope })
+}
+
+export { getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo }

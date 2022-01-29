@@ -1,0 +1,102 @@
+#content-body {
+    width: 100%;
+    height: fit-content;
+    box-sizing: border-box;
+    padding: 20px 80px 20px 80px;
+    display: flex;
+    align-items: center;
+    background: #f0f3f5;
+}
+
+#user-info {
+    width: 300px;
+    padding: 20px;
+    height: 800px;
+    border-radius: 10px;
+}
+
+#user-avatar {
+    border-radius: 100%;
+    width: 300px;
+    height: 300px;
+    border: 1px solid slategray;
+    background: url(https://gitee.com/coldrain-moro/images_bed/raw/master/images/chino.jpg);
+    background-size: cover;
+}
+
+#fragment-user-info {
+    width: 100%;
+    height: fit-content;
+}
+
+#info-box {
+    width: 100%;
+    height: 100%;
+}
+
+#infomation-board {
+    margin-left: 20px;
+    width: 1000px;
+    height: 840px;
+    border-radius: 10px;
+}
+
+#edit-button {
+    width: 300px;
+}
+
+#submit-btn { 
+    float: left;
+    width: 140px;
+}
+
+#cancel-btn {
+    float: right;
+    width: 140px;
+}
+
+.button {
+    margin-top: 30px;
+    cursor: pointer;
+    border-radius: 10px;
+    height: 30px;
+    background: #F5F5F5;
+    color: black;
+    transition: .2s;
+    text-align: center;
+    line-height: 30px;
+    border: 1px solid #BDBDBD;
+    font-weight: 500;
+}
+
+.button:hover {
+    background: #EEEEEE;
+}
+
+embed {
+    width: 30px;
+    height: 30px;
+    display: inline;
+}
+
+.card {
+    background: white;
+}
+
+input {
+    margin: 10px 0px 10px 0px;
+    width: 280px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid #BDBDBD;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: black;
+    transition: .2s;
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid #3F51B5;
+}

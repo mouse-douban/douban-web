@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
-    <title>豆瓣电影</title>
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/top-bar-status.css">
-    <script type="module" src="js/index.js" defer></script>
-    <script type="module" src="./js/components.js"></script>
+    <title>个人主页</title>
+    <link rel="stylesheet" href="../css/mine.css">
+    <link rel="stylesheet" href="../css/top-bar-status.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="../js/mine.js" type="module" defer></script>
 </head>
 <body>
-    <!--Header 耦合度爆炸-->
     <div id="top-nav-items">
         <ul id="top-nav-ul" style="display:inline-block;">
             <li>
@@ -57,7 +55,6 @@
             </ul>
         </div>
     </div>
-    <!--搜索栏-->
     <div id="search-area">
         <div id="search-content">
             <div id="nav-logo" onclick="window.location.href = './index.html'"></div>
@@ -78,42 +75,29 @@
             </div>
         </div>
     </div>
-    <div id="type-tab">
-        <ul id="type-tab-ul" style="display:inline-block;margin-left: 237px;">
-            <li>
-                <span class="top-nav-item" onclick="alert('未实现')">影讯&购票</span>
-            </li>
-            <li>
-                <span class="top-nav-item">选电影</span>
-            </li>
-            <li>
-                <span class="top-nav-item">电视剧</span>
-            </li>
-            <li>
-                <span class="top-nav-item">排行榜</span>
-            </li>
-            <li>
-                <span class="top-nav-item">分类</span>
-            </li>
-            <li>
-                <span class="top-nav-item">影评</span>
-            </li>
-            <li>
-                <span class="top-nav-item" onclick="alert('未实现')">2021年度榜单</span>
-            </li>
-            <li>
-                <span class="top-nav-item" onclick="alert('未实现')">2021书影音报告</span>
-            </li>
-        </ul>
+    <div id="content-body">
+        <div id="user-info" class="card">
+            <div id="user-avatar"></div>
+            <div id="fragment-user-info">
+                <h1 id="user-id">Rain</h1>
+                <p id="user-description">Student | Software Engineering | Learning Android & Web-FrontEnd | Focusing on learning</p>
+                <div id="info-box">
+                    <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
+                        <embed src="../images/phone.svg" type="image/svg+xml" />
+                        <p id="phone-number" style="display: inline;margin-left: 10px;">15683055233</p>
+                    </div>
+                    <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
+                        <embed src="../images/email.svg" type="image/svg+xml" />
+                        <p id="email" style="display: inline;margin-left: 10px;">rain@asgard.hk</p>
+                    </div>
+                </div>
+                <div id="edit-button" class="button">Edit Profile</div>
+            </div>
+        </div>
+        <!--想看/看过-->
+        <div id="infomation-board" class="card">
+            
+        </div>
     </div>
-    <div style="display: inline-flex;width: 100%;height: 100px;justify-content: center;margin-top: 30px;">
-        <div id="banner"></div>
-    </div>
-
-    <!-- <movie-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-        movie="永恒族"
-        score="5.9">
-    </movie-card> -->
-
 </body>
 </html>
