@@ -3,142 +3,126 @@ package users
 import (
 	"douban-webend/controller"
 	"douban-webend/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"strings"
 )
 
-func HandleAccountIndexInfo(ctx *gin.Context) {
+func parseCommonQueryParams(ctx *gin.Context) (err error, uid int64, start, limit int, sort string) {
 	id := ctx.Param("id")
-	uid, err := strconv.ParseInt(id, 10, 64)
+	uid, err = strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		utils.RespWithParamError(ctx, "id 格式不支持")
 		return
 	}
-
-	ctx.Set("uid", uid)
-
-	scope, ok := ctx.GetQuery("scope")
-
-	if !ok || scope == "" {
-		HandleAccountBaseInfo(ctx)
+	startS := ctx.Query("start")
+	if start, err = strconv.Atoi(startS); startS != "" && err != nil {
+		utils.RespWithParamError(ctx, "start 格式不支持")
 		return
 	}
-
-	scopes := strings.Split(scope, `,`)
-
-	for _, s := range scopes {
-		s = strings.TrimSpace(s)
-		if s != "reviews" && s != "movie_list" && s != "before" && s != "after" {
-			utils.RespWithParamError(ctx, "scope 格式不支持")
-			return
-		}
-	}
-	err, resp := controller.CtrlAccountScopeInfo(uid, scope)
-	utils.Resp(ctx, err, resp)
-}
-
-func HandleAccountBaseInfo(ctx *gin.Context) {
-	uid := ctx.GetInt64("uid")
-	err, resp := controller.CtrlAccountBaseInfo(uid)
-	utils.Resp(ctx, err, resp)
-}
-
-func HandleAccountInfoUpdate(ctx *gin.Context) {
-	uid := ctx.GetInt64("uid")
-
-	scope := ctx.PostForm("scope")
-
-	var params = make(map[string]string)
-
-	for _, s := range strings.Split(scope, ",") {
-		s = strings.TrimSpace(s)
-		if s != "username" && s != "github_id" && s != "gitee_id" && s != "avatar" {
-			utils.AbortWithParamError(ctx, "scope 格式不支持")
-			return
-		}
-		value := ctx.PostForm(s)
-		if value == "" {
-			utils.AbortWithParamError(ctx, fmt.Sprintf("%v 参数为空", s))
-			return
-		}
-		params[s] = value
-	}
-
-	err, resp := controller.CtrlAccountInfoUpdate(uid, params)
-	utils.Resp(ctx, err, resp)
-
-}
-
-func HandleAccountEXInfoUpdate(ctx *gin.Context) {
-	uid := ctx.GetInt64("uid")
-
-	verify := ctx.PostForm("verify")          // 验证码
-	verifyType := ctx.PostForm("verify_type") // 验证方式
-	verifyAccount := ctx.PostForm("verify_account")
-
-	switch verifyType {
-	case "sms":
-		if !utils.MatchPhoneNumber(verifyAccount) {
-			utils.AbortWithParamError(ctx, "电话号码格式不支持")
-			return
-		}
-		if !utils.MatchVerifyCode(verify) {
-			utils.AbortWithParamError(ctx, "验证码格式不支持")
-			return
-		}
-	case "email":
-		if !utils.MatchEmailFormat(verifyAccount) {
-			utils.AbortWithParamError(ctx, "邮箱格式不支持")
-			return
-		}
-		if !utils.MatchVerifyCode(verify) {
-			utils.AbortWithParamError(ctx, "验证码格式不支持")
-			return
-		}
-	default:
-		utils.AbortWithParamError(ctx, "verify_type 格式错误")
+	limitS := ctx.Query("limit")
+	if limit, err = strconv.Atoi(limitS); limitS != "" && err != nil {
+		utils.RespWithParamError(ctx, "limit 格式不支持")
 		return
 	}
-
-	scope := ctx.PostForm("scope")
-
-	var params = make(map[string]string)
-
-	for _, s := range strings.Split(scope, ",") {
-		s = strings.TrimSpace(s)
-		if s != "password" && s != "email" && s != "phone" {
-			utils.AbortWithParamError(ctx, "scope 格式不支持")
-			return
-		}
-		value := ctx.PostForm(s)
-		if value == "" {
-			utils.AbortWithParamError(ctx, fmt.Sprintf("%v 参数为空", s))
-			return
-		}
-		params[s] = value
+	sort = ctx.Query("sort")
+	if sort != "latest" && sort != "hotest" && sort != "" {
+		utils.RespWithParamError(ctx, "sort 格式不支持")
+		err = utils.ServerInternalError
+		return
 	}
+	return
+}
 
-	err, resp := controller.CtrlAccountEXInfoUpdate(uid, params, verifyAccount, verify, verifyType)
+func HandleAccountMovieListGet(ctx *gin.Context) {
+	err, uid, start, limit, _ := parseCommonQueryParams(ctx)
+	if err != nil {
+		return
+	}
+	if limit == 0 {
+		limit = 10
+	}
+	err, resp := controller.CtrlAccountMovieListGet(uid, start, limit)
 	utils.Resp(ctx, err, resp)
 }
 
-func HandleAccountDelete(ctx *gin.Context) {
-	uid := ctx.GetInt64("uid")
-	verify := ctx.PostForm("verify") // 验证码
-	if !utils.MatchVerifyCode(verify) {
-		utils.AbortWithParamError(ctx, "验证码格式不支持")
+func HandleAccountBeforeGet(ctx *gin.Context) {
+	handleAccountCommentGet(ctx, "before")
+}
+
+func HandleAccountAfterGet(ctx *gin.Context) {
+	handleAccountCommentGet(ctx, "after")
+}
+
+func handleAccountCommentGet(ctx *gin.Context, kind string) {
+	err, uid, start, limit, sort := parseCommonQueryParams(ctx)
+	if err != nil {
 		return
 	}
-	verifyType := ctx.PostForm("verify_type") // 验证方式
-	switch verifyType {
-	case "sms", "email":
-		err, resp := controller.CtrlAccountDelete(uid, verify, verifyType)
+	if limit == 0 {
+		limit = 10
+	}
+	if sort == "" {
+		sort = "latest"
+	}
+	switch kind {
+	case "before":
+		err, resp := controller.CtrlAccountBeforeGet(uid, start, limit, sort)
 		utils.Resp(ctx, err, resp)
-		return
-	default:
-		utils.AbortWithParamError(ctx, "verify_type 格式错误")
+	case "after":
+		err, resp := controller.CtrlAccountAfterGet(uid, start, limit, sort)
+		utils.Resp(ctx, err, resp)
+	}
+}
+
+func HandleAccountReviewsGet(ctx *gin.Context) {
+	err, uid, start, limit, sort := parseCommonQueryParams(ctx)
+	if err != nil {
 		return
 	}
+	if limit == 0 {
+		limit = 10
+	}
+	if sort == "" {
+		sort = "latest"
+	}
+	err, resp := controller.CtrlAccountReviewSnapshotsGet(uid, start, limit, sort)
+	utils.Resp(ctx, err, resp)
+}
+
+func HandleAccountFollow(ctx *gin.Context) {
+	handleFollows(ctx, "follow")
+}
+
+func HandleAccountUnFollow(ctx *gin.Context) {
+	handleFollows(ctx, "unfollow")
+}
+
+func handleFollows(ctx *gin.Context, which string) {
+	uidS := ctx.Param("id")
+	uid, err := strconv.ParseInt(uidS, 10, 64)
+	if err != nil {
+		utils.RespWithParamError(ctx, "uid 格式不支持")
+		return
+	}
+	idS := ctx.Query("id")
+	id, err := strconv.ParseInt(idS, 10, 64)
+	if err != nil {
+		utils.RespWithParamError(ctx, "id 格式不支持")
+		return
+	}
+	kind := ctx.Query("type")
+	switch kind {
+	case "users", "lists":
+		switch which {
+		case "follow":
+			err, resp := controller.CtrlAccountFollow(uid, id, kind)
+			utils.Resp(ctx, err, resp)
+		case "unfollow":
+			err, resp := controller.CtrlAccountUnfollow(uid, id, kind)
+			utils.Resp(ctx, err, resp)
+		}
+	default:
+		utils.RespWithParamError(ctx, "type 格式不支持")
+	}
+
 }

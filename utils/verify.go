@@ -117,13 +117,13 @@ func SendVerifyCode(vType, target, vCode string) {
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
 			if err != nil {
-				log.Panicln(err)
+				log.Println(err)
 				return
 			}
 
 			err = SendEmail(vCode, target)
 			if err != nil {
-				log.Panicln(err)
+				log.Println(err)
 			}
 
 		}()
@@ -141,13 +141,13 @@ func SendVerifyCode(vType, target, vCode string) {
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
 			if err != nil {
-				log.Panicln(err)
+				log.Println(err)
 				return
 			}
 
 			err = SendSMS(vCode, target)
 			if err != nil {
-				log.Panicln(err)
+				log.Println(err)
 			}
 		}()
 

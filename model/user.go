@@ -2,12 +2,22 @@ package model
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
-type MoveList struct { // 片单
-	Id   int64   `json:"id"`
-	Name string  `json:"name"`
-	List []int64 `json:"list"`
+type MovieList struct { // 片单
+	Id          int64     `json:"id"`
+	Uid         int64     `json:"uid"`
+	Date        time.Time `json:"date"`
+	Name        string    `json:"name"`
+	Followers   int64     `json:"followers"`
+	List        []int64   `json:"list"`
+	Description string    `json:"description"`
+}
+
+type Follow struct {
+	Users map[int64]bool `json:"users,omitempty"`
+	Lists map[int64]bool `json:"movie_lists,omitempty"`
 }
 
 type User struct {
@@ -18,8 +28,10 @@ type User struct {
 	Email          string           `json:"email,omitempty"`
 	Phone          string           `json:"phone,omitempty"`
 	Avatar         string           `json:"avatar,omitempty"`
+	Following      Follow           `json:"following,omitempty"`
+	Description    string           `json:"description,omitempty"`
 	Reviews        []ReviewSnapshot `json:"reviews,omitempty"`    // 可选
-	MovieList      []MoveList       `json:"movie_list,omitempty"` // 可选
+	MovieList      []MovieList      `json:"movie_list,omitempty"` // 可选
 	Before         []Comment        `json:"before,omitempty"`     // 可选
 	After          []Comment        `json:"after,omitempty"`      // 可选
 	PlaintPassword string           `json:"-"`                    // 只写

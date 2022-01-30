@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 // CtrlBaseRegister controller 层所有函数均返回 (err error, resp utils.RespData)
@@ -104,6 +105,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 
 	switch platform {
 	case "gitee":
+		// 获取 token
 		postUrl := fmt.Sprintf(GiteeToken, code, config.Config.GiteeOauthClientId, fmt.Sprintf(GiteeRedirectUri, config.Config.ServerIp), config.Config.GiteeOauthClientSecret)
 		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl) // 请求token
 		var token struct {
@@ -117,6 +119,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 		if err != nil {
 			return
 		}
+		// 获取信息
 		infoCh := utils.GetGETBytes(GiteeOpenAPIUser+"?access_token="+token.AccessToken, nil)
 		infoJson := <-infoCh
 		if len(infoJson) == 0 {
@@ -127,10 +130,12 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 			return utils.ServerInternalError, utils.RespData{}
 		}
 		info.PlatForm = platform
+		// 注册｜登录
 		err, accessToken, refreshToken, uid = service.LoginAccountFromGitee(info)
 	case "github":
+		// 获取 token
 		postUrl := fmt.Sprintf(GithubToken, config.Config.GithubOauthClientId, config.Config.GithubOauthClientSecret, code)
-		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl) // 请求 token
+		tokenChan := utils.GetPOSTBytesWithEmptyBody(postUrl)
 
 		tokenB := <-tokenChan
 		if len(tokenB) == 0 {
@@ -154,6 +159,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 			return utils.ServerInternalError, utils.RespData{}
 		}
 
+		// 注册｜登录
 		info.PlatForm = platform
 		err, accessToken, refreshToken, uid = service.LoginAccountFromGithub(info)
 	}
@@ -176,16 +182,11 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 	return
 }
 
-func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
+func CtrlAccountBaseInfoGet(uid int64) (err error, resp utils.RespData) {
 
 	err, user := service.GetAccountBaseInfo(uid)
 	if err != nil {
-		return utils.ServerError{
-			HttpStatus: http.StatusBadRequest,
-			Status:     40009,
-			Info:       "invalid request",
-			Detail:     "没有这个账户",
-		}, utils.RespData{}
+		return
 	}
 
 	resp = utils.RespData{
@@ -197,6 +198,7 @@ func CtrlAccountBaseInfo(uid int64) (err error, resp utils.RespData) {
 	return
 }
 
+// CtrlAccountInfoUpdate 需要对 params 内的参数做正则检测
 func CtrlAccountInfoUpdate(uid int64, params map[string]string) (err error, resp utils.RespData) {
 	err = service.UpdateUserInfo(uid, params)
 	if err != nil {
@@ -205,6 +207,7 @@ func CtrlAccountInfoUpdate(uid int64, params map[string]string) (err error, resp
 	return nil, utils.NoDetailSuccessResp
 }
 
+// CtrlAccountEXInfoUpdate 需要对 params 内的参数做正则检测
 func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount, verifyCode, verifyType string) (err error, resp utils.RespData) {
 	err = utils.VerifyInputCode(verifyAccount, verifyType, verifyCode)
 	if err != nil {
@@ -214,7 +217,7 @@ func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount,
 	if verifyType == "sms" {
 		kind = "phone"
 	}
-	params[kind] = verifyAccount // 替换
+	params[kind] = verifyAccount // sms | phone 替换
 	err = service.UpdateUserInfo(uid, params)
 	if err != nil {
 		return
@@ -288,12 +291,12 @@ func CtrlAccountDelete(uid int64, verifyCode, verifyType string) (err error, res
 	return nil, utils.NoDetailSuccessResp
 }
 
-func CtrlAccountScopeInfo(uid int64, scopes string) (err error, resp utils.RespData) {
+func CtrlAccountScopeInfoGet(uid int64, scopes string) (err error, resp utils.RespData) {
 
 	var user model.User
 	for _, s := range strings.Split(scopes, `,`) {
 		s = strings.TrimSpace(s)
-		err = service.GetAccountReviewSnapshots(uid, s, &user)
+		err = service.GetAccountSnapshots(uid, s, &user)
 		if err != nil {
 			return
 		}
@@ -306,4 +309,215 @@ func CtrlAccountScopeInfo(uid int64, scopes string) (err error, resp utils.RespD
 		Data:       user,
 	}
 	return
+}
+
+func CtrlAccountMovieListGet(uid int64, start, limit int) (err error, resp utils.RespData) {
+	var user model.User
+	err = service.GetAccountMovieList(uid, &user, start, limit)
+	if err != nil {
+		return
+	}
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user.MovieList,
+	}
+	return
+}
+
+func CtrlAccountBeforeGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
+	var user model.User
+	err = service.GetAccountComments(uid, "before", &user, start, limit, sort)
+	if err != nil {
+		return
+	}
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user.Before,
+	}
+	return
+}
+
+func CtrlAccountAfterGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
+	var user model.User
+	err = service.GetAccountComments(uid, "after", &user, start, limit, sort)
+	if err != nil {
+		return
+	}
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user.After,
+	}
+	return
+}
+
+func CtrlAccountReviewSnapshotsGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
+	var user model.User
+	err = service.GetAccountReviewSnapshots(uid, &user, start, limit, sort)
+	if err != nil {
+		return
+	}
+	resp = utils.RespData{
+		HttpStatus: http.StatusOK,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       user.Reviews,
+	}
+	return
+}
+
+var followerSync = sync.Mutex{}
+
+func CtrlAccountFollow(uid, id int64, kind string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	if kind == "users" && id == uid {
+		return utils.ServerError{
+			HttpStatus: http.StatusOK,
+			Status:     22222,
+			Info:       utils.InfoSuccess,
+			Detail:     "你每时每刻都在关注着自己",
+		}, utils.RespData{}
+	}
+	switch kind {
+	case "users":
+		// 检查用户是否已经关注了
+		if check, ok := user.Following.Users[id]; ok && check {
+			return utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40011,
+				Info:       "invalid request",
+				Detail:     "已经关注了这个id",
+			}, utils.RespData{}
+		}
+		// 检查用户是否存在
+		err, _ := service.GetAccountBaseInfo(id)
+		if err != nil {
+			return err, utils.RespData{}
+		}
+		// 关注用户
+		user.Following.Users[id] = true
+		bytes, err := json.Marshal(user.Following.Users)
+		if err != nil {
+			return err, utils.RespData{}
+		}
+		err = service.UpdateUserInfo(uid, map[string]string{"following_users": string(bytes)})
+		if err != nil {
+			return err, utils.RespData{}
+		}
+	case "lists":
+		if check, ok := user.Following.Lists[id]; ok && check {
+			return utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40011,
+				Info:       "invalid request",
+				Detail:     "已经关注了这个id",
+			}, utils.RespData{}
+		}
+
+		followerSync.Lock() // 锁起来
+		// 修改 movie list 的 followers
+		err, list := service.GetMovieList(id)
+		if err != nil { // 找不到
+			followerSync.Unlock() // 解锁
+			return err, utils.RespData{}
+		}
+
+		list.Followers += 1
+		err = service.UpdateMovieListInfo(id, map[string]interface{}{"followers": list.Followers}, false)
+		followerSync.Unlock() // 解锁
+
+		if err != nil {
+			return err, utils.RespData{}
+		}
+
+		user.Following.Lists[id] = true
+		bytes, err := json.Marshal(user.Following.Lists)
+		if err != nil {
+			return err, utils.RespData{}
+		}
+		err = service.UpdateUserInfo(uid, map[string]string{"following_lists": string(bytes)})
+		if err != nil {
+			return err, utils.RespData{}
+		}
+	}
+	return nil, utils.NoDetailSuccessResp
+}
+
+func CtrlAccountUnfollow(uid, id int64, kind string) (err error, resp utils.RespData) {
+	err, user := service.GetAccountBaseInfo(uid)
+	if err != nil {
+		return
+	}
+	if kind == "users" && id == uid {
+		return utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     44444,
+			Info:       "invalid request",
+			Detail:     "你每时每刻都在关注着自己",
+		}, utils.RespData{}
+	}
+	switch kind {
+	case "users":
+		if check, ok := user.Following.Users[id]; !ok || !check {
+			return utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40012,
+				Info:       "invalid request",
+				Detail:     "无法取关没有关注的id",
+			}, utils.RespData{}
+		}
+		delete(user.Following.Users, id)
+		bytes, err := json.Marshal(user.Following.Users)
+		if err != nil {
+			return err, utils.RespData{}
+		}
+		err = service.UpdateUserInfo(uid, map[string]string{"following_users": string(bytes)})
+		if err != nil {
+			return err, utils.RespData{}
+		}
+	case "lists":
+		if check, ok := user.Following.Lists[id]; !ok || !check {
+			return utils.ServerError{
+				HttpStatus: http.StatusBadRequest,
+				Status:     40012,
+				Info:       "invalid request",
+				Detail:     "无法取关没有关注的id",
+			}, utils.RespData{}
+		}
+
+		followerSync.Lock() // 锁起来
+		// 修改 movie list 的 followers
+		err, list := service.GetMovieList(id)
+		if err != nil { // 找不到
+			followerSync.Unlock() // 解锁
+			return err, utils.RespData{}
+		}
+
+		list.Followers -= 1
+		err = service.UpdateMovieListInfo(id, map[string]interface{}{"followers": list.Followers}, false)
+		followerSync.Unlock() // 解锁
+
+		if err != nil {
+			return err, utils.RespData{}
+		}
+
+		delete(user.Following.Lists, id)
+		bytes, err := json.Marshal(user.Following.Lists)
+		if err != nil {
+			return err, utils.RespData{}
+		}
+		err = service.UpdateUserInfo(uid, map[string]string{"following_lists": string(bytes)})
+		if err != nil {
+			return err, utils.RespData{}
+		}
+	}
+	return nil, utils.NoDetailSuccessResp
 }

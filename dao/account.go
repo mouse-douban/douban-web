@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -22,8 +23,8 @@ func SelectEncryptPassword(uid int64) (err error, encrypt string) {
 	return
 }
 
-func SelectUserReviewSnapshot(uid int64, user *model.User) (err error) {
-	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.brief, u.avatar, u.username FROM review r JOIN user u ON r.uid = ? AND u.uid = ?"
+func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []model.ReviewSnapshot) {
+	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.brief, u.avatar, u.username, r.mid FROM review r JOIN user u ON r.uid = ? AND u.uid = ? ORDER BY " + orderBy
 	rows, err := dB.Query(sqlStr, uid, uid)
 	if err != nil {
 		return
@@ -49,17 +50,55 @@ func SelectUserReviewSnapshot(uid int64, user *model.User) (err error) {
 			&review.Brief,
 			&review.Avatar,
 			&review.Username,
+			&review.Mid,
 		)
 		if err != nil {
 			return
 		}
-		user.Reviews = append(user.Reviews, review)
+		reviews = append(reviews, review)
 	}
 	return
 }
 
-func SelectUserComments(uid int64, kind string, user *model.User) (err error) {
-	sqlStr := "SELECT c.id, c.uid, c.content, c.date, c.score, c.tag, c.type, c.stars, u.username FROM comment c JOIN user u ON c.uid = ? AND u.uid = ? AND c.type = ?"
+func SelectUserMovieList(uid int64) (err error, list []model.MovieList) {
+	sqlStr := "SELECT id, uid, name, date, followers, list, description FROM movie_list WHERE uid = ? ORDER BY followers DESC"
+	rows, err := dB.Query(sqlStr, uid)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		var movieList model.MovieList
+		var listJson string
+		err = rows.Scan(
+			&movieList.Id,
+			&movieList.Uid,
+			&movieList.Name,
+			&movieList.Date,
+			&movieList.Followers,
+			&listJson,
+			&movieList.Description,
+		)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal([]byte(listJson), &movieList.List)
+		if err != nil {
+			return
+		}
+		list = append(list, movieList)
+	}
+	return
+}
+
+func SelectUserComments(uid int64, kind string, orderBy string) (err error, comments []model.Comment) {
+	sqlStr := "SELECT c.id, c.uid, c.content, c.date, c.score, c.tag, c.type, c.stars, u.username, c.mid FROM comment c JOIN user u ON c.uid = ? AND u.uid = ? AND c.type = ? ORDER BY " + orderBy
 	rows, err := dB.Query(sqlStr, uid, uid, kind)
 	if err != nil {
 		return
@@ -84,17 +123,13 @@ func SelectUserComments(uid int64, kind string, user *model.User) (err error) {
 			&comment.Type,
 			&comment.Stars,
 			&comment.Username,
+			&comment.Mid,
 		)
 		if err != nil {
 			return
 		}
 		comment.Tag = strings.Split(tag, ",")
-		switch comment.Type {
-		case "before":
-			user.Before = append(user.Before, comment)
-		case "after":
-			user.After = append(user.After, comment)
-		}
+		comments = append(comments, comment)
 	}
 	return
 }
@@ -108,9 +143,11 @@ func SelectUidWithOAuthId(oauthID int64, platform string) (err error, uid int64)
 func SelectBaseUserInfo(uid int64) (err error, user model.User) {
 	user.GithubId = -1
 	user.GiteeId = -1
-	sqlStr := "SELECT username, uid, github_id, gitee_id, email, phone, avatar FROM user WHERE uid = ?"
+	sqlStr := "SELECT username, uid, github_id, gitee_id, email, phone, avatar, description, following_users, following_lists FROM user WHERE uid = ?"
 	var githubId sql.NullInt64 // 可能为 null
 	var giteeId sql.NullInt64  // 可能为 null
+	var followingUserJson string
+	var followingListJson string
 	err = dB.QueryRow(sqlStr, uid).Scan(
 		&user.Username,
 		&user.Uid,
@@ -119,12 +156,23 @@ func SelectBaseUserInfo(uid int64) (err error, user model.User) {
 		&user.Email,
 		&user.Phone,
 		&user.Avatar,
+		&user.Description,
+		&followingUserJson,
+		&followingListJson,
 	)
 	if githubId.Valid {
 		user.GithubId = githubId.Int64
 	}
 	if giteeId.Valid {
 		user.GiteeId = giteeId.Int64
+	}
+	err = json.Unmarshal([]byte(followingUserJson), &user.Following.Users)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(followingListJson), &user.Following.Lists)
+	if err != nil {
+		return
 	}
 	return
 }
@@ -187,10 +235,36 @@ func InsertUserFromGithubId(user model.User) (err error, uid int64) {
 	return
 }
 
-// RawUpdateUserInfo 不建议引用
-func RawUpdateUserInfo(uid int64, which, what string) (err error) {
+// RawUpdateUserInfo 没有SQL注入处理, 不建议引用，加入了事务
+func RawUpdateUserInfo(uid int64, which, what string, tx *sql.Tx) (err error) {
 	sqlStr := fmt.Sprintf("UPDATE user SET %s=? WHERE uid = ?", which)
-	_, err = dB.Exec(sqlStr, what, uid)
+	if tx == nil {
+		_, err = dB.Exec(sqlStr, what, uid)
+		return
+	}
+	_, err = tx.Exec(sqlStr, what, uid)
+	return
+}
+
+// UpdateUserDescription 预处理解决 SQL 注入问题，加入了事务
+func UpdateUserDescription(uid int64, value string, tx *sql.Tx) (err error) {
+	sqlStr := "UPDATE user SET description = ? WHERE uid = ?"
+
+	var stmt *sql.Stmt
+	if tx == nil {
+		stmt, err = dB.Prepare(sqlStr)
+	} else {
+		stmt, err = tx.Prepare(sqlStr)
+	}
+
+	if err != nil {
+		return
+	}
+	_, err = stmt.Exec(value, uid)
+	err = stmt.Close()
+	if err != nil {
+		log.Println("Statement 关闭异常!", err)
+	}
 	return
 }
 

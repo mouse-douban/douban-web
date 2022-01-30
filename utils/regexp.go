@@ -1,6 +1,10 @@
 package utils
 
-import "regexp"
+import (
+	"douban-webend/config"
+	"regexp"
+	"strings"
+)
 
 func CheckUsername(username string) bool {
 	if len(username) < 3 || len(username) > 20 {
@@ -56,4 +60,20 @@ func CheckPasswordStrength(password string) bool {
 		return false // 不能有其他字符
 	}
 	return true
+}
+
+// ReplaceXSSKeywords 替换掉 XSS 攻击常用的字符串
+func ReplaceXSSKeywords(raw string) string {
+	replace := strings.Replace(raw, ":", "：", -1) // 把英文 : 换成中文 ：撅!
+	replace = strings.Replace(replace, "<script>", "[script]", -1)
+	replace = strings.Replace(replace, "</script>", "[/script]", -1)
+	return replace
+}
+
+func ReplaceWildUrl(raw string) string {
+	r := regexp.MustCompile("http(s?)://.+/")
+	for _, find := range r.FindAllString(raw, -1) {
+		raw = strings.Replace(raw, find, "https://"+config.Config.ServerIp+"/wild?link="+find, -1)
+	}
+	return raw
 }

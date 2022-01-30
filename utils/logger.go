@@ -33,19 +33,19 @@ func createLogFile() {
 
 	err := os.MkdirAll("logs/"+now, os.ModePerm) // 创建一次日志文件夹
 	if err != nil {
-		log.Println(err)
+		log.Println("创建失败！", err)
 		return
 	}
 
 	ginLog, err := os.Create("./logs/" + now + "/gin-" + now + ".log") // 创建gin日志文件
 	if err != nil {
-		log.Println(err)
+		log.Println("创建失败！", err)
 		return
 	}
 
 	loggerLog, err := os.Create("./logs/" + now + "/logger-" + now + ".log") // 创建logger日志文件
 	if err != nil {
-		log.Println(err)
+		log.Println("创建失败！", err)
 		return
 	}
 

@@ -29,3 +29,27 @@ func Initialize(dbName, root, pwd, ipAndPort, charset string) {
 	}
 	dB = db
 }
+
+func OpenTransaction() (*sql.Tx, error) {
+	return dB.Begin()
+}
+
+func RollBackTransaction(tx *sql.Tx) {
+	if tx == nil {
+		return
+	}
+	err := tx.Rollback()
+	if err != nil {
+		log.Println("事务回滚失败！原因：", err)
+	}
+}
+
+func CommitTransaction(tx *sql.Tx) {
+	if tx == nil {
+		return
+	}
+	err := tx.Commit()
+	if err != nil {
+		log.Println("事务提交失败！原因：", err)
+	}
+}

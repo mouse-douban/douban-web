@@ -10,7 +10,7 @@ import (
 
 func handleWild(ctx *gin.Context) {
 	link, ok := ctx.GetQuery("link")
-	match, _ := regexp.Match("http(s?)://.+", []byte(link))
+	match, _ := regexp.Match(`^http(s?)://[0-9a-zA-Z-_./]{0,100}$`, []byte(link))
 	if !ok {
 		utils.AbortWithParamError(ctx, "link 不能为空")
 	}
@@ -21,5 +21,5 @@ func handleWild(ctx *gin.Context) {
 }
 
 func handleMine(ctx *gin.Context) {
-	users.HandleAccountBaseInfo(ctx)
+	users.HandleAccountBaseInfoGet(ctx)
 }

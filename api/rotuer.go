@@ -91,7 +91,31 @@ var routes = Routes{
 			Name:             "获取用户的主页信息",
 			Method:           http.MethodGet,
 			Pattern:          "/:id",
-			HandlerFunctions: HandleFunctions{users.HandleAccountIndexInfo},
+			HandlerFunctions: HandleFunctions{users.HandleAccountIndexInfoGet},
+		},
+		{
+			Name:             "获取用户的片单列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/movie_list",
+			HandlerFunctions: HandleFunctions{users.HandleAccountMovieListGet},
+		},
+		{
+			Name:             "获取用户的想看列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/before",
+			HandlerFunctions: HandleFunctions{users.HandleAccountBeforeGet},
+		},
+		{
+			Name:             "获取用户的看过列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/after",
+			HandlerFunctions: HandleFunctions{users.HandleAccountAfterGet},
+		},
+		{
+			Name:             "获取用户的影评列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/reviews",
+			HandlerFunctions: HandleFunctions{users.HandleAccountReviewsGet},
 		},
 		{
 			Name:             "更新用户非重要信息",
@@ -104,6 +128,18 @@ var routes = Routes{
 			Method:           http.MethodPatch,
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountEXInfoUpdate},
+		},
+		{
+			Name:             "关注",
+			Method:           http.MethodPatch,
+			Pattern:          "/:id/following",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountFollow},
+		},
+		{
+			Name:             "取关",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id/following",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), users.HandleAccountUnFollow},
 		},
 		{
 			Name:             "销毁账户",

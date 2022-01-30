@@ -184,6 +184,15 @@ func LoginAccountFromGitee(info model.OAuthInfo) (err error, accessToken, refres
 
 func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	err, user = dao.SelectBaseUserInfo(uid)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40009,
+			Info:       "invalid request",
+			Detail:     "没有这个账户",
+		}
+		return
+	}
 	user.Phone = strings.Replace(user.Phone, "%2B", "+", -1) // + 转义
 	if !utils.MatchPhoneNumber(user.Phone) {                 // 排除 UUID 占位
 		user.Phone = ""
@@ -194,36 +203,100 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	return
 }
 
-func GetAccountReviewSnapshots(uid int64, scope string, user *model.User) (err error) {
+func GetAccountSnapshots(uid int64, scope string, user *model.User) (err error) {
 	switch scope {
 	case "reviews":
-		return dao.SelectUserReviewSnapshot(uid, user)
-	case "movie_list":
-		return
+		return GetAccountReviewSnapshots(uid, user, 0, 6, "latest")
 	case "before":
-		return dao.SelectUserComments(uid, scope, user)
+		fallthrough
 	case "after":
-		return dao.SelectUserComments(uid, scope, user)
+		return GetAccountComments(uid, scope, user, 0, 10, "latest")
 	default:
 		return utils.ServerInternalError
 	}
 }
 
+var oderBys = map[string]string{
+	"latest": "date DESC",
+	"hotest": "stars DESC",
+}
+
+func GetAccountReviewSnapshots(uid int64, user *model.User, start, limit int, sort string) (err error) {
+	err, reviews := dao.SelectUserReviewSnapshot(uid, oderBys[sort])
+	if err != nil {
+		return
+	}
+	end := start + limit
+	if end > len(reviews) {
+		end = len(reviews)
+	}
+	user.Reviews = reviews[start:end]
+	return
+}
+
+func GetAccountComments(uid int64, kind string, user *model.User, start, limit int, sort string) (err error) {
+	err, comments := dao.SelectUserComments(uid, kind, oderBys[sort])
+	if err != nil {
+		return
+	}
+	end := start + limit
+	if end > len(comments) {
+		end = len(comments)
+	}
+	switch kind {
+	case "before":
+		user.Before = comments[start:end]
+	case "after":
+		user.After = comments[start:end]
+	}
+	return
+}
+
+func GetAccountMovieList(uid int64, user *model.User, start, limit int) (err error) {
+	err, lists := dao.SelectUserMovieList(uid)
+	if err != nil {
+		return
+	}
+	end := start + limit
+	if end > len(lists) {
+		end = len(lists)
+	}
+	user.MovieList = lists[start:end]
+	return
+}
+
+// UpdateUserInfo 执行多条更新请求，加入事务处理，需要对 params 做好正则检测
 func UpdateUserInfo(uid int64, params map[string]string) (err error) {
+	tx, err := dao.OpenTransaction() // 开启一个事务
+	if err != nil {
+		return
+	}
 	for key, value := range params {
 		if key == "password" { // 加密
 			user := model.User{PlaintPassword: value}
 			value = user.EncryptPassword()
 		}
-		err = dao.RawUpdateUserInfo(uid, key, value)
+		if key == "description" { // 预防 SQL 注入
+			value = utils.ReplaceXSSKeywords(value)
+			value = utils.ReplaceWildUrl(value) // 换掉外链，前端就可以渲染这个外链了
+			err = dao.UpdateUserDescription(uid, value, tx)
+			if err != nil {
+				dao.RollBackTransaction(tx)
+				return
+			}
+			continue
+		}
+		err = dao.RawUpdateUserInfo(uid, key, value, tx)
 		if err != nil {
+			dao.RollBackTransaction(tx)
 			return
 		}
 	}
+	dao.CommitTransaction(tx)
 	return
 }
 
 func DeleteUser(uid int64) (err error) {
-	// todo 先删除 user 的所有子表
+	// todo 先删除 user 的所有子表 使用事务
 	return dao.DeleteUser(uid)
 }
