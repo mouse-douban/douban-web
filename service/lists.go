@@ -53,3 +53,22 @@ func UpdateMovieListInfo(id int64, params map[string]interface{}, updateTime boo
 	dao.CommitTransaction(tx)
 	return
 }
+
+func CreateMovieList(uid int64, name, description string, list []int64) (err error, lid int64) {
+	if name == "" {
+		name = "未命名"
+	}
+	movieList := model.MovieList{
+		Uid:         uid,
+		Name:        name,
+		Description: description,
+		List:        list,
+		Date:        time.Now(),
+		Followers:   0,
+	}
+	return dao.InsertMovieList(movieList)
+}
+
+func DeleteMovieList(lid, uid int64) (err error) {
+	return dao.DeleteMovieList(lid, uid)
+}

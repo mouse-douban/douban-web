@@ -104,3 +104,9 @@ func InsertMovieList(movieList model.MovieList) (err error, id int64) {
 	CommitTransaction(tx)
 	return
 }
+
+func DeleteMovieList(lid, uid int64) (err error) {
+	sqlStr := "DELETE FROM movie_list WHERE id = ? AND uid = ?"
+	_, err = dB.Exec(sqlStr, lid, uid)
+	return
+}

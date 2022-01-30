@@ -35,7 +35,7 @@ func CtrlBaseRegister(account, token, kind string) (err error, resp utils.RespDa
 	resp = utils.RespData{
 		HttpStatus: http.StatusOK,
 		Status:     20000,
-		Info:       "success",
+		Info:       utils.InfoSuccess,
 		Data: struct {
 			AccessToken  string `json:"access_token"`
 			RefreshToken string `json:"refresh_token"`
@@ -70,7 +70,7 @@ func CtrlLogin(account, token, kind string) (err error, resp utils.RespData) {
 	resp = utils.RespData{
 		HttpStatus: http.StatusOK,
 		Status:     20000,
-		Info:       "success",
+		Info:       utils.InfoSuccess,
 		Data: struct {
 			AccessToken  string `json:"access_token"`
 			RefreshToken string `json:"refresh_token"`
@@ -167,7 +167,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 	resp = utils.RespData{
 		HttpStatus: http.StatusOK,
 		Status:     20000,
-		Info:       "success",
+		Info:       utils.InfoSuccess,
 		Data: struct {
 			AccessToken  string `json:"access_token"`
 			RefreshToken string `json:"refresh_token"`

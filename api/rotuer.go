@@ -154,6 +154,44 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{users.HandleVerifyAccount},
 		},
 	},
+	"/lists": []Route{
+		{
+			Name:             "获取片单信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleMovieListGet},
+		},
+		{
+			Name:             "创建片单",
+			Method:           http.MethodPost,
+			Pattern:          "/",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListCreate},
+		},
+		{
+			Name:             "删除片单",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListDelete},
+		},
+		{
+			Name:             "更新片单",
+			Method:           http.MethodPut,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListUpdate},
+		},
+		{
+			Name:             "添加电影到片单",
+			Method:           http.MethodPatch,
+			Pattern:          "/:id/movie",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListMovieAdd},
+		},
+		{
+			Name:             "片单中删除电影",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id/movie",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListMovieRemove},
+		},
+	},
 	"/subjects": []Route{
 		{
 			Name:             "获取电影列表", // 该路由压力较大，考虑使用集群
