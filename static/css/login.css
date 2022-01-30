@@ -17,8 +17,10 @@ p , span {
 }
 
 embed {
-    margin: 10px 20px;
+    margin: 10px 40px;
     cursor: pointer;
+    width: 30px;
+    height: 30px;
 }
 
 #header {
