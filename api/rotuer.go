@@ -197,7 +197,7 @@ var routes = Routes{
 			Name:             "获取电影列表", // 该路由压力较大，考虑使用集群
 			Method:           http.MethodGet,
 			Pattern:          "/",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{handleSubjectsGet},
 		},
 	},
 	"/oauth": []Route{
