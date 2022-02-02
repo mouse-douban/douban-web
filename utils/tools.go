@@ -7,8 +7,29 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"math/rand"
+	"strings"
 	"time"
 )
+
+type StringList []string
+
+func (t StringList) Contains(kind string) bool {
+	for _, has := range t {
+		if has == kind {
+			return true
+		}
+	}
+	return false
+}
+
+func (t StringList) Join(split string) string {
+	builder := strings.Builder{}
+	for _, s := range t {
+		builder.WriteString(s)
+		builder.WriteString(split)
+	}
+	return builder.String()[:builder.Len()-len(split)]
+}
 
 func GenerateRandomPassword() string {
 	rand.Seed(time.Now().Unix())

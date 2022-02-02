@@ -8,9 +8,7 @@ import (
 	"strings"
 )
 
-type StringList []string
-
-var Tags = StringList{
+var Tags = utils.StringList{
 	"喜剧",
 	"生活",
 	"爱情",
@@ -19,15 +17,6 @@ var Tags = StringList{
 	"悬疑",
 	"惊悚",
 	"动画",
-}
-
-func (t StringList) Contains(kind string) bool {
-	for _, has := range t {
-		if has == kind {
-			return true
-		}
-	}
-	return false
 }
 
 func handleSubjectsGet(ctx *gin.Context) {
@@ -49,7 +38,7 @@ func handleSubjectsGet(ctx *gin.Context) {
 	}
 	var tag = ctx.PostForm("tag")
 
-	var tags = make([]string, 0)
+	var tags = make(utils.StringList, 0)
 
 	for _, s := range strings.Split(tag, ",") {
 		s = strings.TrimSpace(s)
@@ -61,7 +50,7 @@ func handleSubjectsGet(ctx *gin.Context) {
 		tags = append(tags, s)
 	}
 
-	err, resp := controller.CtrlSubjectsGet(start, limit, sort, tags)
+	err, resp := controller.CtrlSubjectsGet(start, limit, sort, tags.Join(","))
 
 	utils.Resp(ctx, err, resp)
 
