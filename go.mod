@@ -11,6 +11,7 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.33
 	github.com/unrolled/secure v1.0.9
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781
 )
 
 require (

@@ -256,7 +256,7 @@ func InitRouter(useTLS bool) {
 		log.Fatalf("listen tcp %v failed, cause %v\n", Addr, err)
 	}
 
-	go func() { //不要阻塞主 goroutine
+	go func() { // 不阻塞主 goroutine
 		if useTLS {
 			err = server.ServeTLS(listener, "config/api.pem", "config/api.key")
 			if err != nil && err != http.ErrServerClosed { // 排除 http.ErrServerClosed ，这是正常关闭

@@ -8,8 +8,21 @@ import (
 	"strings"
 )
 
-func InsertSubject(tags string) error {
-	panic("TODO")
+func InsertSubject(movie model.Movie) error {
+	sqlStr := "INSERT INTO subject (tags, date, detail, name, score, plot) VALUES (?, ?, ?, ?, ?, ?)"
+	detail, err := json.Marshal(movie.Detail)
+	if err != nil {
+		return err
+	}
+	score, err := json.Marshal(movie.Score)
+	if err != nil {
+		return err
+	}
+	_, err = dB.Exec(sqlStr, movie.Tags, movie.Date, string(detail), movie.Name, string(score), movie.Plot)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func SelectSubjects(tags, sortBy string) (err error, subjects []model.Movie) {

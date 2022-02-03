@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# jenkins 的持续集成
-# 因为使用了热重载，将不再构建 windows 版本
-
 echo "Local dir $PWD"
 
 echo "Setting goproxy..."
@@ -14,7 +11,7 @@ echo "Setting goproxy..."
 echo "Testing ..."
 /usr/local/go/bin/go env -w GOARCH=amd64
 /usr/local/go/bin/go env -w GOOS=linux
-/usr/local/go/bin/go test -v test/*.go
+/usr/local/go/bin/go test -v test/*/*.go
 
 echo "Building package ..."
 
