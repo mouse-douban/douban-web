@@ -62,7 +62,7 @@ func InitWithCOS() {
 	u, _ := url.Parse(os.Getenv("BUCKET_URL"))
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
-		//设置超时时间
+		// 设置超时时间
 		Timeout: 30 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  os.Getenv("TENCENT_SECRET_ID"),

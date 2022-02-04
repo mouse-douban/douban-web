@@ -1,7 +1,11 @@
 # 使用官方 Golang 镜像作为构建环境
-FROM golang:1.15-buster as builder
+FROM golang:1.17-buster as builder
 
 WORKDIR /app
+
+ENV BUCKET_URL=xxx
+ENV TENCENT_SECRET_ID=xxx
+ENV TENCENT_SECRET_KEY=xxx
 
 # 安装依赖
 COPY go.* ./
@@ -12,6 +16,8 @@ COPY . ./
 
 # 构建二进制文件
 RUN go build -mod=readonly -v -o server cmd/main.go
+# 尝试下载 tls key
+RUN go run build/config.go
 
 # 使用裁剪后的官方 Debian 镜像作为基础镜像
 # https://hub.docker.com/_/debian
@@ -21,8 +27,10 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
     ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# 将构建好的二进制文件拷贝进镜像
+# 将构建好的文件拷贝进镜像
 COPY --from=builder /app/server /app/server
+COPY --from=builder /app/config/api.key /app/config/api.key
+COPY --from=builder /app/config/api.pem /app/config/api.pem
 
 # 启动 Web 服务
 CMD ["/app/server"]
