@@ -17,9 +17,9 @@ import (
 func main() {
 
 	// 使用本地配置文件测试
-	config.Init("config/config.json")
+	// config.Init("config/config.json")
 
-	// config.InitWithCOS() //部署时换成这个
+	config.InitWithCOS() // 部署时换成这个
 
 	if config.Config.UseTLS { // 远程同步 key 文件
 		utils.DownloadFile(os.Getenv("BUCKET_URL"), "tls_keys/douban-api.key", "config/api.key")
@@ -28,7 +28,7 @@ func main() {
 
 	utils.RegisterLogFile() // 注册日志创建任务
 
-	utils.RegisterUploadLogTask(time.Hour * 4) // 每四个小时上传一次日志
+	utils.RegisterUploadLogTask(time.Hour * 6) // 每六个小时上传一次日志
 
 	<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
 
