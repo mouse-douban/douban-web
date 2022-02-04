@@ -27,7 +27,7 @@ func ConnectRedis() {
 // 		- ttl 这段时间后关闭连接 ttl < 0 则不关闭连接
 func makeAConnection(ttl time.Duration) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     config.Config.RedisAddrInner, // 使用内网
+		Addr:     config.Config.RedisAddrInner,
 		Password: config.Config.RedisPassword,
 		DB:       0,
 	})

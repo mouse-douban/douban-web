@@ -178,9 +178,9 @@ func SelectBaseUserInfo(uid int64) (err error, user model.User) {
 }
 
 func InsertUserFromUserName(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, password, email, phone) VALUES(?, ?, ?, ?)"
+	sqlStr := "INSERT INTO user(username, password, email, phone, following_users, following_lists) VALUES(?, ?, ?, ?, ?, ?)"
 	// 使用 UUID 来初始化非空唯一键 phone email
-	_, err = dB.Exec(sqlStr, user.Username, user.EncryptPassword(), utils.GenerateRandomUUID(), utils.GenerateRandomUUID())
+	_, err = dB.Exec(sqlStr, user.Username, user.EncryptPassword(), utils.GenerateRandomUUID(), utils.GenerateRandomUUID(), "{}", "{}")
 	if err != nil {
 		return
 	}
@@ -190,9 +190,9 @@ func InsertUserFromUserName(user model.User) (err error, uid int64) {
 }
 
 func InsertUserFromEmail(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, email, password, phone) VALUES(?, ?, ?, ?)"
+	sqlStr := "INSERT INTO user(username, email, password, phone, following_users, following_lists) VALUES(?, ?, ?, ?, ?, ?)"
 	// 使用 UUID 来初始化非空唯一键 phone
-	_, err = dB.Exec(sqlStr, utils.GenerateRandomUserName(), user.Email, user.EncryptPassword(), utils.GenerateRandomUUID())
+	_, err = dB.Exec(sqlStr, utils.GenerateRandomUserName(), user.Email, user.EncryptPassword(), utils.GenerateRandomUUID(), "{}", "{}")
 	if err != nil {
 		return
 	}
@@ -202,9 +202,9 @@ func InsertUserFromEmail(user model.User) (err error, uid int64) {
 }
 
 func InsertUserFromPhone(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, phone, password, email) VALUES(?, ?, ?, ?)"
+	sqlStr := "INSERT INTO user(username, email, password, phone, following_users, following_lists) VALUES(?, ?, ?, ?, ?, ?)"
 	// 使用 UUID 来初始化非空唯一键 email
-	_, err = dB.Exec(sqlStr, utils.GenerateRandomUserName(), user.Phone, user.EncryptPassword(), utils.GenerateRandomUUID())
+	_, err = dB.Exec(sqlStr, utils.GenerateRandomUserName(), user.Phone, user.EncryptPassword(), utils.GenerateRandomUUID(), "{}", "{}")
 	if err != nil {
 		return
 	}
@@ -214,8 +214,8 @@ func InsertUserFromPhone(user model.User) (err error, uid int64) {
 }
 
 func InsertUserFromGiteeId(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, phone, password, email, gitee_id, avatar) VALUES(?, ?, ?, ?, ?, ?)"
-	_, err = dB.Exec(sqlStr, user.Username+utils.GenerateRandomUUID()[:8], utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GiteeId, user.Avatar)
+	sqlStr := "INSERT INTO user(username, email, password, phone, following_users, following_lists) VALUES(?, ?, ?, ?, ?, ?)"
+	_, err = dB.Exec(sqlStr, user.Username+utils.GenerateRandomUUID()[:8], utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GiteeId, user.Avatar, "{}", "{}")
 	if err != nil {
 		return
 	}
@@ -225,8 +225,8 @@ func InsertUserFromGiteeId(user model.User) (err error, uid int64) {
 }
 
 func InsertUserFromGithubId(user model.User) (err error, uid int64) {
-	sqlStr := "INSERT INTO user(username, phone, password, email, github_id, avatar) VALUES(?, ?, ?, ?, ?, ?)"
-	_, err = dB.Exec(sqlStr, user.Username+utils.GenerateRandomUUID()[:8], utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GithubId, user.Avatar)
+	sqlStr := "INSERT INTO user(username, email, password, phone, following_users, following_lists) VALUES(?, ?, ?, ?, ?, ?)"
+	_, err = dB.Exec(sqlStr, user.Username+utils.GenerateRandomUUID()[:8], utils.GenerateRandomUUID(), user.EncryptPassword(), utils.GenerateRandomUUID(), user.GithubId, user.Avatar, "{}", "{}")
 	if err != nil {
 		return
 	}
