@@ -4,11 +4,12 @@ import (
 	"douban-webend/controller"
 	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
+	"net/url"
 	"strconv"
-	"strings"
 )
 
 var Tags = utils.StringList{
+	"", // 支持空 tag
 	"喜剧",
 	"生活",
 	"爱情",
@@ -22,35 +23,29 @@ var Tags = utils.StringList{
 func handleSubjectsGet(ctx *gin.Context) {
 	var start, limit int
 
-	start, err := strconv.Atoi(ctx.PostForm("start"))
+	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
 		start = 0
 	}
 
-	limit, err = strconv.Atoi(ctx.PostForm("limit"))
+	limit, err = strconv.Atoi(ctx.Query("limit"))
 	if err != nil {
-		limit = 0
+		limit = 20
 	}
 
-	var sort = ctx.PostForm("sort")
+	var sort = ctx.Query("sort")
 	if sort != "hotest" && sort != "latest" {
 		sort = "latest"
 	}
-	var tag = ctx.PostForm("tag")
 
-	var tags = make(utils.StringList, 0)
+	tag, _ := url.QueryUnescape(ctx.Query("tag"))
 
-	for _, s := range strings.Split(tag, ",") {
-		s = strings.TrimSpace(s)
-		if !Tags.Contains(s) {
-			utils.RespWithParamError(ctx, "tag 不支持 "+s)
-			return
-		}
-
-		tags = append(tags, s)
+	if !Tags.Contains(tag) {
+		utils.RespWithParamError(ctx, "tag 不支持 "+tag)
+		return
 	}
 
-	err, resp := controller.CtrlSubjectsGet(start, limit, sort, tags.Join(","))
+	err, resp := controller.CtrlSubjectsGet(start, limit, sort, tag)
 
 	utils.Resp(ctx, err, resp)
 

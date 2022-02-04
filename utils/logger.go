@@ -102,26 +102,6 @@ func compressedLog(src, now string, zw *zip.Writer) {
 		return
 	}
 
-	defer func(ginLog *os.File) {
-		err := ginLog.Close()
-		if err != nil {
-			log.Println("关闭ginLog文件失败！", err)
-		}
-	}(ginLog)
-	defer func(loggerLog *os.File) {
-		err := loggerLog.Close()
-		if err != nil {
-			log.Println("关闭logger文件失败！", err)
-		}
-	}(loggerLog)
-
-	defer func() {
-		// 如果没有正常关闭就写入日志
-		if err := zw.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
 	// 一路梭哈
 	info, _ := ginLog.Stat()
 	header, _ := zip.FileInfoHeader(info)
@@ -132,5 +112,20 @@ func compressedLog(src, now string, zw *zip.Writer) {
 	header, _ = zip.FileInfoHeader(info)
 	writer, _ = zw.CreateHeader(header)
 	_, _ = io.Copy(writer, loggerLog)
+
+	// 如果没有正常关闭就写入日志
+	if err = zw.Close(); err != nil {
+		log.Println(err)
+	}
+
+	err = loggerLog.Close()
+	if err != nil {
+		log.Println("关闭logger文件失败！", err)
+	}
+
+	err = ginLog.Close()
+	if err != nil {
+		log.Println("关闭ginLog文件失败！", err)
+	}
 
 }

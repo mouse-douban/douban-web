@@ -2,25 +2,33 @@ package model
 
 import "time"
 
+type MovieTag struct { // 用于返回电影列表
+	Name   string `json:"name"`
+	Score  string `json:"score"` // 折算成10.0分制
+	Avatar string `json:"avatar"`
+	Mid    int64  `json:"mid"`
+}
+
 type Movie struct {
 	Mid    int64       `json:"mid"`
 	Name   string      `json:"name"`
-	Stars  int64       `json:"stars"`
+	Stars  int64       `json:"stars"` // 平均星数
 	Date   time.Time   `json:"date"`
 	Tags   string      `json:"tags"`
 	Detail MovieDetail `json:"detail"`
 	Score  MovieScore  `json:"score"`
 	Plot   string      `json:"plot"`
+	Avatar string      `json:"avatar"`
 }
 
 type MovieScore struct {
-	Total    int `json:"total"`
-	TotalCnt int `json:"total_cnt"`
-	Five     int `json:"five"`
-	Four     int `json:"four"`
-	Three    int `json:"three"`
-	Two      int `json:"two"`
-	One      int `json:"one"`
+	Score    string `json:"score"`     // 折算成10.0分制
+	TotalCnt int    `json:"total_cnt"` // 总评分人数
+	Five     string `json:"five"`      // 五星占比
+	Four     string `json:"four"`
+	Three    string `json:"three"`
+	Two      string `json:"two"`
+	One      string `json:"one"`
 }
 
 type MovieDetail struct {

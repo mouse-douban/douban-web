@@ -9,7 +9,7 @@ import (
 )
 
 func InsertSubject(movie model.Movie) error {
-	sqlStr := "INSERT INTO subject (tags, date, detail, name, score, plot) VALUES (?, ?, ?, ?, ?, ?)"
+	sqlStr := "INSERT INTO subject (tags, date, detail, name, score, plot, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	detail, err := json.Marshal(movie.Detail)
 	if err != nil {
 		return err
@@ -18,16 +18,24 @@ func InsertSubject(movie model.Movie) error {
 	if err != nil {
 		return err
 	}
-	_, err = dB.Exec(sqlStr, movie.Tags, movie.Date, string(detail), movie.Name, string(score), movie.Plot)
+	_, err = dB.Exec(sqlStr,
+		movie.Tags,
+		movie.Date,
+		string(detail),
+		movie.Name,
+		string(score),
+		movie.Plot,
+		movie.Avatar,
+	)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func SelectSubjects(tags, sortBy string) (err error, subjects []model.Movie) {
-	sqlStr := "SELECT mid, tags, date, stars, detail, name, score, plot FROM subject WHERE tags LIKE '%{tags}%'"
-	sqlStr = strings.Replace(sqlStr, "{tags}", tags, -1)
+func SelectSubjects(tag, sortBy string) (err error, subjects []model.Movie) {
+	sqlStr := "SELECT mid, tags, date, stars, detail, name, score, plot, avatar FROM subject WHERE tags LIKE '%{tag}%'"
+	sqlStr = strings.Replace(sqlStr, "{tag}", tag, -1)
 	sqlStr = sqlStr + "ORDER BY " + sortBy
 	rows, err := dB.Query(sqlStr)
 
@@ -55,6 +63,7 @@ func SelectSubjects(tags, sortBy string) (err error, subjects []model.Movie) {
 			&subject.Name,
 			&score,
 			&subject.Plot,
+			&subject.Avatar,
 		)
 		if err != nil {
 			return

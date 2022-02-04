@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -222,6 +223,8 @@ func HandleVerify(ctx *gin.Context) {
 		})
 		return
 	}
+
+	target, _ = url.QueryUnescape(target)
 
 	switch kind {
 	case "sms": // + 号会转译，发请求时使用 %2B
