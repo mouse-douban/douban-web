@@ -88,8 +88,12 @@ func RegisterUploadLogTask(duration time.Duration) {
 			res, err := os.Open(target)
 
 			if err != nil {
-				log.Println("打开 target 失败", err)
-				continue
+				log.Println("打开 target 失败，尝试创建...", err)
+				err = createLogFile()
+				if err != nil {
+					log.Println("创建日志失败！日期: ", time.Now())
+					continue
+				}
 			}
 
 			err = compressedLog(src, now, zip.NewWriter(res)) // 压缩
