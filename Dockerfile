@@ -30,6 +30,7 @@ RUN go build -mod=readonly -v -o server cmd/main.go
 # 尝试下载 tls key
 RUN go run build/config.go
 
+# 没有就创建一个
 RUN touch config/api.key
 RUN touch config/api.pem
 
