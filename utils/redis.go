@@ -4,7 +4,6 @@ import (
 	"douban-webend/config"
 	"encoding/json"
 	"github.com/go-redis/redis"
-	"log"
 	"time"
 )
 
@@ -16,10 +15,10 @@ func ConnectRedis() {
 	pong, err := redisClient.Ping().Result()
 
 	if err != nil {
-		log.Fatalln(err)
+		LoggerFatal("Redis 连接失败", err)
 	}
-	log.Println("redis connect!")
-	log.Println("redis ping result:", pong)
+	LoggerInfo("redis connect!")
+	LoggerInfo("redis ping result:", pong)
 }
 
 // makeAConnection 建立一个连接
@@ -36,10 +35,9 @@ func makeAConnection(ttl time.Duration) *redis.Client {
 			<-time.NewTimer(t).C
 			err := client.Close()
 			if err != nil {
-				log.Println("没有正常关闭Redis连接!")
-				log.Panicln(err)
+				LoggerWarning("没有正常关闭Redis连接!", err)
 			}
-			log.Printf("关闭连接 %v", client)
+			LoggerInfo("关闭连接", client)
 		}(ttl, client)
 	}
 	return client

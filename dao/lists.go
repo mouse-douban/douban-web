@@ -3,8 +3,8 @@ package dao
 import (
 	"database/sql"
 	"douban-webend/model"
+	"douban-webend/utils"
 	"encoding/json"
-	"log"
 )
 
 func SelectMovieList(id int64) (err error, movieList model.MovieList) {
@@ -55,7 +55,7 @@ func PrepareUpdateMovieList(id int64, column string, value interface{}, tx *sql.
 	}
 	err = stmt.Close()
 	if err != nil {
-		log.Println("关闭 Statement 失败, 原因", err)
+		utils.LoggerWarning("关闭 Statement 失败, 原因", err)
 		return
 	}
 	return
@@ -97,7 +97,7 @@ func InsertMovieList(movieList model.MovieList) (err error, id int64) {
 	}
 	err = stmt.Close()
 	if err != nil {
-		log.Println("Statement 关闭失败，原因: ", err)
+		utils.LoggerWarning("Statement 关闭失败，原因: ", err)
 		RollBackTransaction(tx)
 		return
 	}

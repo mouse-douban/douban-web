@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"archive/zip"
 	"douban-webend/config"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -10,156 +9,112 @@ import (
 	"time"
 )
 
-// RegisterLogFile 注册日志文件创建任务
-func RegisterLogFile() {
-	t := time.NewTicker(time.Hour * 24) // 每天创建一次日志文件
-	defer t.Stop()
-	gin.DisableConsoleColor() // 关闭后台颜色显示
+var (
+	loggerFile     *os.File
+	loggerCreateAt time.Time
+	updateDuration int // 距离创建日期下一天的时间间隔 (s)
+)
 
-	go func(ticker *time.Ticker) {
-
-		for true {
-			err := createLogFile()
-			if err != nil {
-				log.Println("创建日志失败！日期: ", time.Now())
-			}
-			<-t.C
-		}
-
-	}(t)
-
+type GinWriter struct {
 }
 
-func createLogFile() error {
+func (l *GinWriter) Write(p []byte) (n int, err error) {
+	size := len(p)
+	logGin(p[:size-1]) // 切掉 \n
+	return size, nil
+}
 
+// EnableLog 开启日志
+func EnableLog() {
+	gin.DisableConsoleColor()
 	now := time.Now().Format("2006-01-02")
-	log.Printf("正在创建今日: %v 的日志文件\n", now)
 
-	err := os.MkdirAll("logs/"+now, os.ModePerm) // 创建一次日志文件夹
-	if err != nil {
-		log.Println("创建失败！", err)
-		return ServerInternalError
+	_, err := os.Stat("logs")
+	if err != nil { // 检查文件是否存在
+		err = os.Mkdir("logs", 0777) // 创建文件夹
+		if err != nil {
+			log.Fatalln("日志开启失败! 原因: ", err)
+		}
 	}
 
-	ginLog, err := os.Create("./logs/" + now + "/gin-" + now + ".log") // 创建gin日志文件
+	loggerFile, err = os.Create("./logs/" + now + ".log")
 	if err != nil {
-		log.Println("创建失败！", err)
-		return ServerInternalError
+		log.Fatalln("日志开启失败! 原因: ", err)
 	}
 
-	loggerLog, err := os.Create("./logs/" + now + "/logger-" + now + ".log") // 创建logger日志文件
-	if err != nil {
-		log.Println("创建失败！", err)
-		return ServerInternalError
-	}
+	// 设置创建时间
+	loggerCreateAt = time.Now()
 
-	src := "./logs/" + now // 今日日志文件夹
-	target := src + "/log-" + now + ".zip"
-	_, err = os.Create(target)
-	if err != nil {
-		log.Println("创建失败！target 创建失败", err)
-		return ServerInternalError
-	}
+	// 更新间隔
+	n := time.Now()
+	updateDuration = 24*60*60 - (n.Hour()*60*60 + n.Minute()*60 + n.Second())
 
-	err = os.Chmod(target, 0777)
-	if err != nil {
-		log.Println("创建失败！权限设置失败", err)
-		return ServerInternalError
-	}
+	// 设置输出
+	gin.DefaultWriter = &GinWriter{}
 
-	gin.DefaultWriter = io.MultiWriter(ginLog, os.Stdout) // 设置gin log输出
-	log.SetOutput(io.MultiWriter(loggerLog, os.Stdout))   // 设置logger输出
-	return nil
+	log.SetOutput(io.MultiWriter(loggerFile, os.Stdout))
 }
 
 func RegisterUploadLogTask(duration time.Duration) {
-	t := time.NewTicker(duration)
-	go func(ticker *time.Ticker) {
-
-		for true {
-			<-t.C // 并非启动就上传日志
-
+	ticker := time.NewTicker(duration)
+	go func() {
+		for {
+			<-ticker.C
 			now := time.Now().Format("2006-01-02")
-			log.Printf("正在上传今日: %v 的日志文件\n", now)
-
-			src := "./logs/" + now // 今日日志文件夹
-			target := src + "/log-" + now + ".zip"
-
-			res, err := os.Open(target)
-
+			LoggerInfo("正在上传日志文件", "./logs/"+now+".log")
+			file, err := os.Open("./logs/" + now + ".log")
 			if err != nil {
-				log.Println("打开 target 失败，尝试创建...", err)
-				err = createLogFile()
+				file, err = os.Create("./logs/" + now + ".log")
 				if err != nil {
-					log.Println("创建日志失败！日期: ", time.Now())
+					LoggerWarning("上传失败! 原因: ", err)
 					continue
 				}
+				loggerFile = file
 			}
-
-			err = compressedLog(src, now, zip.NewWriter(res)) // 压缩
-
-			if err != nil {
-				log.Println("压缩失败", err)
-				continue
-			}
-
-			upload, err := os.Open(target)
-			if err != nil {
-				log.Println("打开 target 失败", err)
-				continue
-			}
-			UploadFile(config.Config.TencentLogBucketUrl, "/log-"+now+".zip", upload) // 上传到 cos
-			err = upload.Close()
-			if err != nil {
-				log.Println("关闭 upload 失败", err)
-			}
+			UploadFile(config.Config.TencentLogBucketUrl, "logs/"+now+".log", file)
 		}
-
-	}(t)
+	}()
 }
 
-// compressedLog 压缩日志文件
-func compressedLog(src, now string, zw *zip.Writer) error {
-	ginLog, err := os.Open(src + "/gin-" + now + ".log")
-	if err != nil {
-		err = createLogFile()
+// 检查时间
+func checkLoggerFile() {
+	now := time.Now()
+	if int(now.Sub(loggerCreateAt).Seconds()) > updateDuration {
+		var err error
+		loggerFile, err = os.Create("./logs/" + now.Format("2006-01-02") + ".log")
 		if err != nil {
-			return err
+			LoggerWarning("日志更新失败! 原因: ", err)
 		}
+		log.SetOutput(io.MultiWriter(loggerFile, os.Stdout))
 	}
-	loggerLog, err := os.Open(src + "/logger-" + now + ".log")
-	if err != nil {
-		log.Printf("上传日志失败!! 原因: %v", err)
-		return err
-	}
+}
 
-	// 一路梭哈
-	info, _ := ginLog.Stat()
-	header, _ := zip.FileInfoHeader(info)
-	writer, _ := zw.CreateHeader(header)
-	_, _ = io.Copy(writer, ginLog)
+func logGin(p []byte) {
+	log.SetPrefix("")
+	checkLoggerFile()
+	log.Println(string(p))
+}
 
-	info, _ = loggerLog.Stat()
-	header, _ = zip.FileInfoHeader(info)
-	writer, _ = zw.CreateHeader(header)
-	_, _ = io.Copy(writer, loggerLog)
+func LoggerInfo(mess ...interface{}) {
+	log.SetPrefix("[INFO] ")
+	checkLoggerFile()
+	log.Println(mess...)
+}
 
-	// 如果没有正常关闭就写入日志
-	if err = zw.Close(); err != nil {
-		log.Println(err)
-		return err
-	}
+func LoggerWarning(mess ...interface{}) {
+	log.SetPrefix("[WARNING] ")
+	checkLoggerFile()
+	log.Println(mess...)
+}
 
-	err = loggerLog.Close()
-	if err != nil {
-		log.Println("关闭logger文件失败！", err)
-		return err
-	}
+func LoggerPanic(mess ...interface{}) {
+	log.SetPrefix("[PANIC] ")
+	checkLoggerFile()
+	log.Panicln(mess...)
+}
 
-	err = ginLog.Close()
-	if err != nil {
-		log.Println("关闭ginLog文件失败！", err)
-		return err
-	}
-	return nil
+func LoggerFatal(mess ...interface{}) {
+	log.SetPrefix("[FATAL] ")
+	checkLoggerFile()
+	log.Fatalln(mess...)
 }

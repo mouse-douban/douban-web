@@ -3,6 +3,7 @@ package dao
 import (
 	"database/sql"
 	"douban-webend/config"
+	"douban-webend/utils"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
@@ -40,7 +41,7 @@ func RollBackTransaction(tx *sql.Tx) {
 	}
 	err := tx.Rollback()
 	if err != nil {
-		log.Println("事务回滚失败！原因：", err)
+		utils.LoggerWarning("事务回滚失败！原因：", err)
 	}
 }
 
@@ -50,6 +51,6 @@ func CommitTransaction(tx *sql.Tx) {
 	}
 	err := tx.Commit()
 	if err != nil {
-		log.Println("事务提交失败！原因：", err)
+		utils.LoggerWarning("事务提交失败！原因：", err)
 	}
 }

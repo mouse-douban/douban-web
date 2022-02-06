@@ -6,7 +6,6 @@ import (
 	"douban-webend/utils"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -32,7 +31,7 @@ func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []m
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Println(err)
+			utils.LoggerWarning("rows 关闭异常", err)
 		}
 	}(rows)
 
@@ -69,7 +68,7 @@ func SelectUserMovieList(uid int64) (err error, list []model.MovieList) {
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Println(err)
+			utils.LoggerWarning("rows 关闭异常", err)
 		}
 	}(rows)
 
@@ -106,7 +105,7 @@ func SelectUserComments(uid int64, kind string, orderBy string) (err error, comm
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Println(err)
+			utils.LoggerWarning("rows 关闭异常", err)
 		}
 	}(rows)
 
@@ -263,7 +262,7 @@ func UpdateUserDescription(uid int64, value string, tx *sql.Tx) (err error) {
 	_, err = stmt.Exec(value, uid)
 	err = stmt.Close()
 	if err != nil {
-		log.Println("Statement 关闭异常!", err)
+		utils.LoggerWarning("Statement 关闭异常!", err)
 	}
 	return
 }

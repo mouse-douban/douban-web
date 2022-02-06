@@ -6,14 +6,14 @@ import (
 	"testing"
 )
 
-func TestGetSubjectInfo(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			t.Error(r)
-		}
-	}()
-	utils.QuerySubjectInfo("3541415")
-}
+// func TestGetSubjectInfo(t *testing.T) {
+// 	defer func() {
+// 		if r := recover(); r != nil {
+// 			t.Error(r)
+// 		}
+// 	}()
+// 	utils.QuerySubjectInfo("3541415")
+// }
 
 func TestGetSubjects(t *testing.T) {
 	defer func() {

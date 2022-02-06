@@ -6,7 +6,6 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/smtp"
@@ -117,13 +116,13 @@ func SendVerifyCode(vType, target, vCode string) {
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
 			if err != nil {
-				log.Println(err)
+				LoggerWarning("发送失败！", err)
 				return
 			}
 
 			err = SendEmail(vCode, target)
 			if err != nil {
-				log.Println(err)
+				LoggerWarning("发送失败！", err)
 			}
 
 		}()
@@ -141,13 +140,13 @@ func SendVerifyCode(vType, target, vCode string) {
 			}, time.Minute*2) // 存进 redis 两分钟后过期
 
 			if err != nil {
-				log.Println(err)
+				LoggerWarning("发送失败！", err)
 				return
 			}
 
 			err = SendSMS(vCode, target)
 			if err != nil {
-				log.Println(err)
+				LoggerWarning("发送失败！", err)
 			}
 		}()
 
@@ -183,15 +182,14 @@ func SendSMS(verifyCode string, phoneNumbers ...string) error {
 	request.TemplateId = common.StringPtr(config.Config.TencentTemplateId)
 	request.TemplateParamSet = common.StringPtrs([]string{verifyCode})
 
-	response, err := client.SendSms(request)
+	_, err := client.SendSms(request)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		log.Printf("An API error has returned: %s", err)
+		LoggerWarning("An API error has returned:", err)
 		return ServerInternalError
 	}
 	if err != nil {
 		return ServerInternalError
 	}
-	log.Printf("%s", response.ToJsonString())
 	return nil
 }
 

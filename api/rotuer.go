@@ -4,6 +4,7 @@ import (
 	"context"
 	"douban-webend/api/middleware"
 	"douban-webend/api/users"
+	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net"
@@ -230,7 +231,7 @@ func newRouter(useTLS bool) *gin.Engine {
 }
 
 func InitRouter(useTLS bool) {
-	log.Println("Server started!")
+	utils.LoggerInfo("Server started!")
 
 	router := newRouter(useTLS)
 
@@ -253,19 +254,19 @@ func InitRouter(useTLS bool) {
 	}
 
 	if err != nil {
-		log.Fatalf("listen tcp %v failed, cause %v\n", Addr, err)
+		utils.LoggerFatal("listen tcp failed, Cause: ", err)
 	}
 
 	go func() { // 不阻塞主 goroutine
 		if useTLS {
 			err = server.ServeTLS(listener, "config/api.pem", "config/api.key")
 			if err != nil && err != http.ErrServerClosed { // 排除 http.ErrServerClosed ，这是正常关闭
-				log.Fatalf("serve err %v\n", err)
+				utils.LoggerFatal("Serve err Cause:", err)
 			}
 		} else {
 			err = server.Serve(listener)
 			if err != nil && err != http.ErrServerClosed {
-				log.Fatalf("serve err %v\n", err)
+				utils.LoggerFatal("Serve err Cause:", err)
 			}
 		}
 	}()
@@ -284,23 +285,23 @@ func listenSignal() {
 		ctx, _ := context.WithTimeout(context.Background(), time.Second*10) // 10s延迟，到点强制回收资源(不执行cancelFunc)
 		switch sign {
 		case syscall.SIGINT, syscall.SIGTERM: // 中止信号  kill INT [pid] 或者 Ctrl+C 发送的就是这两种信号，kill -9 的信号截停不了（保证用户能够终止程序
-			log.Println("Server shutdown...")
+			utils.LoggerInfo("Server shutdown...")
 			signal.Stop(sig) // 停止信号
 			err := server.Shutdown(ctx)
 			if err != nil {
-				log.Fatalf("shutdown err!! %v\n", err)
+				utils.LoggerFatal("Serve err Case:", err)
 				return
 			}
-			log.Println("shutdown gracefully...")
+			utils.LoggerInfo("shutdown gracefully...")
 		case syscall.SIGUSR2: // 重启信号  kill -31/-USR2 [pid]
-			log.Println("Server reloading...")
+			utils.LoggerInfo("Server reloading...")
 			err := reload()
 			if err != nil {
-				log.Fatalf("reload err!! %v\n", err)
+				utils.LoggerFatal("Serve err Case:", err)
 			}
 			err = server.Shutdown(ctx)
 			if err != nil {
-				log.Fatalf("shutdown err!! %v\n", err)
+				utils.LoggerFatal("Serve err Case:", err)
 				return
 			}
 		}
@@ -318,7 +319,7 @@ func reload() error {
 	}
 
 	// 使用命令来重新运行一遍
-	log.Printf("all file prepared, use cmd ' %v reload ' to reload\n", os.Args[0])
+	utils.LoggerInfo("all file prepared, use cmd ", os.Args[0], "to reload")
 	cmd := exec.Command(os.Args[0], "reload")
 	cmd.Stdin = os.Stdin   // 绑定 fd 0
 	cmd.Stdout = os.Stdout // 绑定 fd 1

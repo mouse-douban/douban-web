@@ -31,8 +31,7 @@ func main() {
 	}
 
 	if EnableLog {
-		utils.RegisterLogFile() // 注册日志创建任务
-
+		utils.EnableLog()
 		utils.RegisterUploadLogTask(time.Hour * 6) // 每六个小时上传一次日志
 
 		<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
