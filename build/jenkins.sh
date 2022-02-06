@@ -3,7 +3,7 @@
 echo "Local dir $PWD"
 
 echo "Set local config loading..."
-sed -i '' 's/EnableCOS = true/EnableCOS = false/g' cmd/main.go
+sed -i 's/EnableCOS = true/EnableCOS = false/g' cmd/main.go
 
 echo "Setting goproxy..."
 

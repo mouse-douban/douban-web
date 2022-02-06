@@ -74,7 +74,7 @@ function setSubmitBtnListener() {
         } else {
             const inputId = document.querySelector("#input-id")
             const inputPassword = document.querySelector("#input-password")
-            login("+86" + inputId.value, inputPassword.value, "password")
+            login(inputId.value, inputPassword.value, "password")
         }
     })
     getVerificationCode.addEventListener('click', async () => {

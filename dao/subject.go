@@ -3,8 +3,8 @@ package dao
 import (
 	"database/sql"
 	"douban-webend/model"
+	"douban-webend/utils"
 	"encoding/json"
-	"log"
 	"strings"
 )
 
@@ -42,7 +42,7 @@ func SelectSubjects(tag, sortBy string) (err error, subjects []model.Movie) {
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Println(err)
+			utils.LoggerWarning("rows 关闭异常", err)
 		}
 	}(rows)
 

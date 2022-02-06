@@ -5,7 +5,6 @@ import (
 	"douban-webend/config"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -17,7 +16,7 @@ func UploadFile(bucketUrl string, path string, r io.Reader) {
 	u, _ := url.Parse(bucketUrl)
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
-		//设置超时时间
+		// 设置超时时间
 		Timeout: 30 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  config.Config.TencentSecretId,
@@ -27,7 +26,7 @@ func UploadFile(bucketUrl string, path string, r io.Reader) {
 
 	_, err := c.Object.Put(context.Background(), path, r, nil)
 	if err != nil {
-		log.Println(err)
+		LoggerWarning("cos 上传异常", err)
 	}
 }
 
@@ -35,7 +34,7 @@ func UploadFileFromLocal(bucketUrl, toPath, filePath string) {
 	u, _ := url.Parse(bucketUrl)
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
-		//设置超时时间
+		// 设置超时时间
 		Timeout: 30 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  config.Config.TencentSecretId,
@@ -45,7 +44,7 @@ func UploadFileFromLocal(bucketUrl, toPath, filePath string) {
 
 	_, err := c.Object.PutFromFile(context.Background(), toPath, filePath, nil)
 	if err != nil {
-		log.Println(err)
+		LoggerWarning("cos 上传异常", err)
 	}
 }
 
@@ -53,7 +52,7 @@ func DeleteFile(bucketUrl string, path string) {
 	u, _ := url.Parse(bucketUrl)
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
-		//设置超时时间
+		// 设置超时时间
 		Timeout: 30 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  config.Config.TencentSecretId,
@@ -63,7 +62,7 @@ func DeleteFile(bucketUrl string, path string) {
 
 	_, err := c.Object.Delete(context.Background(), path, nil)
 	if err != nil {
-		log.Println(err)
+		LoggerWarning("cos 删除异常", err)
 	}
 }
 
@@ -71,7 +70,7 @@ func DownloadFile(bucketUrl string, path string, savePath string) {
 	u, _ := url.Parse(bucketUrl)
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
-		//设置超时时间
+		// 设置超时时间
 		Timeout: 30 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  config.Config.TencentSecretId,
@@ -81,6 +80,6 @@ func DownloadFile(bucketUrl string, path string, savePath string) {
 
 	_, err := c.Object.GetToFile(context.Background(), path, savePath, nil)
 	if err != nil {
-		log.Println(err)
+		LoggerWarning("cos 下载异常", err)
 	}
 }

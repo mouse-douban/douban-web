@@ -3,7 +3,6 @@ package utils
 import (
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -34,7 +33,7 @@ func GetPOSTBytes(url, contentType string, body io.Reader) (resp chan []byte) {
 
 		err = res.Body.Close()
 		if err != nil {
-			log.Println(err)
+			LoggerWarning("请求POST异常", err)
 		}
 	}(&resp, url, contentType, body)
 
@@ -75,7 +74,7 @@ func GetGETBytes(url string, header map[string]string) (resp chan []byte) {
 
 		err = res.Body.Close()
 		if err != nil {
-			log.Println(err)
+			LoggerWarning("请求GET异常", err)
 		}
 	}(&resp, url, header)
 
