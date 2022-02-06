@@ -39,6 +39,9 @@
     width: 1000px;
     height: 840px;
     border-radius: 10px;
+    padding: 20px;
+    display: inline-flex;
+    box-sizing: border-box;
 }
 
 #edit-button {
@@ -53,6 +56,10 @@
 #cancel-btn {
     float: right;
     width: 140px;
+}
+
+#want-to-watch {
+    margin-right: 20px;
 }
 
 .button {
@@ -71,6 +78,32 @@
 
 .button:hover {
     background: #EEEEEE;
+}
+
+.board-block {
+    width: 50%;
+    border-radius: 10px;
+    height: fit-content;
+    padding: 10px;
+    box-sizing: border-box;
+    min-height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    padding: 20px 0px;
+    font-weight: 800;
+    font-size: 30px;
+    border-bottom: 1px solid #BDBDBD;
 }
 
 embed {
@@ -99,4 +132,8 @@ input {
 input:focus {
     outline: none;
     border: 1px solid #3F51B5;
+}
+
+movie-card {
+    margin: 10px 17px;
 }

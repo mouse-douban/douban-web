@@ -51,11 +51,11 @@ async function loadUserInfo() {
     const userId = document.querySelector("#user-id")
     const userDescription = document.querySelector("#user-description")
     const email = document.querySelector("#email")
-    const phoneNumber = document.querySelector("#phoneNumber")
+    const phoneNumber = document.querySelector("#phone-number")
     const avatar = document.querySelector("#user-avatar")
+    document.querySelector("#edit-button").addEventListener("click", switchProfileEditFragment)
     // 请求数据
     const data = await getMineInfo()
-    document.querySelector("#edit-button").addEventListener("click", switchProfileEditFragment)
     switch (data.status) {
         case 43: {
             // 设置基础信息
@@ -80,7 +80,7 @@ function switchProfileEditFragment() {
     const userId = document.querySelector("#user-id").textContent
     const userDescription = document.querySelector("#user-description").textContent
     const email = document.querySelector("#email").textContent
-    const phoneNumber = document.querySelector("#phoneNumber").textContent
+    const phoneNumber = document.querySelector("#phone-number").textContent
     const _avatar = document.querySelector("#user-avatar").style.background
     const avatar = _avatar.slice(4, _avatar.length - 1)
     // 更改fragment
