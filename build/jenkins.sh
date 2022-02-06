@@ -33,3 +33,6 @@ echo "Build darwin..."
 echo "Back to normal..."
 /usr/local/go/bin/go env -w GOARCH=amd64
 /usr/local/go/bin/go env -w GOOS=linux
+
+echo "docker build"
+/usr/bin/docker build -t gin .
