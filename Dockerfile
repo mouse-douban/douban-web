@@ -30,6 +30,9 @@ RUN go build -mod=readonly -v -o server cmd/main.go
 # 尝试下载 tls key
 RUN go run build/config.go
 
+RUN touch config/api.key
+RUN touch config/api.pem
+
 # 使用裁剪后的官方 Debian 镜像作为基础镜像
 # https://hub.docker.com/_/debian
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
