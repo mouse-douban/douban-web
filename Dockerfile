@@ -3,16 +3,25 @@ FROM golang:1.17-buster as builder
 
 WORKDIR /app
 
+# 换成阿里云镜像
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 ENV BUCKET_URL=xxx
 ENV TENCENT_SECRET_ID=xxx
 ENV TENCENT_SECRET_KEY=xxx
 
 # 安装依赖
 COPY go.* ./
-RUN go mod download
+# 设置代理
+RUN go env -w GOPROXY="https://goproxy.cn,direct"
+# 下载依赖
+RUN go mod tidy
 
 # 将代码文件写入镜像
 COPY . ./
+
+# 使用远程config
+RUN sed -i 's/EnableCOS = false/EnableCOS = true/g' cmd/main.go
 
 # 构建二进制文件
 RUN go build -mod=readonly -v -o server cmd/main.go
