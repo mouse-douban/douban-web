@@ -39,9 +39,9 @@
     width: 1000px;
     height: 840px;
     border-radius: 10px;
-    padding: 20px;
-    display: inline-flex;
+    display: flex;
     box-sizing: border-box;
+    flex-direction: column;
 }
 
 #edit-button {
@@ -58,8 +58,58 @@
     width: 140px;
 }
 
-#want-to-watch {
+#tab {
+    width: 100%;
+    box-sizing: border-box;
+    height: fit-content;
+    background-color: #545652;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 20px;
+}
+
+#pager {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    height: fit-content;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style:none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* #want-to-watch {
     margin-right: 20px;
+} */
+
+.tab-item {
+    width: 24.5%;
+    margin-right: 0;
+    height: 50px;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgb(212, 212, 212);
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+    transition: .3s;
+    border-right: 1px solid rgb(235, 235, 235);
+    cursor: pointer;
+}
+
+.tab-item:hover {
+    color: rgb(233, 233, 233);
+}
+
+.selected {
+    color: white;
 }
 
 .button {
@@ -80,7 +130,7 @@
     background: #EEEEEE;
 }
 
-.board-block {
+/* .board-block {
     width: 50%;
     border-radius: 10px;
     height: fit-content;
@@ -104,7 +154,7 @@
     font-weight: 800;
     font-size: 30px;
     border-bottom: 1px solid #BDBDBD;
-}
+} */
 
 embed {
     width: 30px;
@@ -135,5 +185,6 @@ input:focus {
 }
 
 movie-card {
-    margin: 10px 17px;
+    margin: 10px 10px;
+    transition: transform .5s, opacity .7s;
 }

@@ -58,11 +58,49 @@ async function getMineInfo(scope = "") {
  * @param {string} avatar 
  * @param {string} scope 更新范围｜从username|github_id|gitee_id|avatar 中选取，多个用 , 隔开
  */
-async function putUserInfo(id, username, avatar, scope = "username, avatar") {
+async function putUserInfo(id, username, avatar, description, scope = "username,avatar,description") {
     const data = new FormData()
     data.append("username", username)
     data.append("avatar", avatar)
+    data.append("description", description)
     return await put(`/users/${id}`, data, { scope })
 }
 
-export { getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo }
+/**
+ * 获取用户想看列表
+ * 
+ * @param {int} id 
+ * @param {int} start 开始序列号，不填默认为0
+ * @param {int} limit 数量限制，不填为20
+ * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
+ * @returns 
+ */
+async function getWishToWatchList(id, start = 0, limit = 20, sort = "latest") {
+    return await get(`/users/${id}/before`, { start, limit, sort })
+}
+
+/**
+ * 获取用户看过列表
+ * 
+ * @param {int} id 
+ * @param {int} start 开始序列号，不填默认为0
+ * @param {int} limit 数量限制，不填为20
+ * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
+ * @returns 
+ */
+async function getWatchedList(id, start = 0, limit = 20, sort = "latest") {
+    return await get(`/users/${id}/after`, { start, limit, sort })
+}
+
+/**
+ * 获取电影信息
+ * 
+ * @param {int} id 电影id
+ * @param {string} scope 请求的范围｜从plot|celebrities|comments|reviews|discussions 中选取，多个用 , 隔开
+ * @returns 
+ */
+async function getMovieInfo(id, scope = "") {
+    return await get(`/subjects/${id}`, { scope })
+}
+
+export { getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo }

@@ -1,9 +1,10 @@
-import { getMineInfo, putUserInfo } from "./api.js";
+import { getMineInfo, getMovieInfo, getWatchedList, getWishToWatchList, putUserInfo } from "./api.js";
 import { ACCESS_TOKEN } from "./consts.js";
 import { setup } from "./top-bar-status.js";
 import { getUserIdFromToken } from "./utils.js";
 
 const fragmentContainer = document.querySelector("#fragment-user-info")
+const pager = document.querySelector("#pager")
 // 是否正在编辑个人信息
 let editing = false
 // profile fragment
@@ -46,6 +47,69 @@ setup()
 // load user info
 loadUserInfo()
 
+// 初始化tab的点击事件
+setupTabEvents()
+
+function setupTabEvents() {
+    const tabs = document.querySelectorAll("#tab li")
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(tab => tab.classList.remove("selected"))
+            tab.classList.add("selected")
+            switchTabFragment(tab.textContent)
+        })
+    })
+}
+
+// 切换fragment
+async function switchTabFragment(tabName) {
+    switch (tabName) {
+        case "想看": {
+            // 切换到想看的fragment
+            const data = await getWishToWatchList()
+            pager.innerHTML = ""
+            if (data.status === 20000) { 
+                data.data.forEach(movie => {
+                    const movieInfo = await getMovieInfo(movie.mid).data
+                    const movieElement = document.createElement("movie-card")
+                    movieElement.setAttribute("src", movieInfo.avatar)
+                    movieElement.setAttribute("movie", movieInfo.name)
+                    movieElement.setAttribute("score", movieInfo.score.score)
+                    pager.appendChild(movieElement)
+                })
+            } else {
+                alert(data.info)
+            }
+        }
+        case "看过": {
+            // 切换到看过的fragment
+            const data = await getWatchedList()
+            pager.innerHTML = ""
+            if (data.status === 20000) {
+                data.data.forEach(movie => {
+                    const movieInfo = await getMovieInfo(movie.mid).data
+                    const movieElement = document.createElement("movie-card")
+                    movieElement.setAttribute("src", movieInfo.avatar)
+                    movieElement.setAttribute("movie", movieInfo.name)
+                    movieElement.setAttribute("score", movieInfo.score.score)
+                    pager.appendChild(movieElement)
+                })
+            } else {
+                alert(data.info)
+            }
+        }
+        case "我的影评": {
+            // TODO
+        }
+        case "片单": {
+            // TODO
+        }
+        default: {
+            throw new Error("Invalid tab name")
+        }
+    }
+}
+
 // 加载用户信息
 async function loadUserInfo() {
     const userId = document.querySelector("#user-id")
@@ -60,7 +124,7 @@ async function loadUserInfo() {
         case 43: {
             // 设置基础信息
             userId.textContent = data.data.username
-            // userDescription.textContent = data.data.
+            userDescription.textContent = data.data.description
             email.textContent = data.data.email
             phoneNumber.textContent = data.data.phoneNumber
             avatar.style.background = `url(${data.data.avatar})`
@@ -106,7 +170,7 @@ function switchProfileEditFragment() {
         const description = userDescriptionInput.value
         const avatar = avatarInput.value
         // 发送请求
-        await putUserInfo(getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN)), username, description, avatar)
+        await putUserInfo(getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN)), username, avatar, description)
         switchProfileFragment()
     })
     document.querySelector("#cancel-btn").addEventListener("click", () => {
