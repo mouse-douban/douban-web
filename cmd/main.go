@@ -20,7 +20,7 @@ var EnableCOS = false
 func main() {
 
 	if EnableCOS {
-		config.InitWithCOS()
+		config.InitWithCOS("config.json")
 	} else {
 		config.Init("config/config.json")
 	}

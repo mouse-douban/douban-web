@@ -4,6 +4,7 @@ echo "Local dir $PWD"
 
 echo "Set local config loading..."
 sed -i 's/EnableCOS = true/EnableCOS = false/g' cmd/main.go
+sed -i 's/InitWithCOS("config.json")/InitWithCOS("config2.json")/g' cmd/main.go
 
 echo "Setting goproxy..."
 
@@ -33,3 +34,6 @@ echo "Build darwin..."
 echo "Back to normal..."
 /usr/local/go/bin/go env -w GOARCH=amd64
 /usr/local/go/bin/go env -w GOOS=linux
+
+echo "docker build"
+/usr/bin/docker build -t gin .

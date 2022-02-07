@@ -58,7 +58,7 @@ func Init(configPath string) {
 }
 
 // InitWithCOS 配置文件保存在 COS 内，保证配置的唯一性
-func InitWithCOS() {
+func InitWithCOS(configName string) {
 	u, _ := url.Parse(os.Getenv("BUCKET_URL"))
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
@@ -70,7 +70,7 @@ func InitWithCOS() {
 		},
 	})
 
-	resp, err := c.Object.Get(context.Background(), "config.json", nil)
+	resp, err := c.Object.Get(context.Background(), configName, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
