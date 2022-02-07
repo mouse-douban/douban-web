@@ -64,7 +64,9 @@ func CheckPasswordStrength(password string) bool {
 
 // ReplaceXSSKeywords 替换掉 XSS 攻击常用的字符串
 func ReplaceXSSKeywords(raw string) string {
+	// 防止 javascript: 等标签注入
 	replace := strings.Replace(raw, ":", "：", -1) // 把英文 : 换成中文 ：撅!
+	// 防止 <script> 注入
 	replace = strings.Replace(replace, "<script>", "[script]", -1)
 	replace = strings.Replace(replace, "</script>", "[/script]", -1)
 	return replace

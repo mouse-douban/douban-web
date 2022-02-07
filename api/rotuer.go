@@ -195,10 +195,16 @@ var routes = Routes{
 	},
 	"/subjects": []Route{
 		{
-			Name:             "获取电影列表", // 该路由压力较大，考虑使用集群
+			Name:             "获取电影列表",
 			Method:           http.MethodGet,
 			Pattern:          "/",
 			HandlerFunctions: HandleFunctions{handleSubjectsGet},
+		},
+		{
+			Name:             "获取电影主页信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleSubjectGet},
 		},
 	},
 	"/oauth": []Route{

@@ -82,3 +82,31 @@ func SelectSubjects(tag, sortBy string) (err error, subjects []model.Movie) {
 	}
 	return
 }
+
+func SelectSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
+	sqlStr := "SELECT mid, tags, date, stars, name, avatar, detail, score, plot FROM subject WHERE mid = ?"
+	row := dB.QueryRow(sqlStr, mid)
+	var detail, score string
+	err = row.Scan(
+		&movie.Mid,
+		&movie.Tags,
+		&movie.Date,
+		&movie.Stars,
+		&movie.Name,
+		&movie.Avatar,
+		&detail,
+		&score,
+		&movie.Plot,
+	)
+	err = json.Unmarshal([]byte(detail), &movie.Detail)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(score), &movie.Score)
+	return
+}
+
+func SelectSubjectScopeInfo(mid int64, scope string, info []interface{}) (err error) {
+
+	return
+}

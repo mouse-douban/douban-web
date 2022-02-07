@@ -20,7 +20,7 @@ var EnableCOS = false
 func main() {
 
 	if EnableCOS {
-		config.InitWithCOS("config.json")
+		config.InitWithCOS("config2.json")
 	} else {
 		config.Init("config/config.json")
 	}
@@ -34,7 +34,7 @@ func main() {
 		utils.EnableLog()
 		utils.RegisterUploadLogTask(time.Hour * 6) // 每六个小时上传一次日志
 
-		<-time.NewTimer(time.Second * 2).C // 延迟 2s，让日志启动
+		<-time.NewTimer(time.Second).C // 延迟 1s，让日志启动
 	}
 
 	utils.ConnectRedis() // 连接 redis
