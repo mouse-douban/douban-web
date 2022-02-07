@@ -33,3 +33,46 @@ func CtrlSubjectsGet(start, limit int, sort string, tags string) (err error, res
 	}
 	return
 }
+
+func CtrlSubjectBaseInfoGet(mid int64) (err error, resp utils.RespData) {
+	err, movie := service.GetSubjectBaseInfo(mid)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 400,
+			Status:     40015,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
+		return
+	}
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       movie,
+	}
+	return
+}
+
+func CtrlSubjectScopeInfoGet(mid int64, scopes []string) (err error, resp utils.RespData) {
+	var info []interface{}
+
+	err = service.GetSubjectScopeInfo(mid, scopes, info)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 400,
+			Status:     40015,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
+		return
+	}
+
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       info,
+	}
+	return
+}

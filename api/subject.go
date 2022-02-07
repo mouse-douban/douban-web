@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 var Tags = utils.StringList{
@@ -18,6 +19,7 @@ var Tags = utils.StringList{
 	"悬疑",
 	"惊悚",
 	"动画",
+	"奇幻",
 }
 
 func handleSubjectsGet(ctx *gin.Context) {
@@ -49,4 +51,37 @@ func handleSubjectsGet(ctx *gin.Context) {
 
 	utils.Resp(ctx, err, resp)
 
+}
+
+func handleSubjectGet(ctx *gin.Context) {
+	idS := ctx.Param("id")
+	mid, err := strconv.ParseInt(idS, 10, 64)
+	if err != nil {
+		utils.RespWithParamError(ctx, "id 格式错误")
+		return
+	}
+	scope := ctx.Query("scope")
+	if scope == "" {
+		handleSubjectBaseInfoGet(ctx, mid)
+		return
+	}
+	scopes := strings.Split(scope, `,`)
+	for _, s := range scopes {
+		s = strings.TrimSpace(s)
+		if s != "celebrities" && s != "comments" && s != "reviews" && s != "discussions" {
+			utils.RespWithParamError(ctx, "scope 格式不支持")
+			return
+		}
+	}
+	handleSubjectScopeInfoGet(ctx, mid, scopes)
+}
+
+func handleSubjectBaseInfoGet(ctx *gin.Context, mid int64) {
+	err, resp := controller.CtrlSubjectBaseInfoGet(mid)
+	utils.Resp(ctx, err, resp)
+}
+
+func handleSubjectScopeInfoGet(ctx *gin.Context, mid int64, scopes []string) {
+	err, resp := controller.CtrlSubjectScopeInfoGet(mid, scopes)
+	utils.Resp(ctx, err, resp)
 }

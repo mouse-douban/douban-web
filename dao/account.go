@@ -23,7 +23,7 @@ func SelectEncryptPassword(uid int64) (err error, encrypt string) {
 }
 
 func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []model.ReviewSnapshot) {
-	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.brief, u.avatar, u.username, r.mid FROM review r JOIN user u ON r.uid = ? AND u.uid = ? ORDER BY " + orderBy
+	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content, u.avatar, u.username, r.mid FROM review r JOIN user u ON r.uid = ? AND u.uid = ? ORDER BY " + orderBy
 	rows, err := dB.Query(sqlStr, uid, uid)
 	if err != nil {
 		return
@@ -51,6 +51,12 @@ func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []m
 			&review.Username,
 			&review.Mid,
 		)
+		// 修短成 165
+		var end = 165
+		if end > len(review.Brief) {
+			end = len(review.Brief)
+		}
+		review.Brief = review.Brief[:end]
 		if err != nil {
 			return
 		}
