@@ -24,6 +24,8 @@ COPY . ./
 
 # 使用远程config
 RUN sed -i 's/EnableCOS = false/EnableCOS = true/g' cmd/main.go
+# 启用部署 config
+RUN sed -i 's/InitWithCOS("config2.json")/InitWithCOS("config.json")/g' cmd/main.go
 
 # 构建二进制文件
 RUN go build -mod=readonly -v -o server cmd/main.go

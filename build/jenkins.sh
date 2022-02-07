@@ -36,7 +36,7 @@ echo "Back to normal..."
 /usr/local/go/bin/go env -w GOOS=linux
 
 echo "docker clean"
- /usr/bin/docker image rm -f gin
+/usr/bin/docker image rm -f gin
 
 echo "docker build"
 /usr/bin/docker build -t gin .
