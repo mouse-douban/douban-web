@@ -8,12 +8,12 @@ class MovieCard extends HTMLElement {
             width: fit-content;
             flex-direction: column;
             display: flex;
+            justify-content: center;
             margin: 0 25px 10px 0;
         }
 
         img {
-            display: block;
-            float: left;
+            margin-bottom: 5px;
         }
 
         p {
@@ -21,21 +21,30 @@ class MovieCard extends HTMLElement {
             color: #37a;
             max-lines: 2;
             overflow: hidden;
+            text-align: center;
         }
 
         span {
             color: orange;
         }
 
-        #bottom {
-            align-self: center;
-            width: fit-content;
-            height: 44px;
+        .card {
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.19);
         }
 
+        #card {
+            cursor: pointer;
+            border-radius: 10px;
+            height: fit-content;
+            width: fit-content;
+            box-sizing: border-box;
+            padding: 0px 10px 0px 10px;
+            display: flex;
+            flex-direction: column;
+        }
         </style>
-        <img width="115px" height="170px">
-        <div id="bottom">
+        <div id="card" class= "card">
+            <img width="115px" height="170px">
             <p></p>
         </div>
         `

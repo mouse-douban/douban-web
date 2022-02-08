@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/mine.css">
     <link rel="stylesheet" href="../css/top-bar-status.css">
     <link rel="stylesheet" href="../css/common.css">
+    <script type="module" src="../js/components.js" defer></script>
     <script src="../js/mine.js" type="module" defer></script>
 </head>
 <body>
@@ -67,7 +68,7 @@
                                 size="22" maxlength="60" placeholder="搜索电影、电视剧、综艺、影人"
                                 autocompelete="off">
                         </div>
-                        <div class="inp-btn card">
+                        <div class="inp-btn">
                             <input type="submit" value="搜索">
                         </div>
                     </fieldset>
@@ -94,9 +95,21 @@
                 <div id="edit-button" class="button">Edit Profile</div>
             </div>
         </div>
-        <!--想看/看过-->
+        <!-- 想看/看过 -->
         <div id="infomation-board" class="card">
-            
+            <ul id="tab">
+                <li id="want-to-watch-tab" class="tab-item selected">想看</li>
+                <li id="watched-tab" class="tab-item">看过</li>
+                <li id="my-comment-tab" class="tab-item">我的影评</li>
+                <li id="movie-list-tab" class="tab-item" style="border-right:0px;">片单</li>
+            </ul>
+            <!--作为fragment的容器-->
+            <div id="pager">
+                <!-- <movie-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
+                    movie="永恒族"
+                    score="5.9">
+                </movie-card> -->
+            </div>
         </div>
     </div>
 </body>
