@@ -10,15 +10,16 @@ type MovieTag struct { // 用于返回电影列表
 }
 
 type Movie struct {
-	Mid    int64       `json:"mid,omitempty"`
-	Name   string      `json:"name,omitempty"`
-	Stars  int64       `json:"stars,omitempty"` // 平均星数
-	Date   time.Time   `json:"date,omitempty"`
-	Tags   string      `json:"tags,omitempty"`
-	Avatar string      `json:"avatar,omitempty"`
-	Detail MovieDetail `json:"detail,omitempty"`
-	Score  MovieScore  `json:"score,omitempty"`
-	Plot   string      `json:"plot,omitempty"`
+	Mid         int64       `json:"mid,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Stars       int64       `json:"stars,omitempty"` // 平均星数
+	Date        time.Time   `json:"date,omitempty"`
+	Tags        string      `json:"tags,omitempty"`
+	Avatar      string      `json:"avatar,omitempty"`
+	Detail      MovieDetail `json:"detail,omitempty"`
+	Score       MovieScore  `json:"score,omitempty"`
+	Plot        string      `json:"plot,omitempty"`
+	Celebrities []int64     `json:"celebrities,omitempty"` // 所有演职员 id
 }
 
 type MovieScore struct {

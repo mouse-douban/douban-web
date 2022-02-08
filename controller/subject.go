@@ -55,9 +55,9 @@ func CtrlSubjectBaseInfoGet(mid int64) (err error, resp utils.RespData) {
 }
 
 func CtrlSubjectScopeInfoGet(mid int64, scopes []string) (err error, resp utils.RespData) {
-	var info []interface{}
+	var info = make(map[string][]interface{})
 
-	err = service.GetSubjectScopeInfo(mid, scopes, info)
+	err = service.GetSubjectScopeInfo(mid, scopes, &info)
 	if err != nil {
 		err = utils.ServerError{
 			HttpStatus: 400,

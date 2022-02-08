@@ -9,12 +9,16 @@ import (
 )
 
 func InsertSubject(movie model.Movie) error {
-	sqlStr := "INSERT INTO subject (tags, date, detail, name, score, plot, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	sqlStr := "INSERT INTO subject (tags, date, detail, name, score, plot, avatar, celebrities) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	detail, err := json.Marshal(movie.Detail)
 	if err != nil {
 		return err
 	}
 	score, err := json.Marshal(movie.Score)
+	if err != nil {
+		return err
+	}
+	celebrities, err := json.Marshal(movie.Celebrities)
 	if err != nil {
 		return err
 	}
@@ -26,6 +30,7 @@ func InsertSubject(movie model.Movie) error {
 		string(score),
 		movie.Plot,
 		movie.Avatar,
+		string(celebrities),
 	)
 	if err != nil {
 		return err
@@ -84,9 +89,9 @@ func SelectSubjects(tag, sortBy string) (err error, subjects []model.Movie) {
 }
 
 func SelectSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
-	sqlStr := "SELECT mid, tags, date, stars, name, avatar, detail, score, plot FROM subject WHERE mid = ?"
+	sqlStr := "SELECT mid, tags, date, stars, name, avatar, detail, score, plot, celebrities FROM subject WHERE mid = ?"
 	row := dB.QueryRow(sqlStr, mid)
-	var detail, score string
+	var detail, score, celebrities string
 	err = row.Scan(
 		&movie.Mid,
 		&movie.Tags,
@@ -97,16 +102,57 @@ func SelectSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
 		&detail,
 		&score,
 		&movie.Plot,
+		&celebrities,
 	)
 	err = json.Unmarshal([]byte(detail), &movie.Detail)
 	if err != nil {
 		return
 	}
 	err = json.Unmarshal([]byte(score), &movie.Score)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(celebrities), &movie.Celebrities)
 	return
 }
 
-func SelectSubjectScopeInfo(mid int64, scope string, info []interface{}) (err error) {
+func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interface{}) (err error) {
+	sqlStr := "SELECT c.id, c.mid, c.uid, c.content, c.date, c.score, u.username, c.tag, c.type, c.stars  FROM comment c JOIN user u ON c.uid = u.uid AND c.mid = ? AND c.type = ?"
+	sqlStr += " ORDER BY " + orderBy
+	rows, err := dB.Query(sqlStr, mid, kind)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			utils.LoggerWarning("rows 关闭失败!")
+		}
+	}(rows)
+	for rows.Next() {
+		var comment model.Comment
+		var tag string
+		err = rows.Scan(
+			&comment.Id,
+			&comment.Mid,
+			&comment.Uid,
+			&comment.Content,
+			&comment.Date,
+			&comment.Score,
+			&comment.Username,
+			&tag,
+			&comment.Type,
+			&comment.Stars,
+		)
+		if err != nil {
+			return
+		}
+		comment.Tag = strings.Split(tag, ",")
+		*comments = append(*comments, comment)
+	}
+	return
+}
 
+func SelectSubjectReviews(mid int64, orderBy string, comments *[]interface{}) (err error) {
 	return
 }

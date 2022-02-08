@@ -207,22 +207,20 @@ func GetAccountSnapshots(uid int64, scope string, user *model.User) (err error) 
 	switch scope {
 	case "reviews":
 		return GetAccountReviewSnapshots(uid, user, 0, 6, "latest")
-	case "before":
-		fallthrough
-	case "after":
+	case "before", "after":
 		return GetAccountComments(uid, scope, user, 0, 10, "latest")
 	default:
 		return utils.ServerInternalError
 	}
 }
 
-var oderBys = map[string]string{
+var orderBys = map[string]string{
 	"latest": "date DESC",
 	"hotest": "stars DESC",
 }
 
 func GetAccountReviewSnapshots(uid int64, user *model.User, start, limit int, sort string) (err error) {
-	err, reviews := dao.SelectUserReviewSnapshot(uid, oderBys[sort])
+	err, reviews := dao.SelectUserReviewSnapshot(uid, orderBys[sort])
 	if err != nil {
 		return
 	}
@@ -235,7 +233,7 @@ func GetAccountReviewSnapshots(uid int64, user *model.User, start, limit int, so
 }
 
 func GetAccountComments(uid int64, kind string, user *model.User, start, limit int, sort string) (err error) {
-	err, comments := dao.SelectUserComments(uid, kind, oderBys[sort])
+	err, comments := dao.SelectUserComments(uid, kind, orderBys[sort])
 	if err != nil {
 		return
 	}
