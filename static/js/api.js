@@ -53,25 +53,26 @@ async function getMineInfo(scope = "") {
 /**
  * 修改不重要信息，需要jwt鉴权
  * 
- * @param {int} id 
+ * @param {number} id 
  * @param {string} username 
  * @param {string} avatar 
  * @param {string} scope 更新范围｜从username|github_id|gitee_id|avatar 中选取，多个用 , 隔开
  */
 async function putUserInfo(id, username, avatar, description, scope = "username,avatar,description") {
     const data = new FormData()
+    data.append("scope", scope)
     data.append("username", username)
     data.append("avatar", avatar)
     data.append("description", description)
-    return await put(`/users/${id}`, data, { scope })
+    return await put(`/users/${id}`, data)
 }
 
 /**
  * 获取用户想看列表
  * 
- * @param {int} id 
- * @param {int} start 开始序列号，不填默认为0
- * @param {int} limit 数量限制，不填为20
+ * @param {number} id 
+ * @param {number} start 开始序列号，不填默认为0
+ * @param {number} limit 数量限制，不填为20
  * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
  * @returns 
  */
@@ -82,9 +83,9 @@ async function getWishToWatchList(id, start = 0, limit = 20, sort = "latest") {
 /**
  * 获取用户看过列表
  * 
- * @param {int} id 
- * @param {int} start 开始序列号，不填默认为0
- * @param {int} limit 数量限制，不填为20
+ * @param {number} id 
+ * @param {number} start 开始序列号，不填默认为0
+ * @param {number} limit 数量限制，不填为20
  * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
  * @returns 
  */
@@ -95,7 +96,7 @@ async function getWatchedList(id, start = 0, limit = 20, sort = "latest") {
 /**
  * 获取电影信息
  * 
- * @param {int} id 电影id
+ * @param {number} id 电影id
  * @param {string} scope 请求的范围｜从plot|celebrities|comments|reviews|discussions 中选取，多个用 , 隔开
  * @returns 
  */
@@ -103,4 +104,33 @@ async function getMovieInfo(id, scope = "") {
     return await get(`/subjects/${id}`, { scope })
 }
 
-export { getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo }
+/**
+ * 获取用户评论
+ * 
+ * @param {number} id 
+ * @param {number} start 开始序列号，不填默认为0
+ * @param {number} limit 数量限制，不填为20
+ * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
+ * @returns 
+ */
+async function getUserReviews(id, start = 0, limit = 20, sort = "latest") {
+    return await get(`/users/${id}/reviews`, { start, limit, sort })
+}
+
+/**
+ * 获取用户片单
+ * 
+ * @param {number} id 
+ * @param {number} start 开始序列号，不填默认为0
+ * @param {number} limit 数量限制，不填为20
+ * @param {string} sort 排序规则｜填 hotest(最热门)|latest(最新)，不填为latest
+ * @returns 
+ */
+async function getUserMovieList(id, start = 0, limit = 20, sort = "latest") {
+    return await get(`/users/${id}/movie_list`, { start, limit, sort })
+}
+
+export { 
+    getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
+    getUserMovieList, 
+}

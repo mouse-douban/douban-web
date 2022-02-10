@@ -1,7 +1,7 @@
-import { getMineInfo, getMovieInfo, getWatchedList, getWishToWatchList, putUserInfo } from "./api.js";
-import { ACCESS_TOKEN } from "./consts.js";
+import { getMineInfo, getMovieInfo, getUserMovieList, getUserReviews, getWatchedList, getWishToWatchList, putUserInfo } from "./api.js";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "./consts.js";
 import { setup } from "./top-bar-status.js";
-import { getUserIdFromToken } from "./utils.js";
+import { getUserId, getUserIdFromToken } from "./utils.js";
 
 const fragmentContainer = document.querySelector("#fragment-user-info")
 const pager = document.querySelector("#pager")
@@ -41,6 +41,8 @@ const fragEditing = `
 </div>
 `
 
+const defAvatar = "https://tse3-mm.cn.bing.net/th/id/OIP-C.Kq8hpgS5HUsh8sIqyTiougAAAA?pid=ImgDet&rs=1"
+
 // setup topbar
 setup()
 
@@ -52,13 +54,19 @@ setupTabEvents()
 
 function setupTabEvents() {
     const tabs = document.querySelectorAll("#tab li")
+    let first = null
     tabs.forEach(tab => {
+        if (first === null) {
+            first = tab
+        }
         tab.addEventListener("click", () => {
             tabs.forEach(tab => tab.classList.remove("selected"))
             tab.classList.add("selected")
             switchTabFragment(tab.textContent)
         })
     })
+    // 初始化第一个tab的fragment
+    // switchTabFragment(first.textContent)
 }
 
 // 切换fragment
@@ -66,10 +74,10 @@ async function switchTabFragment(tabName) {
     switch (tabName) {
         case "想看": {
             // 切换到想看的fragment
-            const data = await getWishToWatchList()
+            const data = await getWishToWatchList(getUserId())
             pager.innerHTML = ""
             if (data.status === 20000) { 
-                data.data.forEach(movie => {
+                data.data.forEach(async movie => {
                     const movieInfo = await getMovieInfo(movie.mid).data
                     const movieElement = document.createElement("movie-card")
                     movieElement.setAttribute("src", movieInfo.avatar)
@@ -80,13 +88,14 @@ async function switchTabFragment(tabName) {
             } else {
                 alert(data.info)
             }
+            break
         }
         case "看过": {
             // 切换到看过的fragment
-            const data = await getWatchedList()
+            const data = await getWatchedList(getUserId())
             pager.innerHTML = ""
             if (data.status === 20000) {
-                data.data.forEach(movie => {
+                data.data.forEach(async movie => {
                     const movieInfo = await getMovieInfo(movie.mid).data
                     const movieElement = document.createElement("movie-card")
                     movieElement.setAttribute("src", movieInfo.avatar)
@@ -97,12 +106,37 @@ async function switchTabFragment(tabName) {
             } else {
                 alert(data.info)
             }
+            break
         }
         case "我的影评": {
-            // TODO
+            // 切换到我的影评的fragment
+            const data = await getUserReviews(getUserId())
+            pager.innerHTML = ""
+            if (data.status === 20000) {
+                data.data.forEach(async review => {
+                    const reviewElement = document.createElement("user-review")
+                    reviewElement.setAttribute("content", review.brief)
+                    reviewElement.setAttribute("movie", review.name)
+                    reviewElement.setAttribute("score", review.score)
+                    pager.appendChild(reviewElement)
+                })
+            }
+            break
         }
         case "片单": {
-            // TODO
+            // TODO: 添加片单，follow片单
+            // 切换到片单的fragment
+            const data = await getUserMovieList(getUserId())
+            pager.innerHTML = ""
+            if (data.status === 20000) {
+                data.data.forEach(async movieList => {
+                    const movieListElement = document.createElement("user-movie-list")
+                    movieListElement.setAttribute("name", movieList.name)
+                    movieListElement.setAttribute("data", JSON.stringify(movieList.list.map(async id => await getMovieInfo(id).data)))
+                    pager.appendChild(movieListElement)
+                })
+            }
+            break
         }
         default: {
             throw new Error("Invalid tab name")
@@ -118,19 +152,26 @@ async function loadUserInfo() {
     const phoneNumber = document.querySelector("#phone-number")
     const avatar = document.querySelector("#user-avatar")
     document.querySelector("#edit-button").addEventListener("click", switchProfileEditFragment)
+    document.querySelector("#logout-button").addEventListener("click", () => {
+        localStorage.removeItem(ACCESS_TOKEN)
+        localStorage.removeItem(REFRESH_TOKEN)
+        alert("登出成功！")
+        window.location.href = "../index.html"
+    })
     // 请求数据
     const data = await getMineInfo()
     switch (data.status) {
-        case 43: {
+        case 20000: {
             // 设置基础信息
             userId.textContent = data.data.username
             userDescription.textContent = data.data.description
-            email.textContent = data.data.email
-            phoneNumber.textContent = data.data.phoneNumber
-            avatar.style.background = `url(${data.data.avatar})`
+            email.textContent = data.data.email || "暂无"
+            phoneNumber.textContent = data.data.phone || "暂无"
+            avatar.style.background = `url(${data.data.avatar || defAvatar})`
             break
         }
         default: {
+            console.log(data);
             // 请求个人数据失败，跳转主页
             alert("请求个人数据失败，正在跳转到主页...")
             window.location.href = "../index.html"
@@ -146,7 +187,7 @@ function switchProfileEditFragment() {
     const email = document.querySelector("#email").textContent
     const phoneNumber = document.querySelector("#phone-number").textContent
     const _avatar = document.querySelector("#user-avatar").style.background
-    const avatar = _avatar.slice(4, _avatar.length - 1)
+    const avatar = _avatar.slice(5, _avatar.length - 2)
     // 更改fragment
     fragmentContainer.innerHTML = fragEditing
     // 更改状态
@@ -162,7 +203,7 @@ function switchProfileEditFragment() {
     userDescriptionInput.value = userDescription
     emailInput.value = email
     phoneNumberInput.value = phoneNumber
-    avatarInput.value = avatar
+    avatarInput.value = avatar == defAvatar ? "" : avatar
     // 绑定事件
     document.querySelector("#submit-btn").addEventListener("click", async () => {
         // 提交修改

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/top-bar-status.css">
     <script type="module" src="js/index.js" defer></script>
-    <script type="module" src="./js/components.js"></script>
+    <script src="./js/components.js"></script>
 </head>
 <body>
     <!--Header 耦合度爆炸-->
@@ -112,7 +112,31 @@
 
     <h2 style="left: 230px;color: #494949;width: fit-content;position: relative;">选电影</h2>
 
-    
+    <script>
+        const types = [
+            "热门",
+            "喜剧",
+            "生活",
+            "爱情",
+            "动作",
+            "科幻",
+            "悬疑",
+            "惊悚",
+            "动画",
+            "奇幻"
+        ]
+        const tl = new TabLayout(types, async tab => {
+            
+        })
+        tl.style = "position: relative;left: 225px;width: fit-content;"
+        document.querySelector("body").appendChild(tl)
+    </script>
+
+    <separator-line></separator-line>
+
+    <label class="checkbox-label" for="sort-hotest"><input type="radio" id="sort-hotest" name="sort" checked> 按热度排序  </label>
+    <label class="checkbox-label" for="sort-newest"><input type="radio" id="sort-newest" name="sort"> 按最新排序  </label>
+
     <!-- <movie-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
         movie="永恒族"
         score="5.9">

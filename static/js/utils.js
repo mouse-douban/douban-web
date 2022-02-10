@@ -1,4 +1,4 @@
-import { BASE_URL } from './consts.js'
+import { ACCESS_TOKEN, BASE_URL } from './consts.js'
 
 // GET请求
 async function get(path, params = null) {
@@ -12,7 +12,7 @@ async function get(path, params = null) {
             url += `${k}=${params[k]}`
         }
     }
-    const authorization = localStorage.getItem("access_token")
+    const authorization = localStorage.getItem(ACCESS_TOKEN)
     if (authorization != null) {
         return await (await fetch(url, {
             method: "GET",
@@ -38,7 +38,7 @@ async function post(path, body, params = null) {
             url += `${k}=${params[k]}`
         }
     }
-    const authorization = localStorage.getItem("authorization")
+    const authorization = localStorage.getItem(ACCESS_TOKEN)
     if (authorization != null) {
         return await (await fetch(url, {
             method: "POST",
@@ -66,7 +66,7 @@ async function put(path, body, params) {
             url += `${k}=${params[k]}`
         }
     }
-    const authorization = localStorage.getItem("authorization")
+    const authorization = localStorage.getItem(ACCESS_TOKEN)
     if (authorization != null) {
         return await (await fetch(url, {
             method: "PUT",
@@ -77,7 +77,7 @@ async function put(path, body, params) {
         })).json()
     }
     return await (await fetch(url, {
-        method: "POST",
+        method: "PUT",
         body,
     })).json()
 }
@@ -104,4 +104,8 @@ function getUserIdFromToken(access_token) {
     return getTokenInfoObj(access_token).uid
 }
 
-export { get, post, getTokenInfoObj, put, getUserIdFromToken }
+function getUserId() {
+    return getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN))
+}
+
+export { get, post, getTokenInfoObj, put, getUserIdFromToken, getUserId }
