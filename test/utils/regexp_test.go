@@ -61,6 +61,9 @@ func TestUserName(t *testing.T) {
 		"åede))",
 		"0912ii",
 		"+(+++)+",
+		"泡泡", // UTF-8 一个汉字3个字节
+		"泡泡吹泡泡",
+		"龖鸣",
 	}
 	var outputs = []bool{
 		true,
@@ -69,6 +72,9 @@ func TestUserName(t *testing.T) {
 		false,
 		true,
 		false,
+		true,
+		true,
+		true,
 	}
 	for i, input := range inputs {
 		if outputs[i] != utils.CheckUsername(input) {

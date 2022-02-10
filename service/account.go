@@ -203,15 +203,26 @@ func GetAccountBaseInfo(uid int64) (err error, user model.User) {
 	return
 }
 
-func GetAccountSnapshots(uid int64, scope string, user *model.User) (err error) {
+func GetAccountSnapshots(uid int64, scope string, user *map[string]interface{}) (err error) {
 	switch scope {
 	case "reviews":
-		return GetAccountReviewSnapshots(uid, user, 0, 6, "latest")
+		reviews := make([]model.ReviewSnapshot, 0)
+		err = GetAccountReviewSnapshots(uid, &reviews, 0, 6, "latest")
+		if err != nil {
+			return
+		}
+		(*user)["reviews"] = reviews
 	case "before", "after":
-		return GetAccountComments(uid, scope, user, 0, 10, "latest")
+		comments := make([]model.Comment, 0)
+		err = GetAccountComments(uid, scope, &comments, 0, 10, "latest")
+		if err != nil {
+			return
+		}
+		(*user)[scope] = comments
 	default:
 		return utils.ServerInternalError
 	}
+	return nil
 }
 
 var orderBys = map[string]string{
@@ -219,7 +230,7 @@ var orderBys = map[string]string{
 	"hotest": "stars DESC",
 }
 
-func GetAccountReviewSnapshots(uid int64, user *model.User, start, limit int, sort string) (err error) {
+func GetAccountReviewSnapshots(uid int64, data *[]model.ReviewSnapshot, start, limit int, sort string) (err error) {
 	err, reviews := dao.SelectUserReviewSnapshot(uid, orderBys[sort])
 	if err != nil {
 		return
@@ -228,11 +239,13 @@ func GetAccountReviewSnapshots(uid int64, user *model.User, start, limit int, so
 	if end > len(reviews) {
 		end = len(reviews)
 	}
-	user.Reviews = reviews[start:end]
+	if end != 0 {
+		*data = reviews[start:end]
+	}
 	return
 }
 
-func GetAccountComments(uid int64, kind string, user *model.User, start, limit int, sort string) (err error) {
+func GetAccountComments(uid int64, kind string, data *[]model.Comment, start, limit int, sort string) (err error) {
 	err, comments := dao.SelectUserComments(uid, kind, orderBys[sort])
 	if err != nil {
 		return
@@ -241,16 +254,18 @@ func GetAccountComments(uid int64, kind string, user *model.User, start, limit i
 	if end > len(comments) {
 		end = len(comments)
 	}
-	switch kind {
-	case "before":
-		user.Before = comments[start:end]
-	case "after":
-		user.After = comments[start:end]
+	if end != 0 {
+		switch kind {
+		case "before":
+			*data = comments[start:end]
+		case "after":
+			*data = comments[start:end]
+		}
 	}
 	return
 }
 
-func GetAccountMovieList(uid int64, user *model.User, start, limit int) (err error) {
+func GetAccountMovieList(uid int64, data *[]model.MovieList, start, limit int) (err error) {
 	err, lists := dao.SelectUserMovieList(uid)
 	if err != nil {
 		return
@@ -259,7 +274,9 @@ func GetAccountMovieList(uid int64, user *model.User, start, limit int) (err err
 	if end > len(lists) {
 		end = len(lists)
 	}
-	user.MovieList = lists[start:end]
+	if end != 0 {
+		*data = lists[start:end]
+	}
 	return
 }
 

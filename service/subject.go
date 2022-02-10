@@ -39,6 +39,12 @@ func GetSubjectScopeInfo(mid int64, scopes []string, info *map[string][]interfac
 			}
 			(*info)["reviews"] = in
 		case "discussions":
+			var in = make([]interface{}, 0)
+			err = GetSubjectDiscussions(mid, &in, 0, 6, "hotest")
+			if err != nil {
+				return
+			}
+			(*info)["discussions"] = in
 		}
 	}
 	return
@@ -58,5 +64,19 @@ func GetSubjectComments(mid int64, comments *[]interface{}, start, limit int, so
 }
 
 func GetSubjectReviews(mid int64, reviews *[]interface{}, start, limit int, sort string) (err error) {
+	err = dao.SelectSubjectReviews(mid, orderBys[sort], reviews)
+	if err != nil {
+		return
+	}
+	end := start + limit
+	if end > len(*reviews) {
+		end = len(*reviews)
+	}
+	*reviews = (*reviews)[start:end]
+	return
+}
+
+func GetSubjectDiscussions(mid int64, discussions *[]interface{}, start, limit int, sort string) (err error) {
+
 	return
 }

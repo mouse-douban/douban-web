@@ -153,6 +153,42 @@ func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interfac
 	return
 }
 
-func SelectSubjectReviews(mid int64, orderBy string, comments *[]interface{}) (err error) {
+func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}) (err error) {
+	sqlStr := "SELECT r.id, r.mid, r.uid, r.name, u.username, u.avatar, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content FROM review r JOIN user u ON u.uid = r.mid AND r.mid = ?"
+	sqlStr += " ORDER BY " + orderBy
+	rows, err := dB.Query(sqlStr, mid)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			utils.LoggerWarning("rows 关闭失败!")
+		}
+	}(rows)
+	for rows.Next() {
+		var review model.ReviewSnapshot
+		err = rows.Scan(
+			&review.Id,
+			&review.Mid,
+			&review.Uid,
+			&review.Name,
+			&review.Username,
+			&review.Avatar,
+			&review.Score,
+			&review.Date,
+			&review.Stars,
+			&review.Bads,
+			&review.ReplyCnt,
+			&review.Brief,
+		)
+		if err != nil {
+			return
+		}
+		if len(review.Brief) > 165*3 {
+			review.Brief = review.Brief[:165*3]
+		}
+		*reviews = append(*reviews, review)
+	}
 	return
 }

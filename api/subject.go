@@ -68,7 +68,7 @@ func handleSubjectGet(ctx *gin.Context) {
 	scopes := strings.Split(scope, `,`)
 	for _, s := range scopes {
 		s = strings.TrimSpace(s)
-		if s != "celebrities" && s != "comments" && s != "reviews" && s != "discussions" {
+		if s != "comments" && s != "reviews" && s != "discussions" {
 			utils.RespWithParamError(ctx, "scope 格式不支持")
 			return
 		}

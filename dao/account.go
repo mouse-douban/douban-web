@@ -51,8 +51,8 @@ func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []m
 			&review.Username,
 			&review.Mid,
 		)
-		// 修短成 165
-		var end = 165
+		// 修短成 165 个中文
+		var end = 165 * 3
 		if end > len(review.Brief) {
 			end = len(review.Brief)
 		}

@@ -293,10 +293,10 @@ func CtrlAccountDelete(uid int64, verifyCode, verifyType string) (err error, res
 
 func CtrlAccountScopeInfoGet(uid int64, scopes string) (err error, resp utils.RespData) {
 
-	var user model.User
+	var data = make(map[string]interface{})
 	for _, s := range strings.Split(scopes, `,`) {
 		s = strings.TrimSpace(s)
-		err = service.GetAccountSnapshots(uid, s, &user)
+		err = service.GetAccountSnapshots(uid, s, &data)
 		if err != nil {
 			return
 		}
@@ -306,14 +306,14 @@ func CtrlAccountScopeInfoGet(uid int64, scopes string) (err error, resp utils.Re
 		HttpStatus: http.StatusOK,
 		Status:     20000,
 		Info:       utils.InfoSuccess,
-		Data:       user,
+		Data:       data,
 	}
 	return
 }
 
 func CtrlAccountMovieListGet(uid int64, start, limit int) (err error, resp utils.RespData) {
-	var user model.User
-	err = service.GetAccountMovieList(uid, &user, start, limit)
+	movieList := make([]model.MovieList, 0)
+	err = service.GetAccountMovieList(uid, &movieList, start, limit)
 	if err != nil {
 		return
 	}
@@ -321,14 +321,14 @@ func CtrlAccountMovieListGet(uid int64, start, limit int) (err error, resp utils
 		HttpStatus: http.StatusOK,
 		Status:     20000,
 		Info:       utils.InfoSuccess,
-		Data:       user.MovieList,
+		Data:       movieList,
 	}
 	return
 }
 
 func CtrlAccountBeforeGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
-	var user model.User
-	err = service.GetAccountComments(uid, "before", &user, start, limit, sort)
+	before := make([]model.Comment, 0)
+	err = service.GetAccountComments(uid, "before", &before, start, limit, sort)
 	if err != nil {
 		return
 	}
@@ -336,14 +336,14 @@ func CtrlAccountBeforeGet(uid int64, start, limit int, sort string) (err error, 
 		HttpStatus: http.StatusOK,
 		Status:     20000,
 		Info:       utils.InfoSuccess,
-		Data:       user.Before,
+		Data:       before,
 	}
 	return
 }
 
 func CtrlAccountAfterGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
-	var user model.User
-	err = service.GetAccountComments(uid, "after", &user, start, limit, sort)
+	after := make([]model.Comment, 0)
+	err = service.GetAccountComments(uid, "after", &after, start, limit, sort)
 	if err != nil {
 		return
 	}
@@ -351,14 +351,14 @@ func CtrlAccountAfterGet(uid int64, start, limit int, sort string) (err error, r
 		HttpStatus: http.StatusOK,
 		Status:     20000,
 		Info:       utils.InfoSuccess,
-		Data:       user.After,
+		Data:       after,
 	}
 	return
 }
 
 func CtrlAccountReviewSnapshotsGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
-	var user model.User
-	err = service.GetAccountReviewSnapshots(uid, &user, start, limit, sort)
+	reviews := make([]model.ReviewSnapshot, 0)
+	err = service.GetAccountReviewSnapshots(uid, &reviews, start, limit, sort)
 	if err != nil {
 		return
 	}
@@ -366,7 +366,7 @@ func CtrlAccountReviewSnapshotsGet(uid int64, start, limit int, sort string) (er
 		HttpStatus: http.StatusOK,
 		Status:     20000,
 		Info:       utils.InfoSuccess,
-		Data:       user.Reviews,
+		Data:       reviews,
 	}
 	return
 }
