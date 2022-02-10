@@ -58,5 +58,10 @@ func GetSubjectComments(mid int64, comments *[]interface{}, start, limit int, so
 }
 
 func GetSubjectReviews(mid int64, reviews *[]interface{}, start, limit int, sort string) (err error) {
+
 	return
+}
+
+func GetSubjectDiscussions(mid int64) {
+
 }

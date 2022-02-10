@@ -16,6 +16,12 @@ func CheckUsername(username string) bool {
 		return false
 	}
 	r := special.ReplaceAllString(username, "")
+	r = strings.Map(func(c rune) rune {
+		if c >= 0x4E00 && c <= 0x9FA5 { // 常用汉字范围
+			return -1 // 忽略
+		}
+		return c
+	}, r)
 	return r == ""
 }
 

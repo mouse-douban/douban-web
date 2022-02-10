@@ -16,20 +16,20 @@ type MovieList struct { // 片单
 }
 
 type Follow struct {
-	Users map[int64]bool `json:"users,omitempty"`
-	Lists map[int64]bool `json:"movie_lists,omitempty"`
+	Users map[int64]bool `json:"users"`
+	Lists map[int64]bool `json:"movie_lists"`
 }
 
 type User struct {
-	Username       string           `json:"username,omitempty"`
-	Uid            int64            `json:"uid,omitempty"` // 只读
-	GithubId       int64            `json:"github_id,omitempty"`
-	GiteeId        int64            `json:"gitee_id,omitempty"`
-	Email          string           `json:"email,omitempty"`
-	Phone          string           `json:"phone,omitempty"`
-	Avatar         string           `json:"avatar,omitempty"`
-	Following      Follow           `json:"following,omitempty"`
-	Description    string           `json:"description,omitempty"`
+	Username       string           `json:"username"`
+	Uid            int64            `json:"uid"` // 只读
+	GithubId       int64            `json:"github_id"`
+	GiteeId        int64            `json:"gitee_id"`
+	Email          string           `json:"email"`
+	Phone          string           `json:"phone"`
+	Avatar         string           `json:"avatar"`
+	Description    string           `json:"description"`
+	Following      Follow           `json:"following"`
 	Reviews        []ReviewSnapshot `json:"reviews,omitempty"`    // 可选
 	MovieList      []MovieList      `json:"movie_list,omitempty"` // 可选
 	Before         []Comment        `json:"before,omitempty"`     // 可选

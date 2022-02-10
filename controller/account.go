@@ -313,6 +313,7 @@ func CtrlAccountScopeInfoGet(uid int64, scopes string) (err error, resp utils.Re
 
 func CtrlAccountMovieListGet(uid int64, start, limit int) (err error, resp utils.RespData) {
 	var user model.User
+	user.MovieList = make([]model.MovieList, 0)
 	err = service.GetAccountMovieList(uid, &user, start, limit)
 	if err != nil {
 		return
@@ -328,6 +329,7 @@ func CtrlAccountMovieListGet(uid int64, start, limit int) (err error, resp utils
 
 func CtrlAccountBeforeGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
 	var user model.User
+	user.Before = make([]model.Comment, 0)
 	err = service.GetAccountComments(uid, "before", &user, start, limit, sort)
 	if err != nil {
 		return
@@ -343,6 +345,7 @@ func CtrlAccountBeforeGet(uid int64, start, limit int, sort string) (err error, 
 
 func CtrlAccountAfterGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
 	var user model.User
+	user.After = make([]model.Comment, 0)
 	err = service.GetAccountComments(uid, "after", &user, start, limit, sort)
 	if err != nil {
 		return
@@ -358,6 +361,7 @@ func CtrlAccountAfterGet(uid int64, start, limit int, sort string) (err error, r
 
 func CtrlAccountReviewSnapshotsGet(uid int64, start, limit int, sort string) (err error, resp utils.RespData) {
 	var user model.User
+	user.Reviews = make([]model.ReviewSnapshot, 0)
 	err = service.GetAccountReviewSnapshots(uid, &user, start, limit, sort)
 	if err != nil {
 		return
