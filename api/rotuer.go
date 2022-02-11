@@ -37,7 +37,7 @@ type Route struct {
 // TODO 设计 Group 的注册方式
 // 所有路由
 var routes = Routes{
-	"/": []Route{
+	"": []Route{
 		{
 			Name:             "外链跳转",
 			Method:           http.MethodGet,
@@ -55,6 +55,12 @@ var routes = Routes{
 			Method:           http.MethodGet,
 			Pattern:          "/mine",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMine},
+		},
+		{
+			Name:             "上传头像",
+			Method:           http.MethodPost,
+			Pattern:          "/avatar",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleAvatarUpload},
 		},
 	},
 	"/users": []Route{
@@ -206,6 +212,24 @@ var routes = Routes{
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{handleSubjectGet},
 		},
+		{
+			Name:             "获取电影的短评列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/comments",
+			HandlerFunctions: HandleFunctions{handleSubjectCommentsGet},
+		},
+		{
+			Name:             "获取电影的影评列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/reviews",
+			HandlerFunctions: HandleFunctions{handleSubjectReviewsGet},
+		},
+		{
+			Name:             "获取电影的讨论列表",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/discussions",
+			HandlerFunctions: HandleFunctions{handleSubjectDiscussionsGet},
+		},
 	},
 	"/oauth": []Route{
 		{
@@ -253,7 +277,7 @@ func InitRouter(useTLS bool) {
 		// 这里是 3 的原因是 一个进程的 linux 文件描述符，0，1，2 分别代表标准输入，标准输出，标准错误输出，已经被占用
 		// 所以父进程传递过来的文件，描述符是从 3 开始的，这里使用 3 来获得父进程传入的 tcp socket 的文件描述符 ( 果然 linux 万物皆文件
 		listenerFd := os.NewFile(3, "")
-		// 拿到一个新的 listener，父进程任务已经完成，(龟野先生，天皇陛下...（大雾
+		// 拿到一个新的 listener
 		listener, err = net.FileListener(listenerFd)
 	} else { // 常规启动
 		listener, err = net.Listen("tcp", Addr)

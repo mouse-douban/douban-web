@@ -7,6 +7,7 @@ import (
 	"douban-webend/utils"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -520,4 +521,22 @@ func CtrlAccountUnfollow(uid, id int64, kind string) (err error, resp utils.Resp
 		}
 	}
 	return nil, utils.NoDetailSuccessResp
+}
+
+const ImgBucketUrl = "https://image-1259160349.cos.ap-chengdu.myqcloud.com"
+
+func CtrlAvatarUpload(uid int64, img io.Reader, name string) (err error, resp utils.RespData) {
+	var url = ImgBucketUrl
+	uuid := utils.GenerateRandomUUID()
+	path := "/avatar/" + uuid + "." + strings.Split(name, `.`)[1]
+	url += path
+	err = service.UpdateUserInfo(uid, map[string]string{"avatar": url})
+	utils.UploadFile(ImgBucketUrl, path, img)
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       map[string]string{"avatar": url},
+	}
+	return
 }

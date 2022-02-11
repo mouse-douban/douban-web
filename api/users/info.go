@@ -7,9 +7,9 @@ import (
 	"strconv"
 )
 
-func parseCommonQueryParams(ctx *gin.Context) (err error, uid int64, start, limit int, sort string) {
-	id := ctx.Param("id")
-	uid, err = strconv.ParseInt(id, 10, 64)
+func ParseCommonQueryParams(ctx *gin.Context) (err error, id int64, start, limit int, sort string) {
+	idS := ctx.Param("id")
+	id, err = strconv.ParseInt(idS, 10, 64)
 	if err != nil {
 		utils.RespWithParamError(ctx, "id 格式不支持")
 		return
@@ -34,7 +34,7 @@ func parseCommonQueryParams(ctx *gin.Context) (err error, uid int64, start, limi
 }
 
 func HandleAccountMovieListGet(ctx *gin.Context) {
-	err, uid, start, limit, _ := parseCommonQueryParams(ctx)
+	err, uid, start, limit, _ := ParseCommonQueryParams(ctx)
 	if err != nil {
 		return
 	}
@@ -54,7 +54,7 @@ func HandleAccountAfterGet(ctx *gin.Context) {
 }
 
 func handleAccountCommentGet(ctx *gin.Context, kind string) {
-	err, uid, start, limit, sort := parseCommonQueryParams(ctx)
+	err, uid, start, limit, sort := ParseCommonQueryParams(ctx)
 	if err != nil {
 		return
 	}
@@ -75,7 +75,7 @@ func handleAccountCommentGet(ctx *gin.Context, kind string) {
 }
 
 func HandleAccountReviewsGet(ctx *gin.Context) {
-	err, uid, start, limit, sort := parseCommonQueryParams(ctx)
+	err, uid, start, limit, sort := ParseCommonQueryParams(ctx)
 	if err != nil {
 		return
 	}

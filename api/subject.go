@@ -1,6 +1,7 @@
 package api
 
 import (
+	"douban-webend/api/users"
 	"douban-webend/controller"
 	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
@@ -83,5 +84,40 @@ func handleSubjectBaseInfoGet(ctx *gin.Context, mid int64) {
 
 func handleSubjectScopeInfoGet(ctx *gin.Context, mid int64, scopes []string) {
 	err, resp := controller.CtrlSubjectScopeInfoGet(mid, scopes)
+	utils.Resp(ctx, err, resp)
+}
+
+func handleSubjectCommentsGet(ctx *gin.Context) {
+	err, mid, start, limit, sort := users.ParseCommonQueryParams(ctx)
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	kind := ctx.Query("type")
+	if kind != "after" && kind != "before" {
+		utils.RespWithParamError(ctx, "type 格式错误")
+		return
+	}
+	err, resp := controller.CtrlSubjectCommentsGet(mid, start, limit, sort, kind)
+	utils.Resp(ctx, err, resp)
+}
+
+func handleSubjectReviewsGet(ctx *gin.Context) {
+	err, mid, start, limit, sort := users.ParseCommonQueryParams(ctx)
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	err, resp := controller.CtrlSubjectReviewsGet(mid, start, limit, sort)
+	utils.Resp(ctx, err, resp)
+}
+
+func handleSubjectDiscussionsGet(ctx *gin.Context) {
+	err, mid, start, limit, sort := users.ParseCommonQueryParams(ctx)
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	err, resp := controller.CtrlSubjectDiscussionsGet(mid, start, limit, sort)
 	utils.Resp(ctx, err, resp)
 }

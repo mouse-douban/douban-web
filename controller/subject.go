@@ -76,3 +76,39 @@ func CtrlSubjectScopeInfoGet(mid int64, scopes []string) (err error, resp utils.
 	}
 	return
 }
+
+func CtrlSubjectCommentsGet(mid int64, start, limit int, sort, kind string) (err error, resp utils.RespData) {
+	var data = make([]interface{}, 0)
+	err = service.GetSubjectComments(mid, &data, start, limit, sort, kind)
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       data,
+	}
+	return
+}
+
+func CtrlSubjectReviewsGet(mid int64, start, limit int, sort string) (err error, resp utils.RespData) {
+	var data = make([]interface{}, 0)
+	err = service.GetSubjectReviews(mid, &data, start, limit, sort)
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       data,
+	}
+	return
+}
+
+func CtrlSubjectDiscussionsGet(mid int64, start, limit int, sort string) (err error, resp utils.RespData) {
+	var data = make([]interface{}, 0)
+	err = service.GetSubjectDiscussions(mid, &data, start, limit, sort)
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       data,
+	}
+	return
+}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"douban-webend/api/users"
+	"douban-webend/controller"
 	"douban-webend/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -22,4 +23,20 @@ func handleWild(ctx *gin.Context) {
 
 func handleMine(ctx *gin.Context) {
 	users.HandleAccountBaseInfoGet(ctx)
+}
+
+func handleAvatarUpload(ctx *gin.Context) {
+	uid := ctx.GetInt64("uid")
+	img, err := ctx.FormFile("img")
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	file, err := img.Open()
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+	err, resp := controller.CtrlAvatarUpload(uid, file, img.Filename)
+	utils.Resp(ctx, err, resp)
 }

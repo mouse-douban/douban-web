@@ -3,11 +3,18 @@ package service
 import (
 	"douban-webend/dao"
 	"douban-webend/model"
+	"douban-webend/utils"
 )
 
 func GetSubjects(start, limit int, sort string, tags string) (err error, subjects []model.Movie) {
 	err, subjects = dao.SelectSubjects(tags, orderBys[sort])
 	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 40015,
+			Status:     0,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
 		return
 	}
 	end := start + limit
@@ -53,6 +60,12 @@ func GetSubjectScopeInfo(mid int64, scopes []string, info *map[string][]interfac
 func GetSubjectComments(mid int64, comments *[]interface{}, start, limit int, sort, kind string) (err error) {
 	err = dao.SelectSubjectComments(mid, orderBys[sort], kind, comments)
 	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 40015,
+			Status:     0,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
 		return
 	}
 	end := start + limit
@@ -66,6 +79,12 @@ func GetSubjectComments(mid int64, comments *[]interface{}, start, limit int, so
 func GetSubjectReviews(mid int64, reviews *[]interface{}, start, limit int, sort string) (err error) {
 	err = dao.SelectSubjectReviews(mid, orderBys[sort], reviews)
 	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 40015,
+			Status:     0,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
 		return
 	}
 	end := start + limit
@@ -77,6 +96,20 @@ func GetSubjectReviews(mid int64, reviews *[]interface{}, start, limit int, sort
 }
 
 func GetSubjectDiscussions(mid int64, discussions *[]interface{}, start, limit int, sort string) (err error) {
-
+	err = dao.SelectSubjectDiscussions(mid, orderBys[sort], discussions)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 40015,
+			Status:     0,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
+		return
+	}
+	end := start + limit
+	if end > len(*discussions) {
+		end = len(*discussions)
+	}
+	*discussions = (*discussions)[start:end]
 	return
 }

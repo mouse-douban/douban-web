@@ -8,5 +8,11 @@ type DiscussionSnapshot struct {
 	Username string `json:"username"`
 	ReplyCnt int64  `json:"reply_cnt"`
 	Date     string `json:"date"`
+	Avatar   string `json:"avatar"`
 	Stars    int64  `json:"stars"`
+}
+
+type Discussion struct {
+	DiscussionSnapshot
+	Content string `json:"content"`
 }

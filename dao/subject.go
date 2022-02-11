@@ -154,7 +154,7 @@ func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interfac
 }
 
 func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}) (err error) {
-	sqlStr := "SELECT r.id, r.mid, r.uid, r.name, u.username, u.avatar, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content FROM review r JOIN user u ON u.uid = r.mid AND r.mid = ?"
+	sqlStr := "SELECT r.id, r.mid, r.uid, r.name, u.username, u.avatar, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content FROM review r JOIN user u ON u.uid = r.uid AND r.mid = ?"
 	sqlStr += " ORDER BY " + orderBy
 	rows, err := dB.Query(sqlStr, mid)
 	if err != nil {
@@ -189,6 +189,40 @@ func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}) (er
 			review.Brief = review.Brief[:165*3]
 		}
 		*reviews = append(*reviews, review)
+	}
+	return
+}
+
+func SelectSubjectDiscussions(mid int64, orderBy string, discussions *[]interface{}) (err error) {
+	sqlStr := "SELECT d.id, d.uid, d.mid, d.name, u.username, d.reply_cnt, d.date, u.avatar, d.stars FROM discussion d JOIN user u ON d.uid = u.uid AND d.mid = ?"
+	sqlStr += " ORDER BY " + orderBy
+	rows, err := dB.Query(sqlStr, mid)
+	if err != nil {
+		return
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			utils.LoggerWarning("rows 关闭失败!")
+		}
+	}(rows)
+	for rows.Next() {
+		var discussion model.DiscussionSnapshot
+		err = rows.Scan(
+			&discussion.Id,
+			&discussion.Uid,
+			&discussion.Mid,
+			&discussion.Name,
+			&discussion.Username,
+			&discussion.ReplyCnt,
+			&discussion.Date,
+			&discussion.Avatar,
+			&discussion.Stars,
+		)
+		if err != nil {
+			return
+		}
+		*discussions = append(*discussions, discussion)
 	}
 	return
 }
