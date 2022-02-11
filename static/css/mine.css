@@ -20,7 +20,6 @@
     width: 300px;
     height: 300px;
     border: 1px solid slategray;
-    background: url(https://gitee.com/coldrain-moro/images_bed/raw/master/images/chino.jpg);
     background-size: cover;
 }
 
@@ -42,6 +41,10 @@
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
+}
+
+#logout-button {
+    width: 300px;
 }
 
 #edit-button {

@@ -17,3 +17,11 @@
     background: url(../images/banner.jpg);
     background-size: cover;
 }
+
+.checkbox-label {
+    position: relative; 
+    left: 230px;
+    font-size: 13px;
+    margin-right: 20px;
+    color: #666666;
+}

@@ -1,5 +1,5 @@
 // baseurl
-const BASE_URL = "https://42.192.188.200:8080"
+const BASE_URL = "https://api.douban.skygard.cn:8080"
 // localStorage 存储路径
 const ACCESS_TOKEN = "access_token"
 const REFRESH_TOKEN = "refresh_token"

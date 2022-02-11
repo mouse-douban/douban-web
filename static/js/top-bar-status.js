@@ -43,6 +43,9 @@ function setup() {
 
     function setUpMineButton() {
         loginProfileElement.addEventListener('click', () => {
+            if (window.location.href.endsWith("mine/index.html")) {
+                return
+            }
             window.location.href = "./mine/index.html"
         })
     }
@@ -53,6 +56,8 @@ function setup() {
             // 成功
             case 20000: {
                 access_token = res.data.access_token
+                localStorage.setItem("access_token", res.data.access_token)
+                localStorage.setItem("refresh_token", res.data.refresh_token)
                 doGetUserInfo()
                 setUpMineButton()
                 break
