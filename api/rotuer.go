@@ -239,6 +239,14 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{users.HandleOAuthLogin},
 		},
 	},
+	"/celebrities": []Route{
+		{
+			Name:             "获取影人信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleCelebrityGet},
+		},
+	},
 }
 
 func newRouter(useTLS bool) *gin.Engine {

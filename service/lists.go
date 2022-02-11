@@ -70,5 +70,14 @@ func CreateMovieList(uid int64, name, description string, list []int64) (err err
 }
 
 func DeleteMovieList(lid, uid int64) (err error) {
-	return dao.DeleteMovieList(lid, uid)
+	err = dao.DeleteMovieList(lid, uid)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 400,
+			Status:     40000,
+			Info:       "invalid request",
+			Detail:     "删除失败",
+		}
+	}
+	return err
 }

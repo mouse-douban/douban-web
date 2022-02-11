@@ -25,7 +25,16 @@ func GetSubjects(start, limit int, sort string, tags string) (err error, subject
 }
 
 func GetSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
-	return dao.SelectSubjectBaseInfo(mid)
+	err, movie = dao.SelectSubjectBaseInfo(mid)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: 400,
+			Status:     40015,
+			Info:       "invalid request",
+			Detail:     "影片不存在",
+		}
+	}
+	return err, movie
 }
 
 func GetSubjectScopeInfo(mid int64, scopes []string, info *map[string][]interface{}) (err error) {
