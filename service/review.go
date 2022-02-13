@@ -28,6 +28,11 @@ func CreateReview(review model.Review) (err error) {
 			Info:       "invalid request",
 			Detail:     "创建失败",
 		}
+		return
+	}
+	err = UpdateSubjectScore(review.Mid, review.Score)
+	if err != nil {
+		return
 	}
 	return
 }

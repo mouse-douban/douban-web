@@ -40,3 +40,21 @@ func handleAvatarUpload(ctx *gin.Context) {
 	err, resp := controller.CtrlAvatarUpload(uid, file, img.Filename)
 	utils.Resp(ctx, err, resp)
 }
+
+// TODO Redis 缓存
+// 点赞一般是高频访问的接口，直接对数据库IO 效率非常低下
+// 在用户量巨大的情况下就简单的点赞功能会引出以下问题
+// · 用户的点赞关系如何储存？
+// · 数据如何归档入库？
+// · 如何支持高峰期大量的并发请求？
+// · 用户点赞记录存满了怎么办？
+// · 分布式存储怎么合理调度
+// · ...
+func handleStar(ctx *gin.Context) {
+	ctx.Query("type")
+}
+
+// TODO Redis 缓存
+func handleBad(ctx *gin.Context) {
+
+}

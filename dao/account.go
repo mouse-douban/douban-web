@@ -22,9 +22,10 @@ func SelectEncryptPassword(uid int64) (err error, encrypt string) {
 	return
 }
 
-func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []model.ReviewSnapshot) {
-	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content, u.avatar, u.username, r.mid FROM review r JOIN user u ON r.uid = ? AND u.uid = ? ORDER BY " + orderBy
-	rows, err := dB.Query(sqlStr, uid, uid)
+func SelectUserReviewSnapshot(uid int64, orderBy string, start, limit int) (err error, reviews []model.ReviewSnapshot) {
+	reviews = make([]model.ReviewSnapshot, 0)
+	sqlStr := "SELECT r.id, r.uid, r.name, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content, u.avatar, u.username, r.mid FROM review r JOIN user u ON r.uid = ? AND u.uid = ? ORDER BY " + orderBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, uid, uid, limit, start)
 	if err != nil {
 		return
 	}
@@ -65,9 +66,10 @@ func SelectUserReviewSnapshot(uid int64, orderBy string) (err error, reviews []m
 	return
 }
 
-func SelectUserMovieList(uid int64) (err error, list []model.MovieList) {
-	sqlStr := "SELECT id, uid, name, date, followers, list, description FROM movie_list WHERE uid = ? ORDER BY followers DESC"
-	rows, err := dB.Query(sqlStr, uid)
+func SelectUserMovieList(uid int64, start, limit int) (err error, list []model.MovieList) {
+	list = make([]model.MovieList, 0)
+	sqlStr := "SELECT id, uid, name, date, followers, list, description FROM movie_list WHERE uid = ? ORDER BY followers DESC LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, uid, limit, start)
 	if err != nil {
 		return
 	}
@@ -102,9 +104,10 @@ func SelectUserMovieList(uid int64) (err error, list []model.MovieList) {
 	return
 }
 
-func SelectUserComments(uid int64, kind string, orderBy string) (err error, comments []model.Comment) {
-	sqlStr := "SELECT c.id, c.uid, c.content, c.date, c.score, c.tag, c.type, c.stars, u.username, c.mid FROM comment c JOIN user u ON c.uid = ? AND u.uid = ? AND c.type = ? ORDER BY " + orderBy
-	rows, err := dB.Query(sqlStr, uid, uid, kind)
+func SelectUserComments(uid int64, kind string, orderBy string, start, limit int) (err error, comments []model.Comment) {
+	comments = make([]model.Comment, 0)
+	sqlStr := "SELECT c.id, c.uid, c.content, c.date, c.score, c.tag, c.type, c.stars, u.username, c.mid FROM comment c JOIN user u ON c.uid = ? AND u.uid = ? AND c.type = ? ORDER BY " + orderBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, uid, uid, kind, limit, start)
 	if err != nil {
 		return
 	}

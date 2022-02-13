@@ -231,52 +231,17 @@ var orderBys = map[string]string{
 }
 
 func GetAccountReviewSnapshots(uid int64, data *[]model.ReviewSnapshot, start, limit int, sort string) (err error) {
-	err, reviews := dao.SelectUserReviewSnapshot(uid, orderBys[sort])
-	if err != nil {
-		return
-	}
-	end := start + limit
-	if end > len(reviews) {
-		end = len(reviews)
-	}
-	if end != 0 {
-		*data = reviews[start:end]
-	}
+	err, *data = dao.SelectUserReviewSnapshot(uid, orderBys[sort], start, limit)
 	return
 }
 
 func GetAccountComments(uid int64, kind string, data *[]model.Comment, start, limit int, sort string) (err error) {
-	err, comments := dao.SelectUserComments(uid, kind, orderBys[sort])
-	if err != nil {
-		return
-	}
-	end := start + limit
-	if end > len(comments) {
-		end = len(comments)
-	}
-	if end != 0 {
-		switch kind {
-		case "before":
-			*data = comments[start:end]
-		case "after":
-			*data = comments[start:end]
-		}
-	}
+	err, *data = dao.SelectUserComments(uid, kind, orderBys[sort], start, limit)
 	return
 }
 
 func GetAccountMovieList(uid int64, data *[]model.MovieList, start, limit int) (err error) {
-	err, lists := dao.SelectUserMovieList(uid)
-	if err != nil {
-		return
-	}
-	end := start + limit
-	if end > len(lists) {
-		end = len(lists)
-	}
-	if end != 0 {
-		*data = lists[start:end]
-	}
+	err, *data = dao.SelectUserMovieList(uid, start, limit)
 	return
 }
 

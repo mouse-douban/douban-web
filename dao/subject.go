@@ -38,12 +38,11 @@ func InsertSubject(movie model.Movie) error {
 	return nil
 }
 
-func SelectSubjects(tag, sortBy string) (err error, subjects []model.Movie) {
-	sqlStr := "SELECT mid, tags, date, stars, detail, name, score, plot, avatar FROM subject WHERE tags LIKE '%{tag}%'"
+func SelectSubjects(tag, sortBy string, start, limit int) (err error, subjects []model.Movie) {
+	sqlStr := "SELECT mid, tags, date, stars, detail, name, score, plot, avatar FROM subject WHERE tags LIKE '%{tag}%' "
 	sqlStr = strings.Replace(sqlStr, "{tag}", tag, -1)
-	sqlStr = sqlStr + "ORDER BY " + sortBy
-	rows, err := dB.Query(sqlStr)
-
+	sqlStr = sqlStr + " ORDER BY " + sortBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, limit, start)
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
@@ -116,10 +115,10 @@ func SelectSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
 	return
 }
 
-func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interface{}) (err error) {
+func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interface{}, start, limit int) (err error) {
 	sqlStr := "SELECT c.id, c.mid, c.uid, c.content, c.date, c.score, u.username, c.tag, c.type, c.stars  FROM comment c JOIN user u ON c.uid = u.uid AND c.mid = ? AND c.type = ?"
-	sqlStr += " ORDER BY " + orderBy
-	rows, err := dB.Query(sqlStr, mid, kind)
+	sqlStr += " ORDER BY " + orderBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, mid, kind, limit, start)
 	if err != nil {
 		return
 	}
@@ -153,10 +152,10 @@ func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interfac
 	return
 }
 
-func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}) (err error) {
+func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}, start, limit int) (err error) {
 	sqlStr := "SELECT r.id, r.mid, r.uid, r.name, u.username, u.avatar, r.score, r.date, r.stars, r.bads, r.reply_cnt, r.content FROM review r JOIN user u ON u.uid = r.uid AND r.mid = ?"
-	sqlStr += " ORDER BY " + orderBy
-	rows, err := dB.Query(sqlStr, mid)
+	sqlStr += " ORDER BY " + orderBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, mid, limit, start)
 	if err != nil {
 		return
 	}
@@ -193,10 +192,10 @@ func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}) (er
 	return
 }
 
-func SelectSubjectDiscussions(mid int64, orderBy string, discussions *[]interface{}) (err error) {
+func SelectSubjectDiscussions(mid int64, orderBy string, discussions *[]interface{}, start, limit int) (err error) {
 	sqlStr := "SELECT d.id, d.uid, d.mid, d.name, u.username, d.reply_cnt, d.date, u.avatar, d.stars FROM discussion d JOIN user u ON d.uid = u.uid AND d.mid = ?"
-	sqlStr += " ORDER BY " + orderBy
-	rows, err := dB.Query(sqlStr, mid)
+	sqlStr += " ORDER BY " + orderBy + " LIMIT ? OFFSET ?"
+	rows, err := dB.Query(sqlStr, mid, limit, start)
 	if err != nil {
 		return
 	}
@@ -224,5 +223,15 @@ func SelectSubjectDiscussions(mid int64, orderBy string, discussions *[]interfac
 		}
 		*discussions = append(*discussions, discussion)
 	}
+	return
+}
+
+func UpdateSubjectScore(mid int64, score model.MovieScore) (err error) {
+	sqlStr := "UPDATE subject SET score = ? WHERE mid = ?"
+	scoreB, err := json.Marshal(score)
+	if err != nil {
+		return
+	}
+	_, err = dB.Exec(sqlStr, string(scoreB), mid)
 	return
 }

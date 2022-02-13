@@ -28,6 +28,11 @@ func CreateComment(comment model.Comment) (err error) {
 			Info:       "invalid request",
 			Detail:     "创建失败",
 		}
+		return
+	}
+	err = UpdateSubjectScore(comment.Mid, comment.Score)
+	if err != nil {
+		return
 	}
 	return err
 }

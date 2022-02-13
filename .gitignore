@@ -65,3 +65,4 @@ config/config.json
 config/*.key
 config/*.pem
 build/local.sh
+target/
