@@ -9,7 +9,7 @@ type ReviewSnapshot struct {
 	Name     string    `json:"name"`
 	Username string    `json:"username"`
 	Avatar   string    `json:"avatar"`
-	Score    int64     `json:"score"`
+	Score    int       `json:"score"`
 	Date     time.Time `json:"date"`
 	Stars    int64     `json:"stars"`
 	Bads     int64     `json:"bads"`

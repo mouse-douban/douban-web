@@ -8,10 +8,6 @@ RUN sed -i "s/archive.ubuntu./mirrors.aliyun./g" /etc/apt/sources.list
 RUN sed -i "s/deb.debian.org/mirrors.aliyun.com/g" /etc/apt/sources.list
 RUN sed -i "s/security.debian.org/mirrors.aliyun.com\/debian-security/g" /etc/apt/sources.list
 
-ENV BUCKET_URL=xxx
-ENV TENCENT_SECRET_ID=xxx
-ENV TENCENT_SECRET_KEY=xxx
-
 # 安装依赖
 COPY go.* ./
 # 设置代理
@@ -29,8 +25,6 @@ RUN sed -i 's/InitWithCOS("config2.json")/InitWithCOS("config.json")/g' cmd/main
 
 # 构建二进制文件
 RUN go build -mod=readonly -v -o server cmd/main.go
-# 尝试下载 tls key
-RUN go run build/config.go
 
 # 没有就创建一个
 RUN touch config/api.key

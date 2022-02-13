@@ -171,7 +171,7 @@ var routes = Routes{
 		{
 			Name:             "创建片单",
 			Method:           http.MethodPost,
-			Pattern:          "/",
+			Pattern:          "",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleMovieListCreate},
 		},
 		{
@@ -203,7 +203,7 @@ var routes = Routes{
 		{
 			Name:             "获取电影列表",
 			Method:           http.MethodGet,
-			Pattern:          "/",
+			Pattern:          "",
 			HandlerFunctions: HandleFunctions{handleSubjectsGet},
 		},
 		{
@@ -245,6 +245,84 @@ var routes = Routes{
 			Method:           http.MethodGet,
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{handleCelebrityGet},
+		},
+	},
+	"/reviews": []Route{
+		{
+			Name:             "获取影评信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleReviewGet},
+		},
+		{
+			Name:             "发布影评",
+			Method:           http.MethodPost,
+			Pattern:          "",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewPost},
+		},
+		{
+			Name:             "删除影评",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewDelete},
+		},
+		{
+			Name:             "更新影评内容",
+			Method:           http.MethodPut,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewUpdate},
+		},
+	},
+	"/comments": []Route{
+		{
+			Name:             "获取短评信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleCommentGet},
+		},
+		{
+			Name:             "发布短评",
+			Method:           http.MethodPost,
+			Pattern:          "",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleCommentPost},
+		},
+		{
+			Name:             "删除短评",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleCommentDelete},
+		},
+		{
+			Name:             "更新短评内容",
+			Method:           http.MethodPut,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleCommentUpdate},
+		},
+	},
+	"/discussions": []Route{
+		{
+			Name:             "获取讨论信息",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleDiscussionGet},
+		},
+		{
+			Name:             "发布讨论",
+			Method:           http.MethodPost,
+			Pattern:          "",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionPost},
+		},
+		{
+			Name:             "删除讨论",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionDelete},
+		},
+		{
+			Name:             "更新讨论内容",
+			Method:           http.MethodPut,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionUpdate},
 		},
 	},
 }

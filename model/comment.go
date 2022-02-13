@@ -9,7 +9,7 @@ type Comment struct {
 	Uid      int64     `json:"uid"`
 	Tag      []string  `json:"tag"`
 	Content  string    `json:"content"`
-	Score    int64     `json:"score"`
+	Score    int       `json:"score"`
 	Username string    `json:"username"`
 	Type     string    `json:"type"`
 	Date     time.Time `json:"date"`
