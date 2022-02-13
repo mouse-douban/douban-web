@@ -44,3 +44,19 @@ func DeleteReview(id, uid int64) (err error) {
 func UpdateReview(id, uid int64, name, content string, score int) (err error) {
 	return dao.UpdateReview(id, uid, name, content, score)
 }
+
+func StarReview(id, uid int64) (err error) {
+	return dao.StarOrUnStarReview(id, uid, true)
+}
+
+func UnStarReview(id, uid int64) (err error) {
+	return dao.StarOrUnStarReview(id, uid, false)
+}
+
+func BadReview(id, uid int64) (err error) {
+	return dao.BadOrUnBadReview(id, uid, true)
+}
+
+func UnBadReview(id, uid int64) (err error) {
+	return dao.BadOrUnBadReview(id, uid, false)
+}

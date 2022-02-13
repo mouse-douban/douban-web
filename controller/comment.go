@@ -57,3 +57,13 @@ func CtrlCommentUpdate(id, uid int64, tag []string, content string, score int) (
 	resp = utils.NoDetailSuccessResp
 	return
 }
+
+func CtrlCommentStar(id, uid int64, value bool) (err error, resp utils.RespData) {
+	if value {
+		err = service.StarComment(id, uid)
+	} else {
+		err = service.UnStarComment(id, uid)
+	}
+	resp = utils.NoDetailSuccessResp
+	return
+}

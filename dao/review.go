@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
+	"sync"
 	"time"
 )
 
@@ -60,5 +61,35 @@ func UpdateReview(id, uid int64, name, content string, score int) (err error) {
 		}
 	}(stmt)
 	_, err = stmt.Exec(name, content, score, time.Now(), id, uid)
+	return
+}
+
+var mu1 = &sync.Mutex{}
+var mu2 = &sync.Mutex{}
+
+func StarOrUnStarReview(id, uid int64, value bool) (err error) {
+	return starOrBadReview(id, uid, "stars", mu1, value)
+}
+
+func BadOrUnBadReview(id, uid int64, value bool) (err error) {
+	return starOrBadReview(id, uid, "bads", mu2, value)
+}
+
+func starOrBadReview(id, uid int64, kind string, mu *sync.Mutex, value bool) (err error) {
+	mu.Lock()
+	var v int64
+	sqlStr1 := "SELECT " + kind + " FROM review WHERE id = ? AND uid = ?"
+	err = dB.QueryRow(sqlStr1, id, uid).Scan(&v)
+	if err != nil {
+		return
+	}
+	if value {
+		v += 1
+	} else {
+		v -= 1
+	}
+	sqlStr2 := "UPDATE review SET " + kind + " = ? WHERE id = ? AND uid = ?"
+	_, err = dB.Exec(sqlStr2, v, id, uid)
+	mu.Unlock()
 	return
 }

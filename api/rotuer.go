@@ -272,6 +272,18 @@ var routes = Routes{
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewUpdate},
 		},
+		{
+			Name:             "点赞|取消点赞",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/star",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewStar},
+		},
+		{
+			Name:             "点踩|取消点踩",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/bad",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReviewBad},
+		},
 	},
 	"/comments": []Route{
 		{
@@ -298,6 +310,12 @@ var routes = Routes{
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleCommentUpdate},
 		},
+		{
+			Name:             "点赞|取消点赞",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/star",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleCommentStar},
+		},
 	},
 	"/discussions": []Route{
 		{
@@ -323,6 +341,12 @@ var routes = Routes{
 			Method:           http.MethodPut,
 			Pattern:          "/:id",
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionUpdate},
+		},
+		{
+			Name:             "点赞|取消点赞",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/star",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionStar},
 		},
 	},
 }

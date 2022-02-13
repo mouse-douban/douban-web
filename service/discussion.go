@@ -39,3 +39,11 @@ func DeleteDiscussion(id, uid int64) (err error) {
 func UpdateDiscussion(id, uid int64, name, content string) (err error) {
 	return dao.UpdateDiscussion(id, uid, name, content)
 }
+
+func StarDiscussion(id, uid int64) (err error) {
+	return dao.StarOrUnStarDiscussion(id, uid, true)
+}
+
+func UnStarDiscussion(id, uid int64) (err error) {
+	return dao.StarOrUnStarDiscussion(id, uid, false)
+}

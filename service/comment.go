@@ -44,3 +44,11 @@ func UpdateComment(id, uid int64, tag []string, content string, score int) (err 
 func DeleteComment(id, uid int64) (err error) {
 	return dao.DeleteComment(id, uid)
 }
+
+func StarComment(id, uid int64) (err error) {
+	return dao.StarOrUnStarComment(id, uid, true)
+}
+
+func UnStarComment(id, uid int64) (err error) {
+	return dao.StarOrUnStarComment(id, uid, false)
+}

@@ -55,3 +55,13 @@ func CtrlDiscussionUpdate(id, uid int64, name, content string) (err error, resp 
 	resp = utils.NoDetailSuccessResp
 	return
 }
+
+func CtrlDiscussionStar(id, uid int64, value bool) (err error, resp utils.RespData) {
+	if value {
+		err = service.StarDiscussion(id, uid)
+	} else {
+		err = service.UnStarDiscussion(id, uid)
+	}
+	resp = utils.NoDetailSuccessResp
+	return
+}

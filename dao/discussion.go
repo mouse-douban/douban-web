@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
+	"sync"
 	"time"
 )
 
@@ -58,5 +59,26 @@ func UpdateDiscussion(id, uid int64, name, content string) (err error) {
 		}
 	}(stmt)
 	_, err = stmt.Exec(name, content, time.Now(), id, uid)
+	return
+}
+
+var mu = sync.Mutex{}
+
+func StarOrUnStarDiscussion(id, uid int64, value bool) (err error) {
+	mu.Lock()
+	var v int64
+	sqlStr1 := "SELECT stars FROM discussion WHERE id = ? AND uid = ?"
+	err = dB.QueryRow(sqlStr1, id, uid).Scan(&v)
+	if err != nil {
+		return
+	}
+	if value {
+		v += 1
+	} else {
+		v -= 1
+	}
+	sqlStr2 := "UPDATE discussion SET stars = ? WHERE id = ? AND uid = ?"
+	_, err = dB.Exec(sqlStr2, v, id, uid)
+	mu.Unlock()
 	return
 }
