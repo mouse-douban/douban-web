@@ -29,12 +29,7 @@ func SelectUserReviewSnapshot(uid int64, orderBy string, start, limit int) (err 
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭异常", err)
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 
 	for rows.Next() {
 		var review model.ReviewSnapshot
@@ -73,12 +68,7 @@ func SelectUserMovieList(uid int64, start, limit int) (err error, list []model.M
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭异常", err)
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 
 	for rows.Next() {
 		var movieList model.MovieList
@@ -111,12 +101,7 @@ func SelectUserComments(uid int64, kind string, orderBy string, start, limit int
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭异常", err)
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 
 	for rows.Next() {
 		var comment model.Comment
@@ -268,11 +253,8 @@ func UpdateUserDescription(uid int64, value string, tx *sql.Tx) (err error) {
 	if err != nil {
 		return
 	}
+	defer utils.LoggerError("Statement 关闭异常!", stmt)
 	_, err = stmt.Exec(value, uid)
-	err = stmt.Close()
-	if err != nil {
-		utils.LoggerWarning("Statement 关闭异常!", err)
-	}
 	return
 }
 

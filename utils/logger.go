@@ -107,6 +107,19 @@ func LoggerWarning(mess ...interface{}) {
 	log.Println(mess...)
 }
 
+type Closed interface {
+	Close() error
+}
+
+func LoggerError(mess string, c Closed) {
+	err := c.Close()
+	if err != nil {
+		log.SetPrefix("[ERROR] ")
+		checkLoggerFile()
+		log.Println(mess, err)
+	}
+}
+
 func LoggerPanic(mess ...interface{}) {
 	log.SetPrefix("[PANIC] ")
 	checkLoggerFile()

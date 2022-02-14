@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
 	"sync"
@@ -30,12 +29,7 @@ func InsertDiscussion(discussion model.Discussion) (err error) {
 	if err != nil {
 		return
 	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			utils.LoggerWarning("statement 未关闭, cause", err)
-		}
-	}(stmt)
+	defer utils.LoggerError("Statement 关闭异常!", stmt)
 	_, err = stmt.Exec(discussion.Uid, discussion.Mid, discussion.Name, discussion.ReplyCnt, discussion.Date, discussion.Stars, discussion.Content)
 	return
 }
@@ -52,12 +46,7 @@ func UpdateDiscussion(id, uid int64, name, content string) (err error) {
 	if err != nil {
 		return
 	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			utils.LoggerWarning("statement 未关闭, cause", err)
-		}
-	}(stmt)
+	defer utils.LoggerError("Statement 关闭异常!", stmt)
 	_, err = stmt.Exec(name, content, time.Now(), id, uid)
 	return
 }

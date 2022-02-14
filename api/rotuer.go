@@ -349,6 +349,32 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{middleware.Auth(), handleDiscussionStar},
 		},
 	},
+	"/replies": []Route{
+		{
+			Name:             "查询某个帖子回复",
+			Method:           http.MethodGet,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{handleRepliesGet},
+		},
+		{
+			Name:             "查询一个回复的所有子回复",
+			Method:           http.MethodGet,
+			Pattern:          "/:id/all",
+			HandlerFunctions: HandleFunctions{handleAllRepliesGet},
+		},
+		{
+			Name:             "发表回复",
+			Method:           http.MethodPost,
+			Pattern:          "",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReplyPost},
+		},
+		{
+			Name:             "删除回复",
+			Method:           http.MethodDelete,
+			Pattern:          "/:id",
+			HandlerFunctions: HandleFunctions{middleware.Auth(), handleReplyDelete},
+		},
+	},
 }
 
 func newRouter(useTLS bool) *gin.Engine {

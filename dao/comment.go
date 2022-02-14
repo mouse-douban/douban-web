@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
 	"strings"
@@ -31,12 +30,7 @@ func SelectComment(id int64) (err error, comment model.Comment) {
 func InsertComment(comment model.Comment) (err error) {
 	sqlStr := "INSERT INTO comment(mid, uid, content, date, score, tag, type, stars) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	stmt, err := dB.Prepare(sqlStr)
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			utils.LoggerWarning("statement 关闭失败, cause", err)
-		}
-	}(stmt)
+	defer utils.LoggerError("Statement 关闭异常!", stmt)
 	if err != nil {
 		return
 	}
@@ -47,12 +41,7 @@ func InsertComment(comment model.Comment) (err error) {
 func UpdateComment(id, uid int64, tag []string, content string, score int) (err error) {
 	sqlStr := "UPDATE comment SET tag = ?, content = ?, score = ?, date = ? WHERE id = ? AND uid = ?"
 	stmt, err := dB.Prepare(sqlStr)
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			utils.LoggerWarning("statement 关闭失败, cause", err)
-		}
-	}(stmt)
+	defer utils.LoggerError("Statement 关闭异常!", stmt)
 	if err != nil {
 		return
 	}

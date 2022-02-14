@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"douban-webend/model"
 	"douban-webend/utils"
 	"encoding/json"
@@ -43,12 +42,7 @@ func SelectSubjects(tag, sortBy string, start, limit int) (err error, subjects [
 	sqlStr = strings.Replace(sqlStr, "{tag}", tag, -1)
 	sqlStr = sqlStr + " ORDER BY " + sortBy + " LIMIT ? OFFSET ?"
 	rows, err := dB.Query(sqlStr, limit, start)
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭异常", err)
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 
 	if err != nil {
 		return
@@ -122,12 +116,7 @@ func SelectSubjectComments(mid int64, orderBy, kind string, comments *[]interfac
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭失败!")
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 	for rows.Next() {
 		var comment model.Comment
 		var tag string
@@ -159,12 +148,7 @@ func SelectSubjectReviews(mid int64, orderBy string, reviews *[]interface{}, sta
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭失败!")
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 	for rows.Next() {
 		var review model.ReviewSnapshot
 		err = rows.Scan(
@@ -199,12 +183,7 @@ func SelectSubjectDiscussions(mid int64, orderBy string, discussions *[]interfac
 	if err != nil {
 		return
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			utils.LoggerWarning("rows 关闭失败!")
-		}
-	}(rows)
+	defer utils.LoggerError("rows 关闭异常", rows)
 	for rows.Next() {
 		var discussion model.DiscussionSnapshot
 		err = rows.Scan(
