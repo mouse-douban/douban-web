@@ -107,11 +107,11 @@ func LoggerWarning(mess ...interface{}) {
 	log.Println(mess...)
 }
 
-type Closed interface {
+type Closable interface {
 	Close() error
 }
 
-func LoggerError(mess string, c Closed) {
+func LoggerError(mess string, c Closable) {
 	err := c.Close()
 	if err != nil {
 		log.SetPrefix("[ERROR] ")

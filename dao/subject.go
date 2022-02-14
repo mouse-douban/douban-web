@@ -81,6 +81,35 @@ func SelectSubjects(tag, sortBy string, start, limit int) (err error, subjects [
 	return
 }
 
+func SelectSubjectNameLike(key string) (err error, datum []map[string]interface{}) {
+	datum = make([]map[string]interface{}, 0)
+	sqlStr := "SELECT name, score, avatar, mid, tags, detail FROM subject WHERE name LIKE '%{}%'"
+	var name, score, avatar, tags, detail string
+	var mid int64
+	rows, err := dB.Query(strings.Replace(sqlStr, "{}", key, -1))
+	if err != nil {
+		return
+	}
+
+	defer utils.LoggerError("rows 关闭失败", rows)
+
+	for rows.Next() {
+		var data = make(map[string]interface{})
+		err = rows.Scan(&name, &score, &avatar, &mid, &tags, &detail)
+		if err != nil {
+			return
+		}
+		data["name"] = name
+		data["score"] = score
+		data["avatar"] = avatar
+		data["mid"] = mid
+		data["tags"] = tags
+		data["detail"] = detail
+		datum = append(datum, data)
+	}
+	return
+}
+
 func SelectSubjectBaseInfo(mid int64) (err error, movie model.Movie) {
 	sqlStr := "SELECT mid, tags, date, stars, name, avatar, detail, score, plot, celebrities FROM subject WHERE mid = ?"
 	row := dB.QueryRow(sqlStr, mid)

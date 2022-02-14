@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"douban-webend/dao"
 	"douban-webend/model"
 	"douban-webend/service"
 	"douban-webend/utils"
@@ -109,6 +110,17 @@ func CtrlSubjectDiscussionsGet(mid int64, start, limit int, sort string) (err er
 		Status:     20000,
 		Info:       utils.InfoSuccess,
 		Data:       data,
+	}
+	return
+}
+
+func CtrlWhatSubjectsNameLike(name string) (err error, resp utils.RespData) {
+	err, datum := dao.SelectSubjectNameLike(name)
+	resp = utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       datum,
 	}
 	return
 }

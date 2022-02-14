@@ -39,6 +39,12 @@ type Route struct {
 var routes = Routes{
 	"": []Route{
 		{
+			Name:             "搜索",
+			Method:           http.MethodGet,
+			Pattern:          "/search",
+			HandlerFunctions: HandleFunctions{handleSearch},
+		},
+		{
 			Name:             "外链跳转",
 			Method:           http.MethodGet,
 			Pattern:          "/wild",
@@ -48,7 +54,7 @@ var routes = Routes{
 			Name:             "Swagger文档",
 			Method:           http.MethodGet,
 			Pattern:          "/swagger",
-			HandlerFunctions: HandleFunctions{},
+			HandlerFunctions: HandleFunctions{handleSwagger},
 		},
 		{
 			Name:             "我的主页",

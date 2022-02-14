@@ -58,3 +58,29 @@ func handleStar(ctx *gin.Context) {
 func handleBad(ctx *gin.Context) {
 
 }
+
+func handleSwagger(ctx *gin.Context) {
+	ctx.Redirect(http.StatusPermanentRedirect, "https://douban.skygard.cn/swagger/openapi.json")
+}
+
+func handleSearch(ctx *gin.Context) {
+	words := ctx.Query("key")
+	if words == "" {
+		utils.RespWithParamError(ctx, "key 不能为空")
+		return
+	}
+	err, resp1 := controller.CtrlWhatCelebritiesNameLike(words)
+	if err != nil {
+		utils.RespWithError(ctx, utils.ServerInternalError)
+		return
+	}
+	err, resp2 := controller.CtrlWhatSubjectsNameLike(words)
+	if err != nil {
+		utils.RespWithError(ctx, utils.ServerInternalError)
+		return
+	}
+	response := make([]utils.RespData, 2)
+	response[0] = resp1
+	response[1] = resp2
+	ctx.JSON(http.StatusOK, response)
+}
