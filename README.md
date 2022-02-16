@@ -18,13 +18,13 @@
 >
 > 一款仿豆瓣电影的后端 **RESTful API** 项目
 >
+> 基于gin的单体服务
 
 ## API 文档
 
-+ [HTML 格式]()
-+ [Markdown 格式]()
-+ [OpenAPI(Swagger) 格式]()
-+ [Apifox 格式]()
++ [HTML 格式](https://douban.skygard.cn/swagger/api.html)
++ [Markdown 格式](./API.md)
++ [OpenAPI(Swagger) 格式](http://douban.skygard.cn/swagger/openapi.json)
 
 ## 实现的Features
 
@@ -34,13 +34,15 @@
   >
   >  jwt 认证
   >
-  >  无  session，可以横向拓展
+  >  无  session，方便进行横向拓展
 
 + 热重载
 
-+ 简单的日志系统
++ 日志集中
 
 + 数据的增删改查
+
++ Redis 验证码数据缓存
 
 ## 常见漏洞防护
 
@@ -123,15 +125,12 @@
 >
 > 常规部署
 
-## 学习到的东西
+# 总结
 
 + 初探分布式(太深奥了)，集群部署
 + 容器化
 + 数据库的一些零散的知识
 + 应用了一学期所学的知识
-
-# 总结
-
 + 项目很多地方重复性很高(懒得抽离)
 + 某些问题上也没有想最好的方案而是能用就行(
 + 数据库方面只停留在会敲几个SQL语句而已...
