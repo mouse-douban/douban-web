@@ -30,6 +30,8 @@ func UpdateMovieListInfo(id int64, params map[string]interface{}, updateTime boo
 	for key, value := range params {
 		// 预处理防止 sql 注入
 		if key == "description" || key == "name" {
+			value = utils.ReplaceXSSKeywords(value.(string))
+			value = utils.ReplaceWildUrl(value.(string))
 			err = dao.PrepareUpdateMovieList(id, key, value, tx)
 			if err != nil {
 				dao.RollBackTransaction(tx)
@@ -58,6 +60,8 @@ func CreateMovieList(uid int64, name, description string, list []int64) (err err
 	if name == "" {
 		name = "未命名"
 	}
+	description = utils.ReplaceXSSKeywords(description)
+	description = utils.ReplaceWildUrl(description)
 	movieList := model.MovieList{
 		Uid:         uid,
 		Name:        name,

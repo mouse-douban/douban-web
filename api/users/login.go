@@ -36,7 +36,7 @@ func HandleRegister(ctx *gin.Context) {
 			utils.RespWithParamError(ctx, "密码格式不支持")
 			return
 		}
-		ok = utils.CheckUsername(account)
+		ok = utils.CheckName(account)
 		if !ok {
 			utils.RespWithParamError(ctx, "用户名称格式不支持")
 			return
@@ -129,7 +129,7 @@ func HandleLogin(ctx *gin.Context) {
 	}
 	switch kind {
 	case "password":
-		if !utils.CheckUsername(account) {
+		if !utils.CheckName(account) {
 			utils.RespWithParamError(ctx, "用户名格式不支持")
 			return
 		}

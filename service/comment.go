@@ -20,6 +20,8 @@ func GetComment(id int64) (err error, comment model.Comment) {
 }
 
 func CreateComment(comment model.Comment) (err error) {
+	comment.Content = utils.ReplaceXSSKeywords(comment.Content)
+	comment.Content = utils.ReplaceWildUrl(comment.Content)
 	err = dao.InsertComment(comment)
 	if err != nil {
 		err = utils.ServerError{
@@ -38,6 +40,8 @@ func CreateComment(comment model.Comment) (err error) {
 }
 
 func UpdateComment(id, uid int64, tag []string, content string, score int) (err error) {
+	content = utils.ReplaceXSSKeywords(content)
+	content = utils.ReplaceWildUrl(content)
 	return dao.UpdateComment(id, uid, tag, content, score)
 }
 

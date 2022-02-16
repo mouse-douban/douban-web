@@ -68,7 +68,7 @@ func HandleAccountInfoUpdate(ctx *gin.Context) {
 		// description 默认会使用预处理，无需检测
 		switch s {
 		case "username":
-			if !utils.CheckUsername(value) {
+			if !utils.CheckName(value) {
 				utils.RespWithParamError(ctx, "username 格式不支持")
 				return
 			}
