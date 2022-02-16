@@ -274,6 +274,7 @@ class TabLayout extends HTMLElement {
         this.tabs = tabs
         this.onTabItemClick = onTabItemClick
         this.tabItems = []
+        this.selected = tabs[0]
         this.tabs.forEach(tab => {
             const tabItem = document.createElement("div")
             tabItem.classList.add("tab")
@@ -282,9 +283,11 @@ class TabLayout extends HTMLElement {
                 if (tabItem.classList.contains("selected")) {
                     return
                 }
-                this.tabItems.forEach(item => item.classList.remove("selected"))
-                tabItem.classList.add("selected")
-                this.onTabItemClick(tab)
+                if (this.onTabItemClick(tab)) {
+                    this.selected = tab
+                    this.tabItems.forEach(item => item.classList.remove("selected"))
+                    tabItem.classList.add("selected")
+                }
             })
             this.shadow.appendChild(tabItem)
             this.tabItems.push(tabItem)
@@ -309,9 +312,68 @@ class SeparatorLine extends HTMLElement {
 
 customElements.define("separator-line", SeparatorLine)
 
+// 有时间也许可以尝试一下实现懒加载
 class RecyclerView extends HTMLElement {
     constructor() {
         super()
-        
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+            :host {
+                display: flex;
+                flex-warp: wrap;
+                justify-content: flex-start;
+                align-items: flex-start;
+            }
+
+            .element {
+                margin: 10px;
+            }
+
+        </style>
+        <div id="list">
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        this.shadow.appendChild(template.content.cloneNode(true))
+        this.list = this.shadow.querySelector("#list")
+    }
+
+    // 更新数据
+    flush() {
+        this.list.innerHTML = ""
+        this.datas.forEach((data, index) => {
+            const ele = this.adapter(data, index)
+            this.list.appendChild(ele)
+        })
+    }
+
+    /**
+     * 设置数据
+     * 
+     * @param {array} datas
+     */
+    setData(datas) {
+        this.datas = datas
+    }
+
+    /**
+     * 添加单条数据
+     * 
+     * @param {*} data 
+     */
+    appendData(data) {
+        this.datas.push(data)
+    }
+
+    /**
+     * 给这个recyclerview设置适配回调函数
+     * 
+     * @param {*} adapter (data: any, index: number) => HTMLElement
+     */
+    setAdapter(adapter) {
+        this.adapter = adapter
     }
 }
+
+customElements.define("recycler-view", RecyclerView)

@@ -32,7 +32,7 @@ const loginInnerHtml = `
                         size="22" maxlength="60" placeholder="手机号/邮箱">
                 </div>
                 <div class="input-box">
-                    <input id="input-password" style="width: 75%;"
+                    <input id="input-password" type="password" style="width: 75%;"
                         size="22" maxlength="60" placeholder="输入密码">
                     <div id="get-verification-code" style="color: #9b9b9b; width: 25%;">找回密码</div>
                 </div>
