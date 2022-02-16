@@ -77,8 +77,8 @@ func TestUserName(t *testing.T) {
 		true,
 	}
 	for i, input := range inputs {
-		if outputs[i] != utils.CheckUsername(input) {
-			t.Error("Error in utils.CheckUsername(" + input + ")")
+		if outputs[i] != utils.CheckName(input) {
+			t.Error("Error in utils.CheckName(" + input + ")")
 		}
 	}
 }

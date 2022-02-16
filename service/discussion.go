@@ -20,6 +20,8 @@ func GetDiscussion(id int64) (err error, discussion model.Discussion) {
 }
 
 func CreateDiscussion(discussion model.Discussion) (err error) {
+	discussion.Content = utils.ReplaceXSSKeywords(discussion.Content)
+	discussion.Content = utils.ReplaceWildUrl(discussion.Content)
 	err = dao.InsertDiscussion(discussion)
 	if err != nil {
 		err = utils.ServerError{
@@ -37,6 +39,8 @@ func DeleteDiscussion(id, uid int64) (err error) {
 }
 
 func UpdateDiscussion(id, uid int64, name, content string) (err error) {
+	content = utils.ReplaceXSSKeywords(content)
+	content = utils.ReplaceWildUrl(content)
 	return dao.UpdateDiscussion(id, uid, name, content)
 }
 

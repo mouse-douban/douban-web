@@ -74,6 +74,8 @@ func CreateReply(reply model.Reply) (err error) {
 		reply.Content = "回复 " + parent.Username + " : " + reply.Content
 	}
 	reply.Date = time.Now()
+	reply.Content = utils.ReplaceXSSKeywords(reply.Content)
+	reply.Content = utils.ReplaceWildUrl(reply.Content)
 	return dao.InsertReply(reply)
 }
 

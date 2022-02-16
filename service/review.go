@@ -20,6 +20,8 @@ func GetReview(id int64) (err error, review model.Review) {
 }
 
 func CreateReview(review model.Review) (err error) {
+	review.Content = utils.ReplaceXSSKeywords(review.Content)
+	review.Content = utils.ReplaceWildUrl(review.Content)
 	err = dao.InsertReview(review)
 	if err != nil {
 		err = utils.ServerError{
@@ -42,6 +44,8 @@ func DeleteReview(id, uid int64) (err error) {
 }
 
 func UpdateReview(id, uid int64, name, content string, score int) (err error) {
+	content = utils.ReplaceXSSKeywords(content)
+	content = utils.ReplaceWildUrl(content)
 	return dao.UpdateReview(id, uid, name, content, score)
 }
 

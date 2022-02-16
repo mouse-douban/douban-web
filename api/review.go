@@ -32,7 +32,12 @@ func handleReviewPost(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "score 格式错误")
 		return
 	}
-	err, resp := controller.CtrlReviewPost(mid, ctx.GetInt64("uid"), ctx.PostForm("name"), ctx.PostForm("content"), score)
+	name := ctx.PostForm("name")
+	if !utils.CheckName(name) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
+	}
+	err, resp := controller.CtrlReviewPost(mid, ctx.GetInt64("uid"), name, ctx.PostForm("content"), score)
 	utils.Resp(ctx, err, resp)
 }
 
@@ -60,7 +65,12 @@ func handleReviewUpdate(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "score 格式错误")
 		return
 	}
-	err, resp := controller.CtrlReviewUpdate(id, ctx.GetInt64("uid"), ctx.PostForm("name"), ctx.PostForm("content"), score)
+	name := ctx.PostForm("name")
+	if !utils.CheckName(name) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
+	}
+	err, resp := controller.CtrlReviewUpdate(id, ctx.GetInt64("uid"), name, ctx.PostForm("content"), score)
 	utils.Resp(ctx, err, resp)
 }
 

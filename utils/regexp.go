@@ -2,20 +2,21 @@ package utils
 
 import (
 	"douban-webend/config"
+	"fmt"
 	"regexp"
 	"strings"
 )
 
-func CheckUsername(username string) bool {
-	if len(username) < 3 || len(username) > 20 {
+func CheckName(name string) bool {
+	if len(name) < 3 || len(name) > 20 {
 		return false
 	}
 	space := regexp.MustCompile(" ")
 	special := regexp.MustCompile("[-_+=^a-zA-Z0-9]")
-	if space.MatchString(username) {
+	if space.MatchString(name) {
 		return false
 	}
-	r := special.ReplaceAllString(username, "")
+	r := special.ReplaceAllString(name, "")
 	r = strings.Map(func(c rune) rune {
 		if c >= 0x4E00 && c <= 0x9FA5 { // 常用汉字范围
 			return -1 // 忽略
@@ -81,7 +82,8 @@ func ReplaceXSSKeywords(raw string) string {
 func ReplaceWildUrl(raw string) string {
 	r := regexp.MustCompile("http(s?)://.+/")
 	for _, find := range r.FindAllString(raw, -1) {
-		raw = strings.Replace(raw, find, "https://"+config.Config.ServerIp+"/wild?link="+find, -1)
+		rp := fmt.Sprintf("<a href=%s>%s</a>", "https://"+config.Config.ServerIp+"/wild?link="+find, find)
+		raw = strings.Replace(raw, find, rp, -1)
 	}
 	return raw
 }

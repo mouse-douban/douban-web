@@ -26,7 +26,12 @@ func handleDiscussionPost(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "mid 格式错误")
 		return
 	}
-	err, resp := controller.CtrlDiscussionPost(ctx.GetInt64("uid"), mid, ctx.PostForm("name"), ctx.PostForm("content"))
+	name := ctx.PostForm("name")
+	if !utils.CheckName(name) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
+	}
+	err, resp := controller.CtrlDiscussionPost(ctx.GetInt64("uid"), mid, name, ctx.PostForm("content"))
 	utils.Resp(ctx, err, resp)
 }
 
@@ -48,7 +53,12 @@ func handleDiscussionUpdate(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "id 格式错误")
 		return
 	}
-	err, resp := controller.CtrlDiscussionUpdate(id, ctx.GetInt64("uid"), ctx.PostForm("name"), ctx.PostForm("content"))
+	name := ctx.PostForm("name")
+	if !utils.CheckName(name) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
+	}
+	err, resp := controller.CtrlDiscussionUpdate(id, ctx.GetInt64("uid"), name, ctx.PostForm("content"))
 	utils.Resp(ctx, err, resp)
 }
 

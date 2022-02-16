@@ -32,7 +32,12 @@ func handleMovieListCreate(ctx *gin.Context) {
 		}
 		list = append(list, mid)
 	}
-	err, resp := controller.CtrlMovieListCreate(uid, ctx.PostForm("name"), ctx.PostForm("description"), list)
+	name := ctx.PostForm("name")
+	if !utils.CheckName(name) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
+	}
+	err, resp := controller.CtrlMovieListCreate(uid, name, ctx.PostForm("description"), list)
 	utils.Resp(ctx, err, resp)
 }
 
@@ -70,6 +75,11 @@ func handleMovieListUpdate(ctx *gin.Context) {
 			return
 		}
 		params[s] = value
+	}
+
+	if !utils.CheckName(params["name"].(string)) {
+		utils.RespWithParamError(ctx, "name 格式错误")
+		return
 	}
 	err, resp := controller.CtrlUpdateMovieList(lid, uid, params)
 	utils.Resp(ctx, err, resp)
