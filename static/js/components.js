@@ -92,7 +92,7 @@ class MovieCard extends HTMLElement {
 customElements.define("movie-card", MovieCard)
 
 class UserReview extends HTMLElement {
-    constructor() { 
+    constructor() {
         super()
         const template = document.createElement("template")
         template.innerHTML = `
@@ -377,3 +377,280 @@ class RecyclerView extends HTMLElement {
 }
 
 customElements.define("recycler-view", RecyclerView)
+
+class ActorCard extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        :host {
+            width: fit-content;
+            flex-direction: column;
+            display: flex;
+            justify-content: center;
+            margin: 0 25px 10px 0;
+        }
+
+        img {
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #37a;
+            max-lines: 2;
+            margin: 5px;
+            overflow: hidden;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .actor:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+
+        .job {
+            color: #494949;
+        }
+
+        .card {
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.19);
+        }
+
+        #card {
+            cursor: pointer;
+            border-radius: 10px;
+            height: fit-content;
+            width: fit-content;
+            box-sizing: border-box;
+            padding: 0px 10px 0px 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        </style>
+        <div id="card" class= "card">
+            <img width="115px" height="170px">
+            <p class="actor"></p>
+            <p class="job"></p>
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        // insert
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+
+    connectedCallback() {
+        this.shadow.querySelector('.actor').innerHTML = this.getAttribute("actor")
+        this.shadow.querySelector('.job').innerHTML = this.getAttribute("job")
+        this.shadow.querySelector('img').src = this.getAttribute("src")
+    }
+
+    // 属性改变回调
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "src") {
+            this.shadow.querySelector("img").src = newValue
+        }
+        if (name === "actor") {
+            this.shadow.querySelector('.actor').innerHTML = `${newValue}`
+        }
+        if (name === "job") {
+            this.shadow.querySelector('.job').innerHTML = `${this.getAttribute("job")}`
+        }
+    }
+}
+
+customElements.define("actor-card", ActorCard)
+
+class ShortComment extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        :host {
+            width: 100%;
+        }
+
+        span {
+            font-size: 13px;
+        }
+
+        .score {
+            color: orange;
+        }
+
+        .time {
+            color: #aaaaaa;
+        }
+
+        .clickable {
+            color: #3377aa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clickable:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+
+        .top-box {            
+            border-top: 1px solid #efefef;
+            padding: 10px 0;
+        }
+
+        .content {
+            color: #494949;
+            font-size: 14px;
+        }
+
+        </style>
+        <div class= "top-box">
+            <span class="user clickable">user</span> <span class="type">看过</span> <span class="score-span"><span class="score">5</span>⭐</span> <span class="time">2022-02-01 10:46:17</span>
+            <span style="float: right;"><span class="stars">5801</span> <span class="stars-text clickable">有用</span></span>
+        </div>
+        <p class="content">短评内容</p>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        // insert
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+
+    connectedCallback() {
+        this.shadow.querySelector(".type").innerHTML = this.getAttribute("type") === "after" ? "看过" : "想看"
+        this.shadow.querySelector('.user').innerHTML = this.getAttribute("user")
+        this.shadow.querySelector('.score').innerHTML = this.getAttribute("score")
+        this.shadow.querySelector('.time').innerHTML = this.getAttribute("time")
+        this.shadow.querySelector('.content').innerHTML = this.getAttribute("content")
+        this.shadow.querySelector('.stars').innerHTML = this.getAttribute("stars")
+    }
+
+    // 属性改变回调
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "user") {
+            this.shadow.querySelector('.user').innerHTML = `${newValue}`
+        }
+        if (name === "score") {
+            this.shadow.querySelector('.score').innerHTML = `${newValue}`
+        }
+        if (name === "time") {
+            this.shadow.querySelector('.time').innerHTML = `${newValue}`
+        }
+        if (name === "content") {
+            this.shadow.querySelector('.content').innerHTML = `${newValue}`
+        }
+        if (name === "stars") {
+            this.shadow.querySelector('.stars').innerHTML = `${newValue}`
+        }
+        if (name === "type") {
+            this.shadow.querySelector('.type').innerHTML = newValue === "after" ? "看过" : "想看"
+        }
+    }
+}
+
+customElements.define("short-comment", ShortComment)
+
+class MovieComment extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        :host {
+            width: 100%;
+        }
+
+        span {
+            font-size: 13px;
+        }
+
+        .score {
+            color: orange;
+        }
+
+        .time {
+            color: #aaaaaa;
+        }
+
+        .clickable {
+            color: #3377aa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clickable:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+
+        .top-box {            
+            border-top: 1px solid #efefef;
+            padding: 10px 0;
+        }
+
+        .content {
+            color: #494949;
+            font-size: 14px;
+        }
+
+        .title {
+            margin: 0;
+            font-weight: normal;
+            font-size: 16px;
+            width: fit-content;
+        }
+
+        </style>
+        <div class= "top-box">
+            <img src="" width="36px" height="36px"> <span class="user clickable">user</span> <span class="score-span"><span class="score">5</span>⭐</span> <span class="time">2022-02-01 10:46:17</span>
+            <span style="float: right;"><span class="stars">5801</span> <span class="stars-text clickable">有用</span></span>
+        </div>
+        <h2 class="title clickable">影评标题</h2>
+        <p class="content">影评内容</p>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        // insert
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+
+    connectedCallback() {
+        this.shadow.querySelector('.user').innerHTML = this.getAttribute("user")
+        this.shadow.querySelector('.score').innerHTML = this.getAttribute("score")
+        this.shadow.querySelector('.time').innerHTML = this.getAttribute("time")
+        this.shadow.querySelector('.content').innerHTML = this.getAttribute("content")
+        this.shadow.querySelector('.stars').innerHTML = this.getAttribute("stars")
+        this.shadow.querySelector('.title').innerHTML = this.getAttribute("title")
+        this.shadow.querySelector('img').src = this.getAttribute("user-icon")
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "user") {
+            this.shadow.querySelector('.user').innerHTML = `${newValue}`
+        }
+        if (name === "score") {
+            this.shadow.querySelector('.score').innerHTML = `${newValue}`
+        }
+        if (name === "time") {
+            this.shadow.querySelector('.time').innerHTML = `${newValue}`
+        }
+        if (name === "content") {
+            this.shadow.querySelector('.content').innerHTML = `${newValue}`
+        }
+        if (name === "stars") {
+            this.shadow.querySelector('.stars').innerHTML = `${newValue}`
+        }
+        if (name == "title") {
+            this.shadow.querySelector('.title').innerHTML = `${newValue}`
+        }
+        if (name == "user-icon") {
+            this.shadow.querySelector('img').src = `${newValue}`
+        }
+    }
+}
+
+customElements.define("movie-comment", MovieComment)

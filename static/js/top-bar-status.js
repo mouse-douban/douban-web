@@ -1,6 +1,6 @@
 // 顶部状态条控制script，使用频率较高
 import { getUserInfo, login } from './api.js'
-import { getTokenInfoObj } from './utils.js'
+import { getAbsolutePath, getTokenInfoObj } from './utils.js'
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from './consts.js'
 
 function setup() {
@@ -37,16 +37,16 @@ function setup() {
 
     function setUpLoginButton() {
         loginProfileElement.addEventListener('click', () => {
-            window.location.href = "./login/index.html"
+            window.location.href = getAbsolutePath("/static/login")
         })
     }
 
     function setUpMineButton() {
         loginProfileElement.addEventListener('click', () => {
-            if (window.location.href.endsWith("mine/index.html")) {
+            if (window.location.href.endsWith("mine/")) {
                 return
             }
-            window.location.href = "./mine/index.html"
+            window.location.href = getAbsolutePath("/static/mine")
         })
     }
 
