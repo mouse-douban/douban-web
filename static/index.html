@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--破解防盗链-->
+    <meta name="referrer" content="never">
     <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
     <title>豆瓣电影</title>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/top-bar-status.css">
     <script type="module" src="js/index.js" defer></script>
     <script src="./js/components.js"></script>
+    <script src="./js/api.js" type="module"></script>
 </head>
 <body>
     <!--Header 耦合度爆炸-->
@@ -112,35 +115,14 @@
 
     <h2 style="left: 230px;color: #494949;width: fit-content;position: relative;">选电影</h2>
 
-    <script>
-        const types = [
-            "热门",
-            "喜剧",
-            "生活",
-            "爱情",
-            "动作",
-            "科幻",
-            "悬疑",
-            "惊悚",
-            "动画",
-            "奇幻"
-        ]
-        const tl = new TabLayout(types, async tab => {
-            
-        })
-        tl.style = "position: relative;left: 225px;width: fit-content;"
-        document.querySelector("body").appendChild(tl)
-    </script>
+    <script src="./js/sub/set-up-index-tab.js" type="module"></script>
 
     <separator-line></separator-line>
 
-    <label class="checkbox-label" for="sort-hotest"><input type="radio" id="sort-hotest" name="sort" checked> 按热度排序  </label>
-    <label class="checkbox-label" for="sort-newest"><input type="radio" id="sort-newest" name="sort"> 按最新排序  </label>
+    <label class="checkbox-label" for="sort-newest"><input type="radio" id="sort-latest" name="sort" checked> 按最新排序  </label>
+    <label class="checkbox-label" for="sort-hotest"><input type="radio" id="sort-hotest" name="sort"> 按热度排序  </label>
 
-    <!-- <movie-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-        movie="永恒族"
-        score="5.9">
-    </movie-card> -->
+    <script src="./js/sub/set-up-index-rv.js" type="module"></script>
 
 </body>
 </html>

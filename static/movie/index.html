@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--破解防盗链-->
+    <meta name="referrer" content="never">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
+    <link rel="stylesheet" href="../css/top-bar-status.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/movie.css">
+    <script src="../js/components.js"></script>
+    <script src="../js/movie.js"></script>
+    <title>电影标题 (豆瓣)</title>
+</head>
+
+<body>
+    <div id="top-nav-items">
+        <ul id="top-nav-ul" style="display:inline-block;">
+            <li>
+                <span class="top-nav-item" onclick="alert('没有主页！哼😕')">豆瓣</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道读书！')">读书</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="window.location.href = './index.html'">电影</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道听音乐！')">音乐</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('啊这...我不好说了')">同城</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道小组！')">小组</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('跟读书有区别吗？哼😕')">阅读</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('什么年代了还听广播 原来我也听那没事了')">FM</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('没时间啦 万策尽啦！！！😱')">时间</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('拒绝超前消费!')">豆品</span>
+            </li>
+        </ul>
+        <div id="top-nav-right-items">
+            <ul id="top-nav-right-ul">
+                <li>
+                    <span class="top-nav-item" onclick="alert('flutter在学了😭')">下载豆瓣客户端</span>
+                </li>
+                <li>
+                    <span class="top-nav-item" id="login-nav-item">登录/注册</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="search-area">
+        <div id="search-content">
+            <div id="nav-logo" onclick="window.location.href = './index.html'"></div>
+            <div id="nav-search">
+                <form action="TODO Search" method="get">
+                    <fieldset style="display: inline-flex;border: 0px;">
+                        <label for="inp-query"></label>
+                        <div class="inp">
+                            <input id="inp-query" class="card" name="search_text" size="22" maxlength="60"
+                                placeholder="搜索电影、电视剧、综艺、影人" autocompelete="off">
+                        </div>
+                        <div class="inp-btn">
+                            <input type="submit" value="搜索">
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const types = [
+            "我看",
+            "影讯&购票",
+            "选电影",
+            "电视剧",
+            "排行榜",
+            "分类",
+            "影评",
+            "2021年度榜单",
+            "2021书影音报告",
+        ]
+
+        const tl = new TabLayout(types, tab => {
+            switch(tab) {
+                case "我看": {
+                    window.location.href = "../index.html"
+                    break
+                }
+                default: {
+                    alert("未实现")
+                }
+            }
+            return false
+        })
+        tl.style = "position: relative;left: 225px;width: fit-content;"
+        document.querySelector("body").appendChild(tl)
+    </script>
+    <div class="content-box">
+        <h1 class="movie-title">电影标题 <span style="color: #888888;font-size: 25px;">(2022)</span></h1>
+        <div class="flex-box">
+            <img id="mainpic" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" title="点击看更多海报" alt="蕾米" rel="v:image">
+            <div id="movie-info">
+                <div>导演: <span>xxx</span></div>
+                <div>编剧: <span>xxx</span></div>
+                <div>主演: <span>xxx</span></div>
+                <div>类型: <span>xxx</span></div>
+                <div>制片国家/地区: <span>xxx</span></div>
+                <div>语言: <span>xxx</span></div>
+                <div>上映日期: <span>xxx</span></div>
+                <div>片长: <span>xxx</span></div>
+                <div>又名: <span>xxx</span></div>
+                <div>IMDb: <span>xxx</span></div>
+            </div>
+            <div id="evaluate-box">
+                <div id="evaluate-box-top">
+                    <p style="font-size:small;">豆瓣评分</p>
+                    <h2 style="color: #494949;font-weight: 500;font-size: 30px;margin-top: 5px;">
+                        9.9 <span style="font-size: 10px;position: relative;bottom: 6px;">⭐⭐⭐⭐⭐</span>
+                    </h2>
+                    <p>5星: <span style="color: orange;">80%</span></p>
+                    <p>4星: <span style="color: orange;">10%</span></p>
+                    <p>3星: <span style="color: orange;">5%</span></p>
+                    <p>2星: <span style="color: orange;">2%</span></p>
+                    <p>1星: <span style="color: orange;">3%</span></p>
+                </div>
+                <div id="evaluate-box-bottom">
+                    <p style="color: #888888;font-size: xx-small;">你所热爱的，就是你的生活 :)</p>
+                </div>
+            </div>
+        </div>
+        <button>想看</button>
+        <button>看过</button>
+    </div>
+</body>
+
+</html>

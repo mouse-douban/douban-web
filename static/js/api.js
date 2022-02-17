@@ -130,7 +130,20 @@ async function getUserMovieList(id, start = 0, limit = 20, sort = "latest") {
     return await get(`/users/${id}/movie_list`, { start, limit, sort })
 }
 
+/**
+ * 获取电影列表
+ * 
+ * @param {*} start 开始的索引，不填为0
+ * @param {*} limit 限制数量，不填为20
+ * @param {*} sort 排序规则｜填 hotest|latest，不填为 latest
+ * @param {*} tag 标签 喜剧,生活,爱情,动作,科幻,悬疑,惊悚,动画,奇幻
+ * @returns 
+ */
+async function getSubjects(start = 0, limit = 20, sort = "latest", tag = "") {
+    return await get("/subjects", { start, limit, sort, tag })
+}
+
 export { 
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, 
+    getUserMovieList, getSubjects
 }
