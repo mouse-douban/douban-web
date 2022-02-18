@@ -108,4 +108,13 @@ function getUserId() {
     return getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN))
 }
 
-export { get, post, getTokenInfoObj, put, getUserIdFromToken, getUserId }
+// 获取绝对地址
+function getAbsolutePath(path) {
+    const curWwwPath = window.document.location.href
+    const pathName = window.document.location.pathname;
+    const pos = curWwwPath.indexOf(pathName)
+    const localhostPaht = curWwwPath.substring(0, pos)
+    return localhostPaht + path
+}
+
+export { get, post, getTokenInfoObj, put, getUserIdFromToken, getUserId, getAbsolutePath }
