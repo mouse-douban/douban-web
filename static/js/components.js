@@ -11,10 +11,11 @@ class MovieCard extends HTMLElement {
             display: flex;
             justify-content: center;
             margin: 0 25px 10px 0;
+            transition: all 0.3s;
         }
 
         img {
-            margin-bottom: 5px;
+            margin: 10px 0px;
         }
 
         p {
@@ -36,8 +37,8 @@ class MovieCard extends HTMLElement {
         #card {
             cursor: pointer;
             border-radius: 10px;
-            height: fit-content;
-            width: fit-content;
+            height: 250px;
+            width: 135px;
             box-sizing: border-box;
             padding: 0px 10px 0px 10px;
             display: flex;
@@ -319,9 +320,11 @@ class RecyclerView extends HTMLElement {
         const template = document.createElement("template")
         template.innerHTML = `
         <style>
-            :host {
-                display: flex;
-                flex-warp: wrap;
+            #list {
+                display: inline-flex;
+                flex-wrap: wrap;
+                width: 60%;
+                height: fit-content;
                 justify-content: flex-start;
                 align-items: flex-start;
             }
@@ -654,3 +657,137 @@ class MovieComment extends HTMLElement {
 }
 
 customElements.define("movie-comment", MovieComment)
+
+class RecyclerTail extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        :host {
+            width: 100%;
+        }
+
+        .tail {
+            margin-bottom: 20px;
+            height: fit-content;
+            padding: 20px;
+            background-color: #efefef;
+            border-top: 1px solid #efefef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+
+        .tail:hover {
+            background-color: #f2f2f2;
+        }
+
+        .tail-text {
+            font-size: 16px;
+            color: #aaaaaa;
+        }
+
+        </style>
+        <div class="tail">
+            <span class="tail-text">点此加载更多</span>
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+        const tail = this.shadow.querySelector(".tail")
+        // state: hasMore noMore loading
+        this.state = "hasMore"
+        tail.addEventListener("click", async () => {
+            if (this.state === "hasMore") {
+                this.state = "loading"
+                tail.textContent = `正在加载...`
+                // 这里必须执行完毕才能切换状态回去，所以onloadmore必须是一个async的函数
+                // onloadmore需要返回一个boolean来标注加载状态 true为加载完成 false为没有更多了
+                const flag = await eval(this.onloadmore)
+                if (flag) {
+                    this.state = "hasMore"
+                    tail.textContent = `点此加载更多`
+                } else {
+                    this.state = "noMore"
+                    tail.textContent = `没有更多了`
+                }
+            }
+        })
+    }
+
+    connectedCallback() {
+        this.onloadmore = this.getAttribute("onloadmore")
+    }
+}
+
+customElements.define("recycler-tail", RecyclerTail)
+
+const emptyStarUrl = "https://img3.doubanio.com/f/shire/95cc2fa733221bb8edd28ad56a7145a5ad33383e/pics/rating_icons/star_hollow_hover@2x.png"
+const fullStarUrl = "https://img3.doubanio.com/f/shire/7258904022439076d57303c3b06ad195bf1dc41a/pics/rating_icons/star_onmouseover@2x.png"
+const keys = ["", "很差", "较差", "还行", "推荐", "力荐"]
+
+// 评分组件
+class RankingStars extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+            :host {
+                padding: 10px;
+            }
+
+            img {
+                cursor: pointer;
+            }
+
+            span {
+                color: #888888;
+                font-size: 15px;
+            }
+        </style>
+        <img src="${emptyStarUrl}" id="1" width="16" height="16">
+        <img src="${emptyStarUrl}" id="2" width="16" height="16">
+        <img src="${emptyStarUrl}" id="3" width="16" height="16">
+        <img src="${emptyStarUrl}" id="4" width="16" height="16">
+        <img src="${emptyStarUrl}" id="5" width="16" height="16">
+        <span></span>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+        this.span = this.shadow.querySelector("span")
+        this.stars = this.shadow.querySelectorAll("img")
+        this.state = 0
+        this.stars.forEach((star, index) => {
+            star.addEventListener("mouseover", () => {
+                this.stars.forEach(star => {
+                    star.src = emptyStarUrl
+                })
+                for (let i = 0; i < star.id; i++) {
+                    this.stars[i].src = fullStarUrl
+                }
+                this.span.textContent = keys[star.id]
+            })
+            star.addEventListener("mouseout", () => {
+                this.stars.forEach(star => {
+                    star.src = emptyStarUrl
+                })
+                for (let i = 0; i < this.state; i++) {
+                    this.stars[i].src = fullStarUrl
+                }
+                this.span.textContent = keys[this.state]
+            })
+            star.addEventListener("click", () => {
+                this.state = index + 1
+            })
+        })
+    }
+}
+
+customElements.define("ranking-stars", RankingStars)
