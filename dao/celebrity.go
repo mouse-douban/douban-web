@@ -20,6 +20,7 @@ func SelectCelebrity(id int64) (err error, celebrity model.Celebrity) {
 		&celebrity.Job,
 		&celebrity.IMDb,
 		&celebrity.Brief,
+		&celebrity.Avatar,
 	)
 	return
 }
@@ -42,6 +43,7 @@ func SelectCelebrityNameLike(name string) (err error, celebrities []model.Celebr
 			&celebrity.Job,
 			&celebrity.IMDb,
 			&celebrity.Brief,
+			&celebrity.Avatar,
 		)
 		if err != nil {
 			return
