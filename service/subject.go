@@ -13,8 +13,8 @@ func GetSubjects(start, limit int, sort string, tags string) (err error, subject
 	err, subjects = dao.SelectSubjects(tags, orderBys[sort], start, limit)
 	if err != nil {
 		err = utils.ServerError{
-			HttpStatus: 40015,
-			Status:     0,
+			HttpStatus: 400,
+			Status:     40015,
 			Info:       "invalid request",
 			Detail:     "影片不存在",
 		}

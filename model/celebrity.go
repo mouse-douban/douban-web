@@ -11,4 +11,5 @@ type Celebrity struct {
 	Job      string `json:"job"`
 	IMDb     string `json:"IMDb"`
 	Brief    string `json:"brief"`
+	Avatar   string `json:"avatar"`
 }

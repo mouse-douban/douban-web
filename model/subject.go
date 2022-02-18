@@ -33,15 +33,15 @@ type MovieScore struct {
 }
 
 type MovieDetail struct {
-	Nicknames  []string  `json:"nicknames"`
-	Director   string    `json:"director"`
-	Writers    []string  `json:"writers"`
-	Characters []string  `json:"characters"`
-	Type       []string  `json:"type"`
-	Website    string    `json:"website"`
-	Region     string    `json:"region"`
-	Language   string    `json:"language"`
-	Release    time.Time `json:"release"`
-	Period     int       `json:"period"`
-	IMDb       string    `json:"IMDb"`
+	Nicknames  []string `json:"nicknames"`
+	Director   string   `json:"director"`
+	Writers    []string `json:"writers"`
+	Characters []string `json:"characters"`
+	Type       []string `json:"type"`
+	Website    string   `json:"website"`
+	Region     string   `json:"region"`
+	Language   string   `json:"language"`
+	Release    string   `json:"release"`
+	Period     int      `json:"period"`
+	IMDb       string   `json:"IMDb"`
 }

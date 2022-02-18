@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import json
 import pymysql
 
@@ -21,34 +23,33 @@ class DB:
 
     conn = pymysql.connect(**param)
 
-    def __fetch_all(self, sql):
+    def fetch_all(self, sql):
         with self.conn.cursor() as cur:
             cur.execute(sql)
+            self.conn.commit()
             return cur.fetchall()
 
     def execute(self, sql):
         with self.conn.cursor() as cur:
-            return cur.execute(sql)
+            infect = cur.execute(sql)
+            self.conn.commit()
+            return infect
 
     def __fetch_one(self, sql):
         with self.conn.cursor() as cur:
             cur.execute(sql)
+            self.conn.commit()
             return cur.fetchone()
 
     def close(self):
         self.conn.close()
 
-    def insert_subject(self, tags, date, stars, detail, name, score, plot, avatar, celebrities):
-        self.execute(f"INSERT INTO subject(tags, date, stars, detail, name, score, plot, avatar, celebrities)"
-                     f" VALUES('{tags}', '{date}', '{stars}', '{detail}', '{name}', '{score}', '{plot}', '{avatar}', '{celebrities}')")
+    def insert_subject(self, mid, tags, date, stars, detail, name, score, plot, avatar, celebrities):
+        self.execute(f"INSERT INTO subject(mid, tags, date, stars, detail, name, score, plot, avatar, celebrities)"
+                     f" VALUES('{mid}', '{tags}', '{date}', '{stars}', '{detail}', '{name}', '{score}', '{plot}', '{avatar}', '{celebrities}')")
+        self.conn.commit()
 
-    def insert_celebrity(self, id, name, name_en, gender, sign, birth, hometown, job, imdb, brief):
-        sql = f"INSERT INTO celebrity(id, name, name_en, gender, sign, birth, hometown, job, imdb, brief) VALUES('{id}', '{name}', '{name_en}', '{gender}', '{sign}', '{birth}', '{hometown}', '{job}', '{imdb}', '{brief}')"
+    def insert_celebrity(self, cid, name, name_en, gender, sign, birth, hometown, job, imdb, brief, avatar):
+        sql = f"INSERT INTO celebrity(id, name, name_en, gender, sign, birth, hometown, job, imdb, brief, avatar) VALUES('{cid}', '{name}', '{name_en}', '{gender}', '{sign}', '{birth}', '{hometown}', '{job}', '{imdb}', '{brief}', '{avatar}')"
         self.execute(sql)
-
-
-dB = DB()
-
-dB.insert_celebrity(2, "哈哈", "haha", "女", "天鱼座", "2021-02-11 12:00:00", "银河", "马飞飞", "8018hgdaybwd", "yidauw")
-
-dB.close()
+        self.conn.commit()
