@@ -45,8 +45,10 @@ class DB:
         self.conn.close()
 
     def insert_subject(self, mid, tags, date, stars, detail, name, score, plot, avatar, celebrities):
-        self.execute(f"INSERT INTO subject(mid, tags, date, stars, detail, name, score, plot, avatar, celebrities)"
-                     f" VALUES('{mid}', '{tags}', '{date}', '{stars}', '{detail}', '{name}', '{score}', '{plot}', '{avatar}', '{celebrities}')")
+        sql = "INSERT INTO subject(mid, tags, date, stars, detail, name, score, plot, avatar, celebrities)" \
+              f" VALUES('{mid}', '{tags}', '{date}', '{stars}', '{detail}', '{name}', '{score}', '{plot}', '{avatar}', '{celebrities}')"
+        # sql = sql.replace("\"", "")
+        self.execute(sql)
         self.conn.commit()
 
     def insert_celebrity(self, cid, name, name_en, gender, sign, birth, hometown, job, imdb, brief, avatar):
