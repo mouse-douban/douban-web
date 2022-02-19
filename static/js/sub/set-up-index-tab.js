@@ -3,7 +3,6 @@ import { getSubjects } from "../api.js"
 const types = [
     "热门",
     "喜剧",
-    "生活",
     "爱情",
     "动作",
     "科幻",

@@ -143,7 +143,27 @@ async function getSubjects(start = 0, limit = 20, sort = "latest", tag = "") {
     return await get("/subjects", { start, limit, sort, tag })
 }
 
+/**
+ * 获取电影主页信息
+ * 
+ * @param {*} id mid
+ * @param {*} scope 范围, 填comments|reviews|discussions
+ */
+async function getSubjectById(id, scope = "") {
+    return await get(`/subjects/${id}`, { scope })
+}
+
+/**
+ * 获取影人信息
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+async function getCelebrityInfo(id) {
+    return await get(`/celebrities/${id}`)
+}
+
 export { 
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo
 }

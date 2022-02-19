@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!--破解防盗链-->
     <meta name="referrer" content="never">
@@ -14,8 +15,6 @@
     <script src="../js/movie.js" type="module"></script>
     <title>电影标题 (豆瓣)</title>
 </head>
-
-<body>
     <div id="top-nav-items">
         <ul id="top-nav-ul" style="display:inline-block;">
             <li>
@@ -91,9 +90,8 @@
             "2021年度榜单",
             "2021书影音报告",
         ]
-
         const tl = new TabLayout(types, tab => {
-            switch(tab) {
+            switch (tab) {
                 case "我看": {
                     window.location.href = "../index.html"
                     break
@@ -110,24 +108,25 @@
     <div class="content-box">
         <h1 class="movie-title">电影标题 <span style="color: #888888;font-size: 25px;">(2022)</span></h1>
         <div class="flex-box">
-            <img id="mainpic" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" title="点击看更多海报" alt="蕾米" rel="v:image">
+            <img id="mainpic" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
+                title="点击看更多海报" alt="" rel="v:image">
             <div id="movie-info">
-                <div>导演: <span>xxx</span></div>
-                <div>编剧: <span>xxx</span></div>
-                <div>主演: <span>xxx</span></div>
-                <div>类型: <span>xxx</span></div>
-                <div>制片国家/地区: <span>xxx</span></div>
-                <div>语言: <span>xxx</span></div>
-                <div>上映日期: <span>xxx</span></div>
-                <div>片长: <span>xxx</span></div>
-                <div>又名: <span>xxx</span></div>
-                <div>IMDb: <span>xxx</span></div>
+                <div>导演: <span id="director">xxx</span></div>
+                <div>编剧: <span id="writers">xxx</span></div>
+                <div>主演: <span id="characters">xxx</span></div>
+                <div>类型: <span id="type">xxx</span></div>
+                <div>制片国家/地区: <span id="region">xxx</span></div>
+                <div>语言: <span id="language">xxx</span></div>
+                <div>上映日期: <span id="release">xxx</span></div>
+                <div>片长: <span id="period">xxx</span>分钟</div>
+                <div>又名: <span id="nicknames">xxx</span></div>
+                <div>IMDb: <span id="IMDb">xxx</span></div>
             </div>
             <div id="evaluate-box">
                 <div id="evaluate-box-top">
                     <p style="font-size:small;">豆瓣评分</p>
                     <h2 style="color: #494949;font-weight: 500;font-size: 30px;margin-top: 5px;">
-                        9.9 <span style="font-size: 10px;position: relative;bottom: 6px;">⭐⭐⭐⭐⭐</span>
+                        <span id="score">9.9</span> <span style="font-size: 10px;position: relative;bottom: 6px;">⭐⭐⭐⭐⭐</span>
                     </h2>
                     <p>5星: <span style="color: orange;">80%</span></p>
                     <p>4星: <span style="color: orange;">10%</span></p>
@@ -143,71 +142,82 @@
         <button>想看</button>
         <button>看过</button>
         <div class="action-line">
-            <img src="https://img3.doubanio.com/f/shire/cc03d0fcf32b7ce3af7b160a0b85e5e66b47cc42/pics/short-comment.gif"> <span>写短评</span>
-            <img src="https://img3.doubanio.com/f/shire/5bbf02b7b5ec12b23e214a580b6f9e481108488c/pics/add-review.gif"> <span>写影评</span>
+            <img
+                src="https://img3.doubanio.com/f/shire/cc03d0fcf32b7ce3af7b160a0b85e5e66b47cc42/pics/short-comment.gif">
+            <span>写短评</span>
+            <img src="https://img3.doubanio.com/f/shire/5bbf02b7b5ec12b23e214a580b6f9e481108488c/pics/add-review.gif">
+            <span>写影评</span>
             <span>添加到片单</span>
         </div>
         <h2 class="sub-title">电影名称的剧情简介 · · · · · ·</h2>
-        <p>毕生追求男主梦的魏成功（魏翔 饰）终于得到了女明星米兰（马丽 饰）的“赏识”，被邀请出演她的男一号“杀手卡尔”，他兴致勃勃诠释角色的同时，却没想到已经落入了一场危机四伏的阴谋，但他依然借自己 “精湛”的演技和绝佳的运气化险为夷，而残酷的真相也离他越来越近……</p>
-        <h2 class="sub-title">电影名称的演职员 · · · · · · <span>( 全部 22 )</span></h2>
-        <div style="display: flex;margin-bottom: 20px; flex-wrap: wrap;">
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
+        <p id="introduce">毕生追求男主梦的魏成功（魏翔 饰）终于得到了女明星米兰（马丽 饰）的“赏识”，被邀请出演她的男一号“杀手卡尔”，他兴致勃勃诠释角色的同时，却没想到已经落入了一场危机四伏的阴谋，但他依然借自己
+            “精湛”的演技和绝佳的运气化险为夷，而残酷的真相也离他越来越近……</p>
+        <h2 class="sub-title">电影名称的演职员 · · · · · · <span>( 全部 ? )</span></h2>
+        <div id="actor-container" style="display: flex;margin-bottom: 20px; flex-wrap: wrap;">
+            <!-- <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-                actor="蕾米"
-                job="导演"></actor-card>
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card> -->
         </div>
-        <h2 class="sub-title">电影名称的短评 · · · · · · <span>( 全部 220 条 )</span></h2>
-        <short-comment user="寒雨"
-            score="5"
-            time="2022-02-01 10:46:17"
-            content="这是一部好电影，我很喜欢。"
-            stars="233"
-            type="after"
-        ></short-comment>
-        <short-comment user="寒雨"
-            score="5"
-            time="2022-02-01 10:46:17"
-            content="这是一部好电影，我很喜欢。"
-            stars="233"
-            type="after"
-        ></short-comment>
-        <short-comment user="寒雨"
-            score="5"
-            time="2022-02-01 10:46:17"
-            content="这是一部好电影，我很喜欢。"
-            stars="233"
-            type="after"
-        ></short-comment>
-        <short-comment user="寒雨"
-            score="5"
-            time="2022-02-01 10:46:17"
-            content="这是一部好电影，我很喜欢。"
-            stars="233"
-            type="after"
-        ></short-comment>
-        <h2 class="sub-title">电影名称的影评 · · · · · · <span>( 全部 220 条 )</span></h2>
-        <movie-comment user="寒雨"
-            time="2022-02-01 10:46:17"
-            content="这是一部好电影，我很喜欢。"
-            stars="233"
-            user-icon="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
-            title="很好的一部电影"
-            score="5"
-            ></movie-comment>
+        <h2 class="sub-title">电影名称的短评 · · · · · · <span>( 全部 ? 条 )</span></h2>
+        <div id="short-comment-container">
+            <short-comment user="寒雨" score="5" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+                type="after"></short-comment>
+            <short-comment user="寒雨" score="5" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+                type="after"></short-comment>
+            <short-comment user="寒雨" score="5" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+                type="after"></short-comment>
+            <short-comment user="寒雨" score="5" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+                type="after"></short-comment>
+        </div>
+        <script>
+            async function onloadMoreShortComment() {
+                const container = document.getElementById("short-comment-container");
+                const movieId = localStorage.getItem("movieId");
+                const page = this.shortCommentPage || 0;
+                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 10}&type=after`).then(res => res.json().data);
+                const beforeData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 10}&type=before`).then(res => res.json().data);
+                const data = [...afterData, ...beforeData];
+                data.forEach(async item => {
+                    const shortComment = document.createElement("short-comment");
+                    const user = await fetch(`https://api.douban.skygard.cn:8080/users/${item.uid}`).then(res => res.json());
+                    shortComment.setAttribute("user", user.data.username);
+                    shortComment.setAttribute("score", item.score);
+                    shortComment.setAttribute("time", item.date.replace("T", " ").replace("Z", ""));
+                    shortComment.setAttribute("content", item.content);
+                    shortComment.setAttribute("stars", item.stars);
+                    shortComment.setAttribute("type", item.type);
+                    container.appendChild(shortComment);
+                });
+                this.shortCommentPage = ++page;
+                return data.length != 0;
+            }
+        </script>
+        <recycler-tail onloadmore="onloadMoreShortComment()"></recycler-tail>
+        <h2 class="sub-title">电影名称的影评 · · · · · · <span>( 全部 ? 条 )</span></h2>
+        <movie-comment user="寒雨" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+            user-icon="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" title="很好的一部电影"
+            score="5"></movie-comment>
+    </div>
+    <div class="dialog-box">
+        <div class="dialog">
+            <div class="dialog-topbar">
+                <span style="color: #007722;">添加收藏: 我想看这部电影</span>
+                <span class="dialog-closer">x</span>
+            </div>
+            <div class="dialog-content">
+                <ranking-stars></ranking-stars>
+            </div>
+        </div>
     </div>
 </body>
+
 </html>

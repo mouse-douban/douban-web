@@ -8,7 +8,6 @@ const radios = document.querySelectorAll("input[type=radio]")
 radios.forEach(radio => {
     radio.addEventListener("change", async () => {
         if (radio.checked) {
-            console.log(radio.id);
             const sort = radio.id == "sort-latest" ? "" : "hotest"
             const tabLayout = document.querySelector("tab-layout")
             const rv = document.querySelector("recycler-view")
