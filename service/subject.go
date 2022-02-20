@@ -180,7 +180,7 @@ func UpdateSubjectScore(mid int64, score int) (err error) {
 
 func parsePercentage(v string) (ret float64, err error) {
 	v = strings.Replace(v, "%", "", -1)
-	v = "0." + v
 	ret, err = strconv.ParseFloat(v, 64)
+	ret = 0.01 * ret
 	return
 }

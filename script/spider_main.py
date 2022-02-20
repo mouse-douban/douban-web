@@ -86,9 +86,21 @@ def spider_subject(t, db, start, batch_size):
 # 喜剧 260
 # 多进程爬取
 # 不过要注意豆瓣可能会ban异常ip
-def subject_insert():
+def subject_insert(tags_param=None):
+    if tags_param is None:
+        tags_param = [
+            "喜剧",
+            "生活",
+            "爱情",
+            "动作",
+            "科幻",
+            "悬疑",
+            "惊悚",
+            "动画",
+            "奇幻",
+        ]
     lp = []
-    for tag in tags:
+    for tag in tags_param:
         print(f"add movie of {tag}")
         p = Process(target=spider_subject, args=(tag, sql.DB(), 0, 20,))
         p.start()
@@ -135,10 +147,12 @@ def spider_celebrity(db, start, batch_size):
 
 # 豆瓣会封ip...
 if __name__ == '__main__':
-    pl = []
-    for i in range(7,8):
-        print(f"start at {155*i}, end at {155*i+155}")
-        p = Process(target=spider_celebrity, args=(sql.DB(), 1200, 40,))
-        p.start()
-        pl.append(p)
-    map(lambda c: c.join(), pl)
+    # pl = []
+    # for i in range(7,8):
+    #     print(f"start at {155*i}, end at {155*i+155}")
+    #     p = Process(target=spider_celebrity, args=(sql.DB(), 1200, 40,))
+    #     p.start()
+    #     pl.append(p)
+    # map(lambda c: c.join(), pl)
+    pass
+    #subject_insert(["生活"])

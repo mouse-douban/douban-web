@@ -113,3 +113,4 @@ test
 name, name_en, avatar, detail, brief = get_celebrity_info("1054400")
 print(name, name_en, avatar, detail, brief)
 '''
+
