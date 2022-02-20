@@ -59,10 +59,6 @@ func handleBad(ctx *gin.Context) {
 
 }
 
-func handleSwagger(ctx *gin.Context) {
-	ctx.Redirect(http.StatusPermanentRedirect, "https://douban.skygard.cn/swagger/openapi.json")
-}
-
 func handleSearch(ctx *gin.Context) {
 	words := ctx.Query("key")
 	if words == "" {
@@ -79,8 +75,13 @@ func handleSearch(ctx *gin.Context) {
 		utils.RespWithError(ctx, utils.ServerInternalError)
 		return
 	}
-	response := make([]utils.RespData, 2)
-	response[0] = resp1
-	response[1] = resp2
+
+	response := utils.RespData{
+		HttpStatus: 200,
+		Status:     20000,
+		Info:       utils.InfoSuccess,
+		Data:       []interface{}{resp1.Data, resp2.Data},
+	}
+
 	ctx.JSON(http.StatusOK, response)
 }

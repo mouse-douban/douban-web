@@ -9,6 +9,19 @@ import (
 	"strings"
 )
 
+func GetUidFrom(kind, account string) (err error, uid int64) {
+	err, uid = dao.SelectUidFrom(kind, account)
+	if err != nil {
+		err = utils.ServerError{
+			HttpStatus: http.StatusBadRequest,
+			Status:     40000,
+			Info:       "invalid request",
+			Detail:     "找不到uid",
+		}
+	}
+	return
+}
+
 func RegisterAccountFromUsername(username, password string) (err error, accessToken, refreshToken string, uid int64) {
 	err, got := dao.SelectUidFrom("username", username)
 	if err == nil || got > 0 {

@@ -67,3 +67,4 @@ config/*.pem
 build/local.sh
 target/
 .VSCodeCounter/
+/static/docs/

@@ -10,25 +10,39 @@ import (
 func ParseCommonQueryParams(ctx *gin.Context) (err error, id int64, start, limit int, sort string) {
 	idS := ctx.Param("id")
 	id, err = strconv.ParseInt(idS, 10, 64)
+	paramError := utils.QueryParamError.Copy()
 	if err != nil {
-		utils.RespWithParamError(ctx, "id 格式不支持")
+		paramError.Info = "id 格式不支持"
+		err = paramError
 		return
 	}
 	startS := ctx.Query("start")
 	if start, err = strconv.Atoi(startS); startS != "" && err != nil {
-		utils.RespWithParamError(ctx, "start 格式不支持")
+		paramError.Info = "start 格式不支持"
+		err = paramError
 		return
 	}
 	limitS := ctx.Query("limit")
 	if limit, err = strconv.Atoi(limitS); limitS != "" && err != nil {
-		utils.RespWithParamError(ctx, "limit 格式不支持")
+		paramError.Info = "limit 格式不支持"
+		err = paramError
 		return
 	}
 	sort = ctx.Query("sort")
 	if sort != "latest" && sort != "hotest" && sort != "" {
-		utils.RespWithParamError(ctx, "sort 格式不支持")
-		err = utils.ServerInternalError
+		paramError.Info = "sort 格式不支持"
+		err = paramError
 		return
+	}
+	if limitS == "" {
+		limit = 20
+		err = nil
+	}
+	if startS == "" {
+		err = nil
+	}
+	if sort == "" {
+		sort = "hotest"
 	}
 	return
 }

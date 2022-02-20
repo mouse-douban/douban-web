@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-// SelectUidFrom 只允许内部调用，不会出现sql注入
 func SelectUidFrom(accountType, account string) (err error, uid int64) {
 	sqlStr := "SELECT uid FROM user WHERE " + accountType + " = '" + account + "'"
 	err = dB.QueryRow(sqlStr).Scan(&uid)

@@ -84,7 +84,7 @@ func SelectSubjects(tag, sortBy string, start, limit int) (err error, subjects [
 func SelectSubjectNameLike(key string) (err error, datum []map[string]interface{}) {
 	datum = make([]map[string]interface{}, 0)
 	sqlStr := "SELECT name, score, avatar, mid, tags, detail FROM subject WHERE name LIKE '%{}%'"
-	var name, score, avatar, tags, detail string
+	var name, scoreStr, avatar, tags, detailStr string
 	var mid int64
 	rows, err := dB.Query(strings.Replace(sqlStr, "{}", key, -1))
 	if err != nil {
@@ -95,10 +95,22 @@ func SelectSubjectNameLike(key string) (err error, datum []map[string]interface{
 
 	for rows.Next() {
 		var data = make(map[string]interface{})
-		err = rows.Scan(&name, &score, &avatar, &mid, &tags, &detail)
+		err = rows.Scan(&name, &scoreStr, &avatar, &mid, &tags, &detailStr)
 		if err != nil {
 			return
 		}
+		var detail model.MovieDetail
+		err = json.Unmarshal([]byte(detailStr), &detail)
+		if err != nil {
+			return
+		}
+
+		var score model.MovieScore
+		err = json.Unmarshal([]byte(scoreStr), &score)
+		if err != nil {
+			return
+		}
+
 		data["name"] = name
 		data["score"] = score
 		data["avatar"] = avatar

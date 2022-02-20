@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"net/url"
 	"strconv"
 )
 
@@ -52,7 +51,7 @@ func HandleRegister(ctx *gin.Context) {
 			utils.RespWithParamError(ctx, "邮箱格式不对")
 			return
 		}
-	case "sms":
+	case "sms": // + 会转义，使用 %2B 代替
 		ok = utils.MatchPhoneNumber(account)
 		if !ok {
 			utils.RespWithParamError(ctx, "电话格式不支持")
@@ -224,8 +223,6 @@ func HandleVerify(ctx *gin.Context) {
 		return
 	}
 
-	target, _ = url.QueryUnescape(target)
-
 	switch kind {
 	case "sms": // + 号会转译，发请求时使用 %2B
 		if !utils.MatchPhoneNumber(target) {
@@ -312,10 +309,10 @@ func HandleVerifyAccount(ctx *gin.Context) {
 }
 
 func HandleForgetPwd(ctx *gin.Context) {
-	id := ctx.PostForm("uid")
-	uid, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		utils.RespWithParamError(ctx, "id 格式不支持")
+	account := ctx.PostForm("account")
+	kind := ctx.PostForm("type")
+	if kind != "phone" && kind != "email" {
+		utils.RespWithParamError(ctx, "kind格式不支持")
 		return
 	}
 	verify := ctx.PostForm("verify")
@@ -328,10 +325,13 @@ func HandleForgetPwd(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "新密码格式不支持")
 		return
 	}
-	verifyType := ctx.PostForm("verify_type")
+	var verifyType = kind
+	if verifyType == "phone" {
+		verifyType = "sms"
+	}
 	switch verifyType {
 	case "sms", "email":
-		err, resp := controller.CtrlResetPwd(uid, verify, verifyType, newPwd)
+		err, resp := controller.CtrlResetPwd(account, kind, verify, verifyType, newPwd)
 		utils.Resp(ctx, err, resp)
 		return
 	default:

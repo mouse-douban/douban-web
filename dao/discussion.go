@@ -52,9 +52,25 @@ func UpdateDiscussion(id, uid int64, name, content string) (err error) {
 }
 
 var mu = sync.Mutex{}
+var mu5 = sync.Mutex{}
+
+func IncreaseDiscussionReplyCnt(id int64) (err error) {
+	mu5.Lock()
+	defer mu5.Unlock()
+	var cnt int64
+	row := dB.QueryRow("SELECT reply_cnt FROM discussion WHERE id = ?", id)
+	err = row.Scan(&cnt)
+	if err != nil {
+		return
+	}
+	cnt++
+	_, err = dB.Exec("UPDATE discussion SET reply_cnt = ? WHERE id = ?", cnt, id)
+	return
+}
 
 func StarOrUnStarDiscussion(id, uid int64, value bool) (err error) {
 	mu.Lock()
+	defer mu.Unlock()
 	var v int64
 	sqlStr1 := "SELECT stars FROM discussion WHERE id = ? AND uid = ?"
 	err = dB.QueryRow(sqlStr1, id, uid).Scan(&v)
@@ -68,6 +84,5 @@ func StarOrUnStarDiscussion(id, uid int64, value bool) (err error) {
 	}
 	sqlStr2 := "UPDATE discussion SET stars = ? WHERE id = ? AND uid = ?"
 	_, err = dB.Exec(sqlStr2, v, id, uid)
-	mu.Unlock()
 	return
 }
