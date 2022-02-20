@@ -145,7 +145,7 @@ actor-card {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 100;
-    /* display: none; */
+    display: none;
 }
 
 .dialog {
@@ -183,5 +183,94 @@ actor-card {
     height: fit-content;
     padding: 18px;
     box-sizing: border-box;
+}
+
+.dialog-title {
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    color: #494949;
+}
+
+.dialog-input {
+    outline: medium;
+    border: 0.5px solid #BBBBBB;
+    font-size: 16px;
+    padding: 5px;
+    width: 50%;
+}
+
+.dialog-tail {
+    width: 100%;
+    height: fit-content;
+    padding: 18px;
+    box-sizing: border-box;
+    border-radius: 0 0 5px 5px;
+    background-color: #e9eef2;
+    text-align: right;
+}
+
+.dialog-button {
+    padding: 5px 15px;
+    font-size: 16px;
+    border: 1px solid gray;
+    background-color: white;
+    transition: all .3s;
+}
+
+.dialog-button:hover {
+    background-color: #f2f2f2;
+}
+
+.add-to-list-content {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas: 
+    "left movie-list"
+    "left comment";
+}
+
+.left {
+    height: 300px;
+    grid-area: left;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #eaeaea;
+}
+
+.right-top {
+    padding: 20px;
+    height: 200px;
+    border-bottom: 1px solid #eaeaea;
+    grid-area: movie-list;
+    box-sizing: border-box;
+}
+
+.right-bottom {
+    padding: 20px;
+    height: 100px;
+    grid-area: comment;
+    box-sizing: border-box;
+}
+
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+img {
+    max-width: 140px;
+    max-height: 140px;
+}
+
+.bar {
+    width: 10px;
+    height: 12px;
+    line-height: 10px;
+    display: inline-block;
+    background-color: #ffd596;
 }
 

@@ -1,0 +1,15 @@
+#content-box {
+    position: relative;
+    left: 225px;
+    height: fit-content;
+    width: fit-content;
+    max-width: 60%;
+    box-sizing: border-box;
+    padding: 20px 0px;
+}
+
+h1 {
+    font-size: 28px;
+    color: #494949;
+    margin: 10px 0px 20px 0px;
+}

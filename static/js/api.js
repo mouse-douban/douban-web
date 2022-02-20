@@ -163,7 +163,41 @@ async function getCelebrityInfo(id) {
     return await get(`/celebrities/${id}`)
 }
 
-export { 
+/**
+ * 发布短评
+ * 
+ * @param {*} mid 
+ * @param {*} score 
+ * @param {*} type 
+ * @param {*} content 
+ * @param {*} tag 
+ */
+async function addComment(mid, score, type, content, tag) {
+    return await post("/comments", { mid, score, type, content, tag })
+}
+
+/**
+ * 发布影评
+ * 
+ * @param {*} mid 
+ * @param {*} score 
+ * @param {*} name 
+ * @param {*} content 
+ */
+async function addReviews(mid, score, name, content) {
+    return await post("/reviews", { mid, score, name, content })
+}
+
+/**
+ * 搜索
+ * 
+ * @param {*} key 
+ */
+async function search(key) {
+    return await get("/search", { key })
+}
+
+export {
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search
 }

@@ -29,6 +29,13 @@ function setup() {
         setUpLoginButton()
     }
 
+    const queryInput = document.querySelector("#inp-query")
+    document.querySelector(".inp-btn").addEventListener("click", () => {
+        const query = queryInput.value
+        if (query.length === 0) return
+        localStorage.setItem("searchKey", query)
+        window.location.href = getAbsolutePath("/static/search")
+    })
     async function doGetUserInfo() {
         const info = await getUserInfo(tokenLifeCycleObj.uid)
         localStorage.setItem(USER_INFO, JSON.stringify(info))

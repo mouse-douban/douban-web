@@ -53,6 +53,9 @@ class MovieCard extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' })
         // insert
         this.shadow.appendChild(template.content.cloneNode(true))
+    }
+
+    connectedCallback() {
         // attributes
         const src = this.getAttribute("src")
         const movie = this.getAttribute("movie")
@@ -446,9 +449,21 @@ class ActorCard extends HTMLElement {
     }
 
     connectedCallback() {
+        // 获取绝对地址
+        function getAbsolutePath(path) {
+            const curWwwPath = window.document.location.href
+            const pathName = window.document.location.pathname;
+            const pos = curWwwPath.indexOf(pathName)
+            const localhostPaht = curWwwPath.substring(0, pos)
+            return localhostPaht + path
+        }
         this.shadow.querySelector('.actor').innerHTML = this.getAttribute("actor")
         this.shadow.querySelector('.job').innerHTML = this.getAttribute("job")
         this.shadow.querySelector('img').src = this.getAttribute("src")
+        this.shadow.querySelector('#card').addEventListener("click", () => {
+            localStorage.setItem("celebrityId", this.getAttribute("id"))
+            window.open(getAbsolutePath("/static/celebrities"))
+        })
     }
 
     // 属性改变回调
@@ -791,3 +806,126 @@ class RankingStars extends HTMLElement {
 }
 
 customElements.define("ranking-stars", RankingStars)
+
+class UnMutableRankingStars extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+            span {
+                color: #888888;
+                font-size: 15px;
+            }
+        </style>
+        <img src="${emptyStarUrl}" width="10" height="10">
+        <img src="${emptyStarUrl}" width="10" height="10">
+        <img src="${emptyStarUrl}" width="10" height="10">
+        <img src="${emptyStarUrl}" width="10" height="10">
+        <img src="${emptyStarUrl}" width="10" height="10">
+        <span></span>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+        this.span = this.shadow.querySelector("span")
+        this.stars = this.shadow.querySelectorAll("img")
+        this.state = 0
+    }
+
+    connectedCallback() {
+        const score = this.getAttribute("score")
+        this.shadow.querySelector("span").textContent = score
+        for (let k = 0; k < score / 2 - 1; k++) {
+            this.stars[k].src = fullStarUrl
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.shadow.querySelector("span").textContent = newValue
+        for (let k = 0; k < newValue / 2 - 1; k++) {
+            this.stars[k].src = fullStarUrl
+        }
+    }
+}
+
+customElements.define("unmutable-ranking-stars", UnMutableRankingStars)
+
+class SearchResult extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        :host {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        #types,#authors {
+            max-lines: 1;
+            overflow: hidden;
+            font-size: 13px;
+            color: #888888;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #3377aa;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: fit-content;
+            font-weight: normal;
+        }
+
+        h3:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+
+        </style>
+        <img src= "https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.webp">
+        <div>
+            <h3>凉宫春日的消失 涼宮ハルヒの消失 (2010)</h3>
+            <div style="margin-bottom: 10px;"><unmutable-ranking-stars score="9.1"></unmutable-ranking-stars> (<span>31722</span>人评价)</div>
+            <div id="types">日本 / 动画 / 喜剧 / 科幻 / The Disappearance of Haruhi Suzumiya / Suzumiya Haruhi no shôshitsu / 162分钟</div>
+            <div id="authors">石原立也 / 武本康弘 / 平野绫 / 杉田智和 / 茅原实里 / 青木沙耶香 / 后藤邑子 / 桑谷夏子 / 松元惠 / 松冈由贵</div>
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+
+    connectedCallback() {
+        // 获取绝对地址
+        function getAbsolutePath(path) {
+            const curWwwPath = window.document.location.href
+            const pathName = window.document.location.pathname;
+            const pos = curWwwPath.indexOf(pathName)
+            const localhostPaht = curWwwPath.substring(0, pos)
+            return localhostPaht + path
+        }
+        const h3 = this.shadow.querySelector("h3")
+        h3.addEventListener("click", () => {
+            localStorage.setItem("movieId", this.getAttribute("id"))
+            window.open(getAbsolutePath("/static/movie"))
+        })
+        h3.textContent = this.getAttribute("title")
+        this.shadow.querySelector("unmutable-ranking-stars").setAttribute("score", this.getAttribute("score"))
+        this.shadow.querySelector("#types").textContent = this.getAttribute("types")
+        this.shadow.querySelector("#authors").textContent = this.getAttribute("authors")
+        this.shadow.querySelector("div span").textContent = this.getAttribute("total")
+    }
+}
+
+customElements.define("search-result", SearchResult)
