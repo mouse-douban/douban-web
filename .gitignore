@@ -66,3 +66,4 @@ config/*.key
 config/*.pem
 build/local.sh
 target/
+.VSCodeCounter/
