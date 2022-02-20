@@ -309,10 +309,10 @@ func HandleVerifyAccount(ctx *gin.Context) {
 }
 
 func HandleForgetPwd(ctx *gin.Context) {
-	id := ctx.PostForm("uid")
-	uid, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		utils.RespWithParamError(ctx, "id 格式不支持")
+	account := ctx.PostForm("account")
+	kind := ctx.PostForm("type")
+	if kind != "phone" && kind != "email" {
+		utils.RespWithParamError(ctx, "kind格式不支持")
 		return
 	}
 	verify := ctx.PostForm("verify")
@@ -325,10 +325,13 @@ func HandleForgetPwd(ctx *gin.Context) {
 		utils.RespWithParamError(ctx, "新密码格式不支持")
 		return
 	}
-	verifyType := ctx.PostForm("verify_type")
+	var verifyType = kind
+	if verifyType == "phone" {
+		verifyType = "sms"
+	}
 	switch verifyType {
 	case "sms", "email":
-		err, resp := controller.CtrlResetPwd(uid, verify, verifyType, newPwd)
+		err, resp := controller.CtrlResetPwd(account, kind, verify, verifyType, newPwd)
 		utils.Resp(ctx, err, resp)
 		return
 	default:

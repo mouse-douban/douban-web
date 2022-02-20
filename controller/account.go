@@ -226,12 +226,16 @@ func CtrlAccountEXInfoUpdate(uid int64, params map[string]string, verifyAccount,
 	return nil, utils.NoDetailSuccessResp
 }
 
-func CtrlResetPwd(uid int64, verifyCode, verifyType, newPwd string) (err error, resp utils.RespData) {
+func CtrlResetPwd(account, kind, verifyCode, verifyType, newPwd string) (err error, resp utils.RespData) {
+	err, uid := service.GetUidFrom(kind, account)
+	if err != nil {
+		return
+	}
 	err, user := service.GetAccountBaseInfo(uid)
 	if err != nil {
 		return
 	}
-	var account string
+
 	switch verifyType {
 	case "sms":
 		account = user.Phone
