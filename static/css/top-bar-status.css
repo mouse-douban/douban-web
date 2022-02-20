@@ -95,6 +95,10 @@ li {
     height: 20px;
 }
 
+#inp-query {
+    outline: medium;
+}
+
 .inp-btn input {
     background: url(https://img3.doubanio.com/dae/accounts/resources/3e96b44/movie/assets/nav_mv_bg.png?s=1) no-repeat 0 -40px;
     width: 100%;

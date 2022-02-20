@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--破解防盗链-->
     <meta name="referrer" content="never">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人主页</title>
-    <link rel="stylesheet" href="../css/mine.css">
+    <script src="../js/components.js"></script>
+    <script src="../js/search.js" type="module"></script>
     <link rel="stylesheet" href="../css/top-bar-status.css">
+    <link rel="stylesheet" href="../css/search.css">
     <link rel="stylesheet" href="../css/common.css">
     <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
-    <script type="module" src="../js/components.js" defer></script>
-    <script src="../js/mine.js" type="module" defer></script>
+    <title>搜索</title>
 </head>
 <body>
     <div id="top-nav-items">
@@ -76,38 +75,37 @@
             </div>
         </div>
     </div>
-    <div id="content-body">
-        <div id="user-info" class="card">
-            <div id="user-avatar"></div>
-            <div id="fragment-user-info">
-                <h1 id="user-id">Rain</h1>
-                <p id="user-description">Student | Software Engineering | Learning Android & Web-FrontEnd | Focusing on learning</p>
-                <div id="info-box">
-                    <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
-                        <embed src="../images/phone.svg" type="image/svg+xml" />
-                        <p id="phone-number" style="display: inline;margin-left: 10px;">15683055233</p>
-                    </div>
-                    <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
-                        <embed src="../images/email.svg" type="image/svg+xml" />
-                        <p id="email" style="display: inline;margin-left: 10px;">rain@asgard.hk</p>
-                    </div>
-                </div>
-                <div id="edit-button" class="button">Edit Profile</div>
-                <div id="logout-button" class="button">Logout</div>
-            </div>
-        </div>
-        <!-- 想看/看过 -->
-        <div id="infomation-board" class="card">
-            <ul id="tab">
-                <li id="want-to-watch-tab" class="tab-item selected">想看</li>
-                <li id="watched-tab" class="tab-item">看过</li>
-                <li id="my-comment-tab" class="tab-item">我的影评</li>
-                <li id="movie-list-tab" class="tab-item" style="border-right:0px;">片单</li>
-            </ul>
-            <!--作为fragment的容器-->
-            <div id="pager">
-                
-            </div>
+    <script>
+        const types = [
+            "我看",
+            "影讯&购票",
+            "选电影",
+            "电视剧",
+            "排行榜",
+            "分类",
+            "影评",
+            "2021年度榜单",
+            "2021书影音报告",
+        ]
+        const tl = new TabLayout(types, tab => {
+            switch (tab) {
+                case "我看": {
+                    window.location.href = "../index.html"
+                    break
+                }
+                default: {
+                    alert("未实现")
+                }
+            }
+            return false
+        })
+        tl.style = "position: relative;left: 225px;width: fit-content;"
+        document.querySelector("body").appendChild(tl)
+    </script>
+    <div id="content-box">
+        <h1>搜索 凉宫春日的消失</h1>
+        <div id="search-result-container">
+
         </div>
     </div>
 </body>

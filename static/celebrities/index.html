@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="referrer" content="never">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/components.js"></script>
+    <script src="../js/celebrities.js" type="module"></script>
+    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
+    <link rel="stylesheet" href="../css/top-bar-status.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/celebrities.css">
+    <title>影人</title>
+</head>
+<body>
+    <div id="top-nav-items">
+        <ul id="top-nav-ul" style="display:inline-block;">
+            <li>
+                <span class="top-nav-item" onclick="alert('没有主页！哼😕')">豆瓣</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道读书！')">读书</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="window.location.href = './index.html'">电影</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道听音乐！')">音乐</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('啊这...我不好说了')">同城</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('就知道小组！')">小组</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('跟读书有区别吗？哼😕')">阅读</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('什么年代了还听广播 原来我也听那没事了')">FM</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('没时间啦 万策尽啦！！！😱')">时间</span>
+            </li>
+            <li>
+                <span class="top-nav-item" onclick="alert('拒绝超前消费!')">豆品</span>
+            </li>
+        </ul>
+        <div id="top-nav-right-items">
+            <ul id="top-nav-right-ul">
+                <li>
+                    <span class="top-nav-item" onclick="alert('flutter在学了😭')">下载豆瓣客户端</span>
+                </li>
+                <li>
+                    <span class="top-nav-item" id="login-nav-item">登录/注册</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="search-area">
+        <div id="search-content">
+            <div id="nav-logo" onclick="window.location.href = './index.html'"></div>
+            <div id="nav-search">
+                <form action="TODO Search" method="get">
+                    <fieldset style="display: inline-flex;border: 0px;">
+                        <label for="inp-query"></label>
+                        <div class="inp">
+                            <input id="inp-query" class="card" name="search_text" size="22" maxlength="60"
+                                placeholder="搜索电影、电视剧、综艺、影人" autocompelete="off">
+                        </div>
+                        <div class="inp-btn">
+                            <input type="submit" value="搜索">
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const types = [
+            "我看",
+            "影讯&购票",
+            "选电影",
+            "电视剧",
+            "排行榜",
+            "分类",
+            "影评",
+            "2021年度榜单",
+            "2021书影音报告",
+        ]
+        const tl = new TabLayout(types, tab => {
+            switch (tab) {
+                case "我看": {
+                    window.location.href = "../index.html"
+                    break
+                }
+                default: {
+                    alert("未实现")
+                }
+            }
+            return false
+        })
+        tl.style = "position: relative;left: 225px;width: fit-content;"
+        document.querySelector("body").appendChild(tl)
+    </script>
+    <div id="content">
+        <h1>影人名称 Name</h1>
+        <div class="flex-box">
+            <img id="avatar" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+            <div id="movie-info">
+                <div>性别: <span id="gender">xxx</span></div>
+                <div>星座: <span id="sign">xxx</span></div>
+                <div>出生日期: <span id="birth">xxx</span></div>
+                <div>出生地: <span id="hometown">xxx</span></div>
+                <div>职业: <span id="job">xxx</span></div>
+                <div>IMDb编号: <span id="IMDb">xxx</span></div>
+            </div>
+        </div>
+        <button>收藏</button> <span class="collect">分享到</span>
+        <div style="width: 100%;border-bottom: 1px dashed #eeeeee;height: 1px;margin: 10px 0px 30px 0px;"></div>
+        <h2 class="sub-title">影人简介 ······</h2>
+        <p id="brief">动漫监督。导演过众多诸如《凉宫春日的忧郁》《团子大家族》《日常》的良心作品。曾经在《幸运星》中以动漫形象出镜。</p>
+        <h2 class="sub-title">影人图片 ······ <span>233</span></h2>
+        <div class="flex-box">
+            <img id="mainpic" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+            <img id="mainpic" src="https://upload.thwiki.cc/4/4b/%E5%8D%81%E5%85%AD%E5%A4%9C%E5%92%B2%E5%A4%9C%EF%BC%88%E7%BB%AF%E6%83%B3%E5%A4%A9%E7%AB%8B%E7%BB%98%EF%BC%89.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+            <img id="mainpic" src="https://upload.thwiki.cc/4/42/%E8%A5%BF%E8%A1%8C%E5%AF%BA%E5%B9%BD%E5%B9%BD%E5%AD%90%EF%BC%88%E7%BB%AF%E6%83%B3%E5%A4%A9%E7%AB%8B%E7%BB%98%EF%BC%89.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+            <img id="mainpic" src="https://upload.thwiki.cc/9/93/%E5%8D%9A%E4%B8%BD%E7%81%B5%E6%A2%A6%EF%BC%88%E7%BB%AF%E6%83%B3%E5%A4%A9%E7%AB%8B%E7%BB%98%EF%BC%89.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+            <img id="mainpic" src="https://upload.thwiki.cc/9/99/%E9%9B%BE%E9%9B%A8%E9%AD%94%E7%90%86%E6%B2%99%EF%BC%88%E7%BB%AF%E6%83%B3%E5%A4%A9%E7%AB%8B%E7%BB%98%EF%BC%89.png"
+                    title="点击看更多海报" alt="" rel="v:image">
+        </div>
+        <h2 class="sub-title">最近的五部作品 ······ <span>233</span></h2>
+        <div class="flex-box">
+            <movie-card src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.jpg" movie="凉宫春日的消失" score="9.1"></movie-card>
+            <movie-card src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.jpg" movie="凉宫春日的消失" score="9.1"></movie-card>
+            <movie-card src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.jpg" movie="凉宫春日的消失" score="9.1"></movie-card>
+            <movie-card src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.jpg" movie="凉宫春日的消失" score="9.1"></movie-card>
+            <movie-card src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.jpg" movie="凉宫春日的消失" score="9.1"></movie-card>
+        </div>
+        <h2 class="sub-title">最受好评的五部作品 ······ <span>233</span></h2>
+        <div class="flex-box">
+            <movie-card src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2611203679.jpg" movie="紫罗兰永恒花园 剧场版" score="8.1"></movie-card>
+            <movie-card src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2611203679.jpg" movie="紫罗兰永恒花园 剧场版" score="8.1"></movie-card>
+            <movie-card src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2611203679.jpg" movie="紫罗兰永恒花园 剧场版" score="8.1"></movie-card>
+            <movie-card src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2611203679.jpg" movie="紫罗兰永恒花园 剧场版" score="8.1"></movie-card>
+            <movie-card src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2611203679.jpg" movie="紫罗兰永恒花园 剧场版" score="8.1"></movie-card>
+        </div>
+        <h2 class="sub-title">合作两次以上的影人 ······ <span>全部</span></h2>
+        <div class="flex-box">
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card>
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card>
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card>
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card>
+            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+                job="导演"></actor-card>
+        </div>
+    </div>
+</body>
+</html>
