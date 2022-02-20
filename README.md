@@ -22,9 +22,13 @@
 
 ## API 文档
 
-+ [HTML 格式](https://douban.skygard.cn/swagger/api.html)
++ [HTML 格式/可测试](https://api.douban.skygard.cn:8080/docs)
 + [Markdown 格式](./API.md)
 + [OpenAPI(Swagger) 格式](http://douban.skygard.cn/swagger/openapi.json)
+
+## 持续构建
+
++ [http://jenkins.skygard.cn/job/douban-webend/](http://jenkins.skygard.cn/job/douban-webend/)
 
 ## 实现的Features
 
