@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"net/url"
 	"strconv"
 )
 
@@ -52,7 +51,7 @@ func HandleRegister(ctx *gin.Context) {
 			utils.RespWithParamError(ctx, "邮箱格式不对")
 			return
 		}
-	case "sms":
+	case "sms": // + 会转义，使用 %2B 代替
 		ok = utils.MatchPhoneNumber(account)
 		if !ok {
 			utils.RespWithParamError(ctx, "电话格式不支持")
@@ -223,8 +222,6 @@ func HandleVerify(ctx *gin.Context) {
 		})
 		return
 	}
-
-	target, _ = url.QueryUnescape(target)
 
 	switch kind {
 	case "sms": // + 号会转译，发请求时使用 %2B

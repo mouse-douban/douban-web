@@ -51,12 +51,6 @@ var routes = Routes{
 			HandlerFunctions: HandleFunctions{middleware.WildChecker(), handleWild},
 		},
 		{
-			Name:             "Swagger文档",
-			Method:           http.MethodGet,
-			Pattern:          "/swagger",
-			HandlerFunctions: HandleFunctions{handleSwagger},
-		},
-		{
 			Name:             "我的主页",
 			Method:           http.MethodGet,
 			Pattern:          "/mine",
@@ -406,6 +400,9 @@ func InitRouter(useTLS bool) {
 	utils.LoggerInfo("Server started!")
 
 	router := newRouter(useTLS)
+
+	// 文档
+	router.StaticFile("/docs", "./static/docs/index.html")
 
 	server = &http.Server{
 		Addr:    Addr,

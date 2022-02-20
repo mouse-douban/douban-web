@@ -114,3 +114,6 @@ name, name_en, avatar, detail, brief = get_celebrity_info("1054400")
 print(name, name_en, avatar, detail, brief)
 '''
 
+if __name__ == '__main__':
+    print(get_celebrity_info(1032440))
+

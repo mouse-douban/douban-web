@@ -59,6 +59,7 @@ var mu3 = sync.Mutex{}
 
 func StarOrUnStarComment(id, uid int64, value bool) (err error) {
 	mu3.Lock()
+	defer mu3.Unlock()
 	var v int64
 	sqlStr1 := "SELECT stars FROM comment WHERE id = ? AND uid = ?"
 	err = dB.QueryRow(sqlStr1, id, uid).Scan(&v)
@@ -72,6 +73,5 @@ func StarOrUnStarComment(id, uid int64, value bool) (err error) {
 	}
 	sqlStr2 := "UPDATE comment SET stars = ? WHERE id = ? AND uid = ?"
 	_, err = dB.Exec(sqlStr2, v, id, uid)
-	mu3.Unlock()
 	return
 }

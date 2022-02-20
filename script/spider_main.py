@@ -109,50 +109,48 @@ def subject_insert(tags_param=None):
     map(lambda i: i.join(), lp)
 
 
-def spider_celebrity(db, start, batch_size):
-    while True:
-        celebrities_tuple = db.fetch_all(f"SELECT celebrities FROM subject LIMIT {batch_size} OFFSET {start}")
-        if len(celebrities_tuple) <= 0:
-            break
+def spider_celebrity(db, start, batch_size, start_position):
+    celebrities_tuple = db.fetch_all(f"SELECT celebrities FROM subject LIMIT {batch_size} OFFSET {start}")
 
-        start += batch_size
-
-        for celebrities in celebrities_tuple:
-            celebrities = json.loads(celebrities[0])
-            for cid in celebrities:
-                try:
-                    name, name_en, avatar, detail, brief = spider.get_celebrity_info(cid)
-                    print(f"prepare add {name}")
-                    db.insert_celebrity(
-                        cid=cid,
-                        name=name,
-                        name_en=name_en,
-                        avatar=avatar,
-                        gender=detail.setdefault("性别", "未知"),
-                        sign=detail.setdefault("星座", "未知"),
-                        birth=detail.setdefault("出生日期", "未知"),
-                        hometown=detail.setdefault("出生地", "未知"),
-                        job=detail.setdefault("职业", "未知"),
-                        imdb=detail.setdefault("imdb编号", "未知"),
-                        brief=brief
-                    )
-                    print(f"added celebrity: {cid}, {name}")
-                except BaseException:
-                    print(f"failed add celebrity : {cid}")
-                    continue
+    for celebrities in celebrities_tuple[start_position:]:
+        celebrities = json.loads(celebrities[0])
+        for cid in celebrities:
+            try:
+                name, name_en, avatar, detail, brief = spider.get_celebrity_info(cid)
+                print(f"prepare add {cid}, {name}")
+                db.insert_celebrity(
+                    cid=cid,
+                    name=name,
+                    name_en=name_en,
+                    avatar=avatar,
+                    gender=detail.setdefault("性别", "未知"),
+                    sign=detail.setdefault("星座", "未知"),
+                    birth=detail.setdefault("出生日期", "未知"),
+                    hometown=detail.setdefault("出生地", "未知"),
+                    job=detail.setdefault("职业", "未知"),
+                    imdb=detail.setdefault("imdb编号", "未知"),
+                    brief=brief
+                )
+                print(f"added celebrity: {cid}, {name}")
+            except BaseException:
+                print(f"failed add celebrity : {cid}")
+                continue
 
     print("prepare close db")
     db.close()
 
 
 # 豆瓣会封ip...
+# 解决方法就是一直换ip (
 if __name__ == '__main__':
-    # pl = []
-    # for i in range(7,8):
-    #     print(f"start at {155*i}, end at {155*i+155}")
-    #     p = Process(target=spider_celebrity, args=(sql.DB(), 1200, 40,))
-    #     p.start()
-    #     pl.append(p)
-    # map(lambda c: c.join(), pl)
+    # 同步电影影人信息
+    pl = []
+    for i in range(0, 8):
+        print(f"start at {155 * i}, end at {155 * i + 155}")
+        p = Process(target=spider_celebrity, args=(sql.DB(), 155 * i, 20, 10))
+        p.start()
+        pl.append(p)
+    map(lambda c: c.join(), pl)
     pass
-    #subject_insert(["生活"])
+    # 爬取电影数据
+    # subject_insert(["生活"])

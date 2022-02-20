@@ -64,8 +64,24 @@ func UpdateReview(id, uid int64, name, content string, score int) (err error) {
 	return
 }
 
+// 唆一锁
 var mu1 = &sync.Mutex{}
 var mu2 = &sync.Mutex{}
+var mu4 = &sync.Mutex{}
+
+func IncreaseReviewReplyCnt(id int64) (err error) {
+	mu4.Lock()
+	defer mu4.Unlock()
+	var cnt int64
+	row := dB.QueryRow("SELECT reply_cnt FROM review WHERE id = ?", id)
+	err = row.Scan(&cnt)
+	if err != nil {
+		return
+	}
+	cnt++
+	_, err = dB.Exec("UPDATE review SET reply_cnt = ? WHERE id = ?", cnt, id)
+	return
+}
 
 func StarOrUnStarReview(id, uid int64, value bool) (err error) {
 	return starOrBadReview(id, uid, "stars", mu1, value)
@@ -77,6 +93,7 @@ func BadOrUnBadReview(id, uid int64, value bool) (err error) {
 
 func starOrBadReview(id, uid int64, kind string, mu *sync.Mutex, value bool) (err error) {
 	mu.Lock()
+	defer mu.Unlock()
 	var v int64
 	sqlStr1 := "SELECT " + kind + " FROM review WHERE id = ? AND uid = ?"
 	err = dB.QueryRow(sqlStr1, id, uid).Scan(&v)
@@ -90,6 +107,5 @@ func starOrBadReview(id, uid int64, kind string, mu *sync.Mutex, value bool) (er
 	}
 	sqlStr2 := "UPDATE review SET " + kind + " = ? WHERE id = ? AND uid = ?"
 	_, err = dB.Exec(sqlStr2, v, id, uid)
-	mu.Unlock()
 	return
 }

@@ -73,6 +73,21 @@ func CreateReply(reply model.Reply) (err error) {
 		// 自动加上这个
 		reply.Content = "回复 " + parent.Username + " : " + reply.Content
 	}
+	switch reply.Ptable {
+	// 回复的回复不算回复(雾
+	case "review":
+		err = dao.IncreaseReviewReplyCnt(reply.Pid)
+	case "discussion":
+		err = dao.IncreaseDiscussionReplyCnt(reply.Pid)
+	}
+	if err != nil {
+		return utils.ServerError{
+			HttpStatus: 400,
+			Status:     40000,
+			Info:       "invalid request",
+			Detail:     "记录不存在",
+		}
+	}
 	reply.Date = time.Now()
 	reply.Content = utils.ReplaceXSSKeywords(reply.Content)
 	reply.Content = utils.ReplaceWildUrl(reply.Content)
