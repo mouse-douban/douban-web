@@ -3,8 +3,8 @@ import { setup } from "./top-bar-status.js";
 
 setup()
 
-// const id = localStorage.getItem("celebrityId")
-const id = 1026319
+const id = localStorage.getItem("celebrityId")
+// const id = 1026319
 
 const data = await getCelebrityInfo(id)
 

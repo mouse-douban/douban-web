@@ -173,7 +173,13 @@ async function getCelebrityInfo(id) {
  * @param {*} tag 
  */
 async function addComment(mid, score, type, content, tag) {
-    return await post("/comments", { mid, score, type, content, tag })
+    const body = new FormData()
+    body.append("mid", mid)
+    body.append("score", score)
+    body.append("type", type)
+    body.append("content", content)
+    body.append("tag", tag)
+    return await post("/comments", body)
 }
 
 /**
@@ -185,7 +191,12 @@ async function addComment(mid, score, type, content, tag) {
  * @param {*} content 
  */
 async function addReviews(mid, score, name, content) {
-    return await post("/reviews", { mid, score, name, content })
+    const body = new FormData()
+    body.append("mid", mid)
+    body.append("score", score)
+    body.append("name", name)
+    body.append("content", content)
+    return await post("/reviews", body)
 }
 
 /**
@@ -197,7 +208,25 @@ async function search(key) {
     return await get("/search", { key })
 }
 
+/**
+ * 忘记密码
+ * 
+ * @param {*} account 用户账号
+ * @param {*} verify 验证码
+ * @param {*} type 验证码类型
+ * @param {*} new_pwd 新密码
+ * @returns 
+ */
+async function forget(account, verify, type, new_pwd) {
+    const body = new FormData()
+    body.append("account", account)
+    body.append("verify", verify)
+    body.append("type", type)
+    body.append("new_pwd", new_pwd)
+    return await post("/users/forget", body)
+}
+
 export {
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget
 }

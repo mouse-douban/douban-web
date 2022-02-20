@@ -7,9 +7,7 @@ class MovieCard extends HTMLElement {
         <style>
         :host {
             width: fit-content;
-            flex-direction: column;
-            display: flex;
-            justify-content: center;
+            display: inline-block;
             margin: 0 25px 10px 0;
             transition: all 0.3s;
         }
@@ -123,12 +121,10 @@ class UserReview extends HTMLElement {
                 min-height: 100px;
             }
             #content {
-                min-height: 80%;
+                min-height: 50%;
+                margin-top: 15px;
                 font-size: 16px;
-                margin-bottom: 10px;
                 font-style: italic;
-                padding-top: 22px;
-                padding-left: 10px;
                 color: #9a9c9a;
                 box-sizing: border-box;
             }
@@ -141,7 +137,9 @@ class UserReview extends HTMLElement {
                 color: #37a;
                 text-align: right;
                 font-style: italic;
-                
+            }
+            h3 {
+                margin: 0;
             }
             .card {
                 box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.19);
@@ -150,15 +148,37 @@ class UserReview extends HTMLElement {
         <div id="review" class="card">
             <div id="stars">${this.getAttribute("score")}⭐</div>
             <div id="content-box">
+                <h3 id="title">${this.getAttribute("title")}</h3>
                 <div id="content">“ ${this.getAttribute("content")} ”</div>
                 <div id="movie-name">《${this.getAttribute("movie")}》</div>
             </div>
         </div>
         `
-        const shadow = this.attachShadow({ mode: 'open' })
-        shadow.appendChild(template.content.cloneNode(true))
+        this.shadow = this.attachShadow({ mode: 'open' })
+        this.shadow.appendChild(template.content.cloneNode(true))
     }
 
+    connectedCallback() {
+        this.shadow.querySelector("#stars").textContent = this.getAttribute("score") + "⭐"
+        this.shadow.querySelector("#content").textContent = `"${this.getAttribute("content")}"`
+        this.shadow.querySelector("#movie-name").textContent = `《${this.getAttribute("movie")}》`
+        this.shadow.querySelector("#title").textContent = this.getAttribute("title")
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "score") {
+            this.shadow.querySelector("#stars").textContent = newValue + "⭐"
+        }
+        if (name === "content") {
+            this.shadow.querySelector("#content").textContent = newValue
+        }
+        if (name === "movie") {
+            this.shadow.querySelector("#movie-name").textContent = newValue
+        }
+        if (name === "title") {
+            this.shadow.querySelector("#title").textContent = newValue
+        }
+    }
 }
 
 customElements.define("user-review", UserReview)
@@ -173,8 +193,7 @@ class UserMovieList extends HTMLElement {
         #list {
             padding: 20px;
             display: flex;
-            width: fit-content;
-            max-width: 100%;
+            width: 100%;
             flex-wrap: wrap;
             height: fit-content;
             box-sizing: border-box;
@@ -195,13 +214,16 @@ class UserMovieList extends HTMLElement {
             font-family: 'Noto Sans', sans-serif;
         }
         </style>
-        <h2 id="name">${this.getAttribute("name")}</h2>
+        <h2 id="name"></h2>
         <div id="list" class="card">
         </div>
         `
         this.shadow = this.attachShadow({ mode: 'open' })
         this.shadow.appendChild(template.content.cloneNode(true))
         this.list = this.shadow.querySelector("#list")
+    }
+
+    connectedCallback() {
         JSON.parse(this.getAttribute("data")).forEach(movieInfo => {
             const movieCard = new MovieCard()
             movieCard.setAttribute("src", movieInfo.avatar)
@@ -210,6 +232,7 @@ class UserMovieList extends HTMLElement {
             this.list.appendChild(movieCard)
             movieCard.flush()
         })
+        this.shadow.querySelector("#name").textContent = this.getAttribute("name")
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -391,7 +414,7 @@ class ActorCard extends HTMLElement {
         template.innerHTML = `
         <style>
         :host {
-            width: fit-content;
+            width: 135px;
             flex-direction: column;
             display: flex;
             justify-content: center;
@@ -405,9 +428,10 @@ class ActorCard extends HTMLElement {
         p {
             font-size: 14px;
             color: #37a;
-            max-lines: 2;
-            margin: 5px;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 5px;
             text-align: center;
             transition: all 0.3s;
         }
@@ -429,7 +453,7 @@ class ActorCard extends HTMLElement {
             cursor: pointer;
             border-radius: 10px;
             height: fit-content;
-            width: fit-content;
+            width: 135px;
             box-sizing: border-box;
             padding: 0px 10px 0px 10px;
             display: flex;
@@ -892,6 +916,11 @@ class SearchResult extends HTMLElement {
             background-color: #3377aa;
         }
 
+        div {
+            color: #494949;
+            font-size: 13px;
+        }
+
         </style>
         <img src= "https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2246432125.webp">
         <div>
@@ -925,7 +954,59 @@ class SearchResult extends HTMLElement {
         this.shadow.querySelector("#types").textContent = this.getAttribute("types")
         this.shadow.querySelector("#authors").textContent = this.getAttribute("authors")
         this.shadow.querySelector("div span").textContent = this.getAttribute("total")
+        this.shadow.querySelector("img").src = this.getAttribute("avatar")
     }
 }
 
 customElements.define("search-result", SearchResult)
+
+class SingleDiscussion extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+
+        div {
+            color: #494949;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .container {
+            border-top: 1px dashed #e6e6e6;
+            padding: 10px 0;
+        }
+
+        .title {
+            width: 400px
+        }
+
+        .line2 {
+            width: 150px;
+        }
+
+        div span {
+            color: #3377aa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        div span:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+        </style>
+        <div class="container">
+            <div class="title"><span>标题</span></div>
+            <div class="line2">来自<span class="author">寒雨</span></div>
+            <div class="time">2022-02-20 14:54:35</div>
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+}
+
+customElements.define("single-discussion", SingleDiscussion)

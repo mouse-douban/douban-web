@@ -75,9 +75,6 @@
     padding: 10px;
     box-sizing: border-box;
     height: fit-content;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
     flex-wrap: wrap;
     overflow-y: scroll;
     scrollbar-width: none;

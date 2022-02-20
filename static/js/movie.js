@@ -95,11 +95,13 @@ switch(data.status) {
         subtitles[1].textContent = subtitles[1].textContent.replace("?", movie.celebrities.length)
         // actorContainer.innerHTML = ""
         movie.celebrities.forEach(async celebrity => {
-            const data = await getCelebrityInfo(celebrity).data
+            const data = await getCelebrityInfo(celebrity)
             const card = document.createElement("actor-card")
-            card.setAttribute("src", data.avatar)
-            card.setAttribute("actor", data.name)
-            card.setAttribute("job", data.job)
+            card.setAttribute("src", data.data.avatar)
+            card.setAttribute("actor", data.data.name)
+            card.setAttribute("job", data.data.job)
+            card.setAttribute("id", data.data.id)
+            actorContainer.appendChild(card)
         })
         for (let k in movie.detail) {
             if (k === "website") continue

@@ -154,7 +154,7 @@
             “精湛”的演技和绝佳的运气化险为夷，而残酷的真相也离他越来越近……</p>
         <h2 class="sub-title">电影名称的演职员 · · · · · · <span>( 全部 ? )</span></h2>
         <div id="actor-container" style="display: flex;margin-bottom: 20px; flex-wrap: wrap;">
-            <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
+            <!-- <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
             <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
@@ -165,9 +165,9 @@
             <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
                 job="导演"></actor-card>
             <actor-card src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" actor="蕾米"
-                job="导演"></actor-card>
+                job="导演"></actor-card> -->
         </div>
-        <h2 class="sub-title">电影名称的短评 · · · · · · <span>( 全部 ? 条 )</span></h2>
+        <h2 class="sub-title">电影名称的短评 · · · · · ·</h2>
         <div id="short-comment-container">
             <short-comment user="寒雨" score="5" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
                 type="after"></short-comment>
@@ -183,9 +183,9 @@
                 const container = document.getElementById("short-comment-container");
                 const movieId = localStorage.getItem("movieId");
                 const page = this.shortCommentPage || 0;
-                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 10}&type=after`).then(res => res.json().data);
-                const beforeData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 10}&type=before`).then(res => res.json().data);
-                const data = [...afterData, ...beforeData];
+                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 20}&type=after`).then(res => res.json());
+                const beforeData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/comments?start=${page * 20}&type=before`).then(res => res.json());
+                const data = [...afterData.data, ...beforeData.data];
                 data.forEach(async item => {
                     const shortComment = document.createElement("short-comment");
                     const user = await fetch(`https://api.douban.skygard.cn:8080/users/${item.uid}`).then(res => res.json());
@@ -197,15 +197,56 @@
                     shortComment.setAttribute("type", item.type);
                     container.appendChild(shortComment);
                 });
-                this.shortCommentPage = ++page;
+                this.shortCommentPage = page + 1;
                 return data.length != 0;
             }
         </script>
         <recycler-tail onloadmore="onloadMoreShortComment()"></recycler-tail>
-        <h2 class="sub-title">电影名称的影评 · · · · · · <span>( 全部 ? 条 )</span></h2>
-        <movie-comment user="寒雨" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
+        <script>
+            onloadMoreShortComment()
+        </script>
+        <h2 class="sub-title">电影名称的影评 · · · · · ·</h2>
+        <div id="review-container">
+            <movie-comment user="寒雨" time="2022-02-01 10:46:17" content="这是一部好电影，我很喜欢。" stars="233"
             user-icon="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" title="很好的一部电影"
             score="5"></movie-comment>
+        </div>
+        <script>
+            async function onloadMoreReviews() {
+                const container = document.getElementById("review-container");
+                const movieId = localStorage.getItem("movieId");
+                const page = this.reviewsPage || 0;
+                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/reviews?start=${page * 20}&type=after`).then(res => res.json());
+                const beforeData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/reviews?start=${page * 20}&type=before`).then(res => res.json());
+                const data = afterData.data.concat(beforeData.data);
+                data.forEach(async item => {
+                    const review = document.createElement("movie-comment");
+                    review.setAttribute("user", item.username);
+                    review.setAttribute("time", item.date.replace("T", " ").replace("Z", ""));
+                    review.setAttribute("content", item.brief);
+                    review.setAttribute("stars", item.stars);
+                    review.setAttribute("user-icon", item.avatar);
+                    review.setAttribute("title", item.name);
+                    review.setAttribute("score", item.score);
+                    container.appendChild(review);
+                });
+                this.reviewsPage = page + 1;
+                return data.length != 0;
+            }
+        </script>
+        <recycler-tail onloadmore="onloadMoreReviews()"></recycler-tail>
+        <script>
+            onloadMoreReviews()
+        </script>
+        <h2 class="sub-title" style="margin-bottom: 30px;">讨论区 · · · · · ·</h2>
+        <div id="discussion-container">
+            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+        </div>
+        <recycler-tail onloadmore="onloadMoreReviews()"></recycler-tail>
     </div>
     <!--写短评的dialog-->
     <div class="dialog-box">
@@ -274,7 +315,7 @@
                 </div>
             </div>
             <div class="dialog-tail">
-                <button class="dialog-button">保存</button>
+                <button class="dialog-button">确认</button>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 import { BASE_URL } from "./consts.js"
-import { getVerifyCode } from "./api.js"
+import { forget, getVerifyCode } from "./api.js"
 
 // switch state
 const tabs = document.querySelectorAll('.account-tab')
@@ -40,8 +40,63 @@ const loginInnerHtml = `
                     登录豆瓣
                 </div>
         `
+// 忘记密码的dialog
+const dialogForgetPass = document.querySelector(".dialog-box")
+const dialogAccount = document.querySelector("#account-input")
+const dialogPassword = document.querySelector("#new-password-input")
+const dialogVerifyCode = document.querySelector("#verify-code-input")
+const smsRadio = document.querySelector("#sms")
 // current state
 let isRegisterView = true
+
+// setup dialog
+dialogForgetPass.querySelector(".dialog-closer").addEventListener("click", () => {
+    dialogForgetPass.style.display = "none"
+})
+
+// submit
+dialogForgetPass.querySelector("#submit-button").addEventListener("click", async () => {
+    const type = smsRadio.checked ? "phone" : "email"
+    const account = dialogAccount.value
+    const vc = dialogVerifyCode.value
+    const password = dialogPassword.value
+    if (account.length === 0 || vc.length === 0 || password.length === 0) {
+        alert("请填写完整信息")
+        return
+    }
+    const data = await forget(account, vc, type, password)
+    switch (data.status) {
+        case 20000: {
+            alert("操作成功！")
+            dialogForgetPass.style.display = "none"
+            break
+        }
+        default: {
+            alert(data.data.detail)
+        }
+    }
+})
+
+// send verification code
+dialogForgetPass.querySelector("#verify-code-btn").addEventListener("click", async () => {
+    const type = smsRadio.checked ? "sms" : "email"
+    const account = type == "sms" ? "%2B86" + dialogAccount.value : dialogAccount.value
+    if (account.length === 0) {
+        alert("请填写账号")
+        return
+    }
+    const data = await getVerifyCode(type, account)
+    switch (data.status) {
+        case 20000: {
+            alert("验证码已发送")
+            break
+        }
+        default: {
+            alert(data.data.detail)
+        }
+    }
+})
+
 tabs.forEach((value, key) => {
     value.addEventListener('click', _e => {
         if (!value.classList.contains("on")) {
@@ -93,7 +148,7 @@ function setSubmitBtnListener() {
             }
         } else {
             // 忘记密码
-
+            dialogForgetPass.style.display = "block"
         }
     })
 }

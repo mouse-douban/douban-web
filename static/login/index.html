@@ -46,11 +46,34 @@
             </div>
             <div id="account-from-3rd-hd">第三方登录</div>
             <div id="account-from-3rd">
-                <embed src="../images/github.svg" type="image/svg+xml" />
-                <embed src="../images/gitee.svg" type="image/svg+xml" onclick="window.location.href = 'https://gitee.com/oauth/authorize?client_id=c1b3c4e42905412665315174f8e3622f05477a51de0813a6502cb2c562e19354&redirect_uri=https://api.douban.skygard.cn:8080/oauth/gitee&response_type=code'"/>
+                <img src="../images/github.svg" width="32px" height="32px" style="cursor: pointer;" onclick="window.location.href = 'https://api.douban.skygard.cn:8080/users/login?platform=github'">
+                <img src="../images/gitee.svg" width="32px" height="32px" style="cursor: pointer;" onclick="window.location.href = 'https://api.douban.skygard.cn:8080/users/login?platform=gitee'">
             </div>
         </div>
     </div>
     <script type="module" src="../js/login.js"></script>
+    <div class="dialog-box">
+        <div class="dialog">
+            <div class="dialog-topbar">
+                <span style="color: #007722;font-size: 18px;">忘记密码</span>
+                <span class="dialog-closer">x</span>
+            </div>
+            <div class="dialog-content">
+                <p class="dialog-title">验证方式</p>
+                <label class="checkbox-label" for="sms" style="margin-right: 20px;color: #494949;"><input type="radio" id="sms" name="type" checked> 短信验证  </label>
+                <label class="checkbox-label" for="email" style="margin-right: 20px;color: #494949;"><input type="radio" id="email" name="type"> 邮箱验证  </label>
+                <p class="dialog-title">你的账号</p>
+                <input type="text" id="account-input" class="dialog-input" placeholder="手机号/邮箱">
+                <button class="dialog-button" id="verify-code-btn" style="font-size: 14px;margin-left: 10px;">发送验证码</button>
+                <p class="dialog-title">你的验证码</p>
+                <input type="text" id="verify-code-input" class="dialog-input" placeholder="验证码">
+                <p class="dialog-title">你的新密码</p>
+                <input type="password" id="new-password-input" class="dialog-input" placeholder="需要包含数字，大小写字符，任意特殊符号">
+            </div>
+            <div class="dialog-tail">
+                <button class="dialog-button" id="submit-button">保存</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

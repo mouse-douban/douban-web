@@ -11,16 +11,16 @@ document.querySelector("#inp-query").value = localStorage.getItem("searchKey")
 container.innerHTML = ""
 switch (data.status) {
     case 20000: {
-        data.data.forEach(item => {
+        data.data[1].forEach(item => {
             const result = document.createElement("search-result")
             result.setAttribute("id", item.mid)
             result.setAttribute("title", item.name)
-            const scoreObj = JSON.parse(item.score)
-            const detail = JSON.parse(item.detail)
-            result.setAttribute("score", scoreObj.score)
-            result.setAttribute("total", scoreObj.total_cnt)
-            result.setAttribute("type", detail.type.join(","))
-            result.setAttribute("authors", detail.director + "," + [...detail.writers,...detail.characters].join(","))
+            result.setAttribute("score", item.score.score)
+            result.setAttribute("total", item.score.total_cnt)
+            result.setAttribute("types", item.detail.type.join(","))
+            result.setAttribute("authors", item.detail.director + "," + [...item.detail.writers,...item.detail.characters].join(","))
+            result.setAttribute("avatar", item.avatar)
+            container.appendChild(result)
         })
         break
     }

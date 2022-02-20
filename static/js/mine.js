@@ -1,7 +1,7 @@
 import { getMineInfo, getMovieInfo, getUserMovieList, getUserReviews, getWatchedList, getWishToWatchList, putUserInfo } from "./api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./consts.js";
 import { setup } from "./top-bar-status.js";
-import { getUserId, getUserIdFromToken } from "./utils.js";
+import { getAbsolutePath, getUserId, getUserIdFromToken } from "./utils.js";
 
 const fragmentContainer = document.querySelector("#fragment-user-info")
 const pager = document.querySelector("#pager")
@@ -9,19 +9,20 @@ const pager = document.querySelector("#pager")
 let editing = false
 // profile fragment
 const fragProfile = `
-                <h1 id="user-id">Rain</h1>
-                <p id="user-description">Student | Software Engineering | Learning Android & Web-FrontEnd | Focusing on learning</p>
+                <h1 id="user-id"></h1>
+                <p id="user-description"></p>
                 <div id="info-box">
                     <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
                         <embed src="../images/phone.svg" type="image/svg+xml" />
-                        <p id="phone-number" style="display: inline;margin-left: 10px;">15683055233</p>
+                        <p id="phone-number" style="display: inline;margin-left: 10px;"></p>
                     </div>
                     <div style="display: flex;align-items: center;margin: 20px 0px 0px 0px;">
                         <embed src="../images/email.svg" type="image/svg+xml" />
-                        <p id="email" style="display: inline;margin-left: 10px;">rain@asgard.hk</p>
+                        <p id="email" style="display: inline;margin-left: 10px;"></p>
                     </div>
                 </div>
                 <div id="edit-button" class="button">Edit Profile</div>
+                <div id="logout-button" class="button">Logout</div>
 `
 // edit fragment
 const fragEditing = `
@@ -66,7 +67,7 @@ function setupTabEvents() {
         })
     })
     // 初始化第一个tab的fragment
-    // switchTabFragment(first.textContent)
+    switchTabFragment(first.textContent)
 }
 
 // 切换fragment
@@ -78,11 +79,15 @@ async function switchTabFragment(tabName) {
             pager.innerHTML = ""
             if (data.status === 20000) { 
                 data.data.forEach(async movie => {
-                    const movieInfo = await getMovieInfo(movie.mid).data
+                    const movieInfo = await getMovieInfo(movie.mid)
                     const movieElement = document.createElement("movie-card")
-                    movieElement.setAttribute("src", movieInfo.avatar)
-                    movieElement.setAttribute("movie", movieInfo.name)
-                    movieElement.setAttribute("score", movieInfo.score.score)
+                    movieElement.setAttribute("src", movieInfo.data.avatar)
+                    movieElement.setAttribute("movie", movieInfo.data.name)
+                    movieElement.setAttribute("score", movieInfo.data.score.score)
+                    movieElement.addEventListener("click", () => {
+                        localStorage.setItem("movieId", movie.mid)
+                        window.open(getAbsolutePath("/static/movie"))
+                    })
                     pager.appendChild(movieElement)
                 })
             } else {
@@ -115,9 +120,11 @@ async function switchTabFragment(tabName) {
             if (data.status === 20000) {
                 data.data.forEach(async review => {
                     const reviewElement = document.createElement("user-review")
+                    const movieData = await getMovieInfo(review.mid)
                     reviewElement.setAttribute("content", review.brief)
-                    reviewElement.setAttribute("movie", review.name)
+                    reviewElement.setAttribute("movie", movieData.data.name)
                     reviewElement.setAttribute("score", review.score)
+                    reviewElement.setAttribute("title", review.name)
                     pager.appendChild(reviewElement)
                 })
             }
@@ -132,7 +139,11 @@ async function switchTabFragment(tabName) {
                 data.data.forEach(async movieList => {
                     const movieListElement = document.createElement("user-movie-list")
                     movieListElement.setAttribute("name", movieList.name)
-                    movieListElement.setAttribute("data", JSON.stringify(movieList.list.map(async id => await getMovieInfo(id).data)))
+                    const str = JSON.stringify(movieList.list.map(async id => {
+                        const data = await getMovieInfo(id)
+                        return data.data
+                    }))
+                    movieListElement.setAttribute("data", str)
                     pager.appendChild(movieListElement)
                 })
             }
@@ -168,6 +179,7 @@ async function loadUserInfo() {
             email.textContent = data.data.email || "暂无"
             phoneNumber.textContent = data.data.phone || "暂无"
             avatar.style.background = `url(${data.data.avatar || defAvatar})`
+            avatar.style.backgroundSize = "cover"
             break
         }
         default: {
