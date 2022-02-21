@@ -3,6 +3,9 @@ OS=$(shell go env GOOS)
 
 .ONESHELL:
 build-bin:
+	sed -i '' 's/EnableCOS = false/EnableCOS = true/g' cmd/main.go;
+	sed -i '' 's/InitWithCOS("config.json")/InitWithCOS("config2.json")/g' cmd/main.go;
+
 	go mod tidy;
 
 	go env -w GOARCH=amd64;

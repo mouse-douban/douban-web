@@ -263,12 +263,12 @@ async function reply(pid, type, content) {
 
 async function updateAvatar(avatar) {
     const body = new FormData()
-    body.append("avatar", avatar)
+    body.append("img", avatar)
     return await post("/avatar", body)
 }
 
 export {
-    getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion, 
+    getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews,
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion,
     starDiscussion, reply, updateAvatar
 }
