@@ -60,10 +60,8 @@
                 }, time);
             });
         }
-        const respStr = "JSON"
-        const resp = JSON.parse(respStr)
-        localStorage.setItem("access_token", resp.data.access_token)
-        localStorage.setItem("refresh_token", resp.data.refresh_token)
+        localStorage.setItem("access_token", "AT")
+        localStorage.setItem("refresh_token", "RT")
         // 延迟三秒跳转
         (async function() {
             await delay(3000);

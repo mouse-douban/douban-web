@@ -1,12 +1,14 @@
 package users
 
 import (
+	"bytes"
 	"douban-webend/config"
 	"douban-webend/controller"
 	"douban-webend/service"
 	"douban-webend/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -95,6 +97,8 @@ func HandleOAuthRedirect(ctx *gin.Context) {
 	}
 }
 
+var authorHTML, _ = ioutil.ReadFile("./static/login/authorization.html")
+
 func HandleOAuthLogin(ctx *gin.Context) {
 	platform := ctx.Param("platform")
 	if platform != "gitee" && platform != "github" {
@@ -106,8 +110,24 @@ func HandleOAuthLogin(ctx *gin.Context) {
 		utils.AbortWithError(ctx, utils.ServerInternalError) // 返回内部错误而不是参数错误
 		return
 	}
-	err, resp := controller.CtrlOAuthLogin(code, platform)
-	utils.Resp(ctx, err, resp)
+	err, accessToken, refreshToken := controller.CtrlOAuthLogin(code, platform)
+	if err != nil {
+		utils.RespWithError(ctx, err)
+		return
+	}
+
+	if accessToken == "" || refreshToken == "" {
+		utils.RespWithError(ctx, utils.ServerInternalError)
+		return
+	}
+
+	if authorHTML != nil {
+		respF := bytes.Replace(authorHTML, []byte("\"AT\""), []byte("\""+string(accessToken)+"\""), -1)
+		respF = bytes.Replace(respF, []byte("\"RT\""), []byte("\""+string(refreshToken)+"\""), -1)
+		ctx.Data(http.StatusOK, "text/html", respF)
+		return
+	}
+	utils.RespWithError(ctx, utils.ServerInternalError)
 }
 
 func HandleLogin(ctx *gin.Context) {

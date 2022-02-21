@@ -95,12 +95,9 @@ const (
 	GiteeOpenAPIUser = "https://gitee.com/api/v5/user/"
 )
 
-func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
+func CtrlOAuthLogin(code, platform string) (err error, accessToken, refreshToken string) {
 
 	err = nil
-
-	var accessToken, refreshToken string
-	var uid int64
 
 	var info model.OAuthInfo
 
@@ -114,7 +111,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 		}
 		tokenJson := <-tokenChan
 		if len(tokenJson) == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 		err = json.Unmarshal(tokenJson, &token)
 		if err != nil {
@@ -124,15 +121,15 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 		infoCh := utils.GetGETBytes(GiteeOpenAPIUser+"?access_token="+token.AccessToken, nil)
 		infoJson := <-infoCh
 		if len(infoJson) == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 		err = json.Unmarshal(infoJson, &info)
 		if err != nil || info.OAuthId == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 		info.PlatForm = platform
 		// 注册｜登录
-		err, accessToken, refreshToken, uid = service.LoginAccountFromGitee(info)
+		err, accessToken, refreshToken, _ = service.LoginAccountFromGitee(info)
 	case "github":
 		// 获取 token
 		postUrl := fmt.Sprintf(GithubToken, config.Config.GithubOauthClientId, config.Config.GithubOauthClientSecret, code)
@@ -140,7 +137,7 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 
 		tokenB := <-tokenChan
 		if len(tokenB) == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 		token := strings.Split(strings.Split(string(tokenB), "=")[1], "&")[0]
 
@@ -153,31 +150,16 @@ func CtrlOAuthLogin(code, platform string) (err error, resp utils.RespData) {
 		infoJson := <-infoCh
 
 		if len(infoJson) == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 		err = json.Unmarshal(infoJson, &info)
 		if err != nil || info.OAuthId == 0 {
-			return utils.ServerInternalError, utils.RespData{}
+			return utils.ServerInternalError, "", ""
 		}
 
 		// 注册｜登录
 		info.PlatForm = platform
-		err, accessToken, refreshToken, uid = service.LoginAccountFromGithub(info)
-	}
-
-	resp = utils.RespData{
-		HttpStatus: http.StatusOK,
-		Status:     20000,
-		Info:       utils.InfoSuccess,
-		Data: struct {
-			AccessToken  string `json:"access_token"`
-			RefreshToken string `json:"refresh_token"`
-			Uid          int64  `json:"uid"`
-		}{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-			Uid:          uid,
-		},
+		err, accessToken, refreshToken, _ = service.LoginAccountFromGithub(info)
 	}
 
 	return
