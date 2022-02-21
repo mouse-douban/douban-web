@@ -8,7 +8,7 @@ import (
 )
 
 func CheckName(name string) bool {
-	if len(name) < 3 || len(name) > 20 {
+	if len(name) < 3 || len(name) > 20*3 {
 		return false
 	}
 	space := regexp.MustCompile(" ")
@@ -44,7 +44,7 @@ func MatchPhoneNumber(phone string) bool {
 
 // CheckPasswordStrength 检测密码强度
 func CheckPasswordStrength(password string) bool {
-	if len(password) < 6 {
+	if len(password) < 6 || len(password) > 64*3 {
 		return false // 长度大于 6
 	}
 	A := regexp.MustCompile(`[A-Z]`)

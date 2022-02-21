@@ -103,11 +103,6 @@ func GetSubjectDiscussions(mid int64, discussions *[]interface{}, start, limit i
 		}
 		return
 	}
-	end := start + limit
-	if end > len(*discussions) {
-		end = len(*discussions)
-	}
-	*discussions = (*discussions)[start:end]
 	return
 }
 
