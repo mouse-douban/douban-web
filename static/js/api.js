@@ -226,7 +226,44 @@ async function forget(account, verify, type, new_pwd) {
     return await post("/users/forget", body)
 }
 
+/**
+ * 获取讨论信息
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+async function getDiscussion(id) {
+    return await get(`/discussions/${id}`)
+}
+
+/**
+ * 点赞
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+async function starDiscussion(id, value = true) {
+    return await get(`/discussions/${id}/star`, { value })
+}
+
+/**
+ * 回复
+ * 
+ * @param {*} pid 父级id
+ * @param {*} type review|discussion|comment|reply
+ * @param {*} content 内容
+ * @returns 
+ */
+async function reply(pid, type, content) {
+    const body = new FormData()
+    body.append("pid", pid)
+    body.append("type", type)
+    body.append("content", content)
+    return post(`/replies`, body)
+}
+
 export {
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion, 
+    starDiscussion, reply
 }

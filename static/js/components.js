@@ -1007,6 +1007,111 @@ class SingleDiscussion extends HTMLElement {
         const node = template.content.cloneNode(true)
         this.shadow.appendChild(node)
     }
+
+    connectedCallback() {
+        // 获取绝对地址
+        function getAbsolutePath(path) {
+            const curWwwPath = window.document.location.href
+            const pathName = window.document.location.pathname;
+            const pos = curWwwPath.indexOf(pathName)
+            const localhostPaht = curWwwPath.substring(0, pos)
+            return localhostPaht + path
+        }
+        const title = this.shadow.querySelector(".title span")
+        title.textContent = this.getAttribute("title")
+        title.addEventListener("click", () => {
+            localStorage.setItem("discussionId", this.getAttribute("id"))
+            window.open(getAbsolutePath("/static/discussion"))
+        })
+        this.shadow.querySelector(".author").textContent = this.getAttribute("author")
+        this.shadow.querySelector(".time").textContent = this.getAttribute("time")
+    }
 }
 
 customElements.define("single-discussion", SingleDiscussion)
+
+class DiscussionReply extends HTMLElement {
+    constructor() {
+        super()
+        const template = document.createElement("template")
+        template.innerHTML = `
+        <style>
+        
+        .info {
+            background-color: #f2fbf2;
+            font-size: 15px;
+        }
+
+        .author {
+            color: #3377aa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .author:hover {
+            color: white;
+            background-color: #3377aa;
+        }
+
+        .bottom {
+            margin-top: 10px;
+            font-size: 15px;
+            width: fit-content;
+            float: right;
+            color: #bbbbbb;
+        }
+
+        .bottom span {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bottom span:hover {
+            color: white;
+            background-color: #bbbbbb;
+        }
+
+        .info {
+            padding: 5px 3px;
+        }
+
+        </style>
+        <div style="margin: 10px 0;">
+            <img src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" width="48px" height="48px">
+            <div style="width: 92.5%;display: inline-block;margin-left: 20px;">
+                <div class="info"><span style="color: #494949;">2021-11-02 17:02:09</span> <span class="author">寒雨</span></div>
+                <p class="content">巴拉巴拉巴拉巴拉</p>
+                <div class="bottom"> <span>赞</span> <span>回应</span></div>
+            </div>
+        </div>
+        `
+        this.shadow = this.attachShadow({ mode: 'open' })
+        const node = template.content.cloneNode(true)
+        this.shadow.appendChild(node)
+    }
+
+    connectedCallback() {
+        const author = this.shadow.querySelector(".author")
+        author.textContent = this.getAttribute("author")
+        this.shadow.querySelector("img").src = this.getAttribute("avatar")
+        this.shadow.querySelector(".info span").textContent = this.getAttribute("time")
+        this.shadow.querySelector(".content").textContent = this.getAttribute("content")
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "author") {
+            this.shadow.querySelector(".author").textContent = newValue
+        }
+        if (name === "avatar") {
+            this.shadow.querySelector("img").src = newValue
+        }
+        if (name === "time") {
+            this.shadow.querySelector(".info span").textContent = newValue
+        }
+        if (name === "content") {
+            this.shadow.querySelector(".content").textContent = newValue
+        }
+    }
+}
+
+customElements.define("discussion-reply", DiscussionReply)

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
+    <title>授权成功, 正在跳转...</title>
+    <style>
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 50px;
+        }
+
+        h2 {
+            font-size: 30px;
+            font-weight: 400;
+        }
+
+        span {
+            color: #0d6ab1;
+            transition: all .3s;
+            cursor: pointer;
+        }
+
+        span:hover {
+            color: white;
+            background-color: #0d6ab1;
+            text-decoration: underline;
+        }
+        
+    </style>
+</head>
+<body>
+    <script>
+        function delay(time) {
+            return new Promise(function(resolve, reject) {
+                setTimeout(function() {
+                    resolve(null);
+                }, time);
+            });
+        }
+        const respStr = "JSON"
+        const resp = JSON.parse(respStr)
+        localStorage.setItem("access_token", resp.data.access_token)
+        localStorage.setItem("refresh_token", resp.data.refresh_token)
+        // 延迟三秒跳转
+        (async function() {
+            await delay(3000);
+            window.location.href = "./index.html";
+        })()
+    </script>
+
+    <h1>授权成功，正在跳转...</h1>
+    <h2>若你的浏览器没有自动跳转，请<span onclick="window.location.href = './index.html';">点击这里</span></h2>
+</body>
+</html>

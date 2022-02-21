@@ -24,7 +24,7 @@
                 <span class="top-nav-item" onclick="alert('就知道读书！')">读书</span>
             </li>
             <li>
-                <span class="top-nav-item" onclick="window.location.href = './index.html'">电影</span>
+                <span class="top-nav-item" onclick="window.location.href = '../index.html'">电影</span>
             </li>
             <li>
                 <span class="top-nav-item" onclick="alert('就知道听音乐！')">音乐</span>
@@ -61,7 +61,7 @@
     </div>
     <div id="search-area">
         <div id="search-content">
-            <div id="nav-logo" onclick="window.location.href = './index.html'"></div>
+            <div id="nav-logo" onclick="window.location.href = '../index.html'"></div>
             <div id="nav-search">
                 <fieldset style="display: inline-flex;border: 0px;">
                     <label for="inp-query"></label>
@@ -216,9 +216,8 @@
                 const container = document.getElementById("review-container");
                 const movieId = localStorage.getItem("movieId");
                 const page = this.reviewsPage || 0;
-                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/reviews?start=${page * 20}&type=after`).then(res => res.json());
-                const beforeData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/reviews?start=${page * 20}&type=before`).then(res => res.json());
-                const data = afterData.data.concat(beforeData.data);
+                const afterData = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/reviews?start=${page * 20}`).then(res => res.json());
+                const data = afterData.data
                 data.forEach(async item => {
                     const review = document.createElement("movie-comment");
                     review.setAttribute("user", item.username);
@@ -240,13 +239,31 @@
         </script>
         <h2 class="sub-title" style="margin-bottom: 30px;">讨论区 · · · · · ·</h2>
         <div id="discussion-container">
-            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
-            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
-            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
-            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
-            <single-discussion style="width: 100%;margin: 10px 0px;"></single-discussion>
+            
         </div>
-        <recycler-tail onloadmore="onloadMoreReviews()"></recycler-tail>
+        <script>
+            async function onloadMoreDiscussions() {
+                const container = document.getElementById("discussion-container");
+                const movieId = localStorage.getItem("movieId");
+                const page = this.discussionPage || 0;
+                const res = await fetch(`https://api.douban.skygard.cn:8080/subjects/${movieId}/discussions?start=${page * 20}&limit=20&sort=hotest`).then(res => res.json());
+                const data = res.data
+                data.forEach(async item => {
+                    const discussion = document.createElement("single-discussion");
+                    discussion.setAttribute("author", item.username);
+                    discussion.setAttribute("time", item.date.replace("T", " ").replace("Z", ""));
+                    discussion.setAttribute("id", item.id);
+                    discussion.setAttribute("title", item.name);
+                    container.appendChild(discussion);
+                });
+                this.discussionPage = page + 1;
+                return data.length != 0;
+            }
+        </script>
+        <recycler-tail onloadmore="onloadMoreDiscussions()"></recycler-tail>
+        <script>
+            onloadMoreDiscussions()
+        </script>
     </div>
     <!--写短评的dialog-->
     <div class="dialog-box">

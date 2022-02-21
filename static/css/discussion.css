@@ -1,0 +1,93 @@
+.content-box {
+    position: relative;
+    left: 225px;
+    height: fit-content;
+    width: 60%;
+    box-sizing: border-box;
+    padding: 20px 0px;
+}
+
+.user {
+    color: #3377aa;
+    transition: all .3s;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 20px 0 10px;
+}
+
+.user:hover {
+    background-color: #3377aa;
+    color: white;
+}
+
+.info {
+    margin: 20px 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #999999;
+    font-size: 15px;
+}
+
+.discussion-content-box {
+    width: fit-content;
+    max-width: 100%;
+    height: fit-content;
+    min-height: 100px;
+}
+
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 5px;
+    border: 1px solid #dbdbdb;
+    color: #494949;
+    background-color: rgb(228, 227, 227);
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all .3s;
+}
+
+.submit:hover {
+    background-color: rgb(175, 175, 175);
+}
+
+.sub-title {
+    color: #007762;
+    font-weight: normal;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.sub-title span {
+    color: #3377aa;
+    font-size: 13px;
+    margin-right: 10px;
+    transition: .3s;
+    cursor: pointer;
+}
+
+.sub-title span:hover {
+    color: white;
+    background-color: #3377aa;
+}
+
+.sub-title + p {
+    color: #494949;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.reply-input {
+    outline: medium;
+    border: 0.5px solid #BBBBBB;
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    height: 100px;
+    border-radius: 3px;
+    box-sizing: border-box;
+    resize: none;
+}

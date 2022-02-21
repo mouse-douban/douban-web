@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../js/components.js"></script>
-    <script src="../js/search.js" type="module"></script>
+    <title>讨论区</title>
+    <link rel="stylesheet" href="../css/discussion.css">
     <link rel="stylesheet" href="../css/top-bar-status.css">
-    <link rel="stylesheet" href="../css/search.css">
     <link rel="stylesheet" href="../css/common.css">
     <link rel="shortcut icon" href="https://img3.doubanio.com/favicon.ico">
-    <title>搜索</title>
+    <script src="../js/components.js"></script>
+    <script src="../js/discussion.js" type="module" defer></script>
 </head>
 <body>
     <div id="top-nav-items">
@@ -102,11 +102,62 @@
         tl.style = "position: relative;left: 225px;width: fit-content;"
         document.querySelector("body").appendChild(tl)
     </script>
-    <div id="content-box">
-        <h1>搜索 凉宫春日的消失</h1>
-        <div id="search-result-container">
-
+    <div class="content-box">
+        <h1 id="name" style="color: #494949;margin: 20px 0 10px 0;">讨论标题</h1>
+        <div class="info">
+            <img id="avatar" src="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png" width="32px" height="32px">
+            <span class="user">寒雨</span>
+            <span class="date">2022-02-20 14:08:44</span>
         </div>
+        <div class="discussion-content-box">
+           <p class="discussion-content">希望新冠疫情早点结束，大家都健健康康</p> 
+        </div>
+        <div style="display: flex;justify-content: end;">
+            <button class="btn like-btn" style="background: #ffdec1;color: #b85702;font-size: 15px;border-color: #ffbb80;">
+                <img src="https://img3.doubanio.com/f/shire/7c87c891556458f5a6790865d0d3c0743fa1ca26/pics/actions/ic_action_like@2x.png" width="16px" height="16px" style="margin-right: 5px;"> 
+                <span id="stars">赞 1</span>
+            </button>
+            <button class="btn collect-btn" style="background: #eff7ed;color: #1e8803;font-size: 15px;border-color: #cfe0cb;">
+                <img src="https://img3.doubanio.com/f/shire/cda782f2a206ee85f26854e2dd6f252a6e7aa153/pics/actions/ic_action_save@2x.png" width="16px" height="16px" style="margin-right: 5px;">
+                收藏
+            </button>
+            <button class="btn transmit-btn" style="background: #eff7ed;color: #1e8803;font-size: 15px;border-color: #cfe0cb;">转发</button>
+        </div>
+        <h2 style="border-bottom: 1px solid #e9e9e9;padding-bottom: 10px;margin-top: 10px;">回应</h2>
+        <div style="width: 100%;" class="reply-container">
+            <discussion-reply
+                avatar="https://gitee.com/coldrain-moro/images_bed/raw/master/images/remilia.png"
+                author="寒雨"
+                time="2022-02-20 14:08:44"
+                content="希望新冠疫情早点结束，大家都健健康康"
+            ></discussion-reply>
+        </div>
+        <script>
+            async function onloadMoreReply() {
+                const container = document.querySelector(".reply-container");
+                const discussionId = localStorage.getItem("discussionId");
+                const page = this.discussionPage || 0;
+                const res = await fetch(`https://api.douban.skygard.cn:8080/replies/${discussionId}?start=${page * 20}&limit=20&sort=hotest&type=discussion`).then(res => res.json());
+                const data = res.data
+                data.forEach(async item => {
+                    const reply = document.createElement("discussion-reply");
+                    reply.setAttribute("avatar", item.avatar);
+                    reply.setAttribute("author", item.username);
+                    reply.setAttribute("time", item.date.replace("T", " ").replace("Z", ""));
+                    reply.setAttribute("content", item.content);
+                    container.appendChild(reply);
+                });
+                this.discussionPage = page + 1;
+                return data.length != 0;
+            }
+        </script>
+        <recycler-tail onloadmore="onloadMoreReply()"></recycler-tail>
+        <script>
+            onloadMoreReply()
+        </script>
+        <h2 class="sub-title" style="margin-bottom: 30px;">你的回应 · · · · · ·</h2>
+        <textarea class="reply-input" placeholder="留下一条友善的回应~"></textarea>
+        <button class="btn submit" style="float: right;margin-top: 10px;font-size: 18px;margin-bottom: 50px;">回复</button>
     </div>
 </body>
 </html>
