@@ -58,11 +58,10 @@ async function getMineInfo(scope = "") {
  * @param {string} avatar 
  * @param {string} scope 更新范围｜从username|github_id|gitee_id|avatar 中选取，多个用 , 隔开
  */
-async function putUserInfo(id, username, avatar, description, scope = "username,avatar,description") {
+async function putUserInfo(id, username, description, scope = "username,description") {
     const data = new FormData()
     data.append("scope", scope)
     data.append("username", username)
-    data.append("avatar", avatar)
     data.append("description", description)
     return await put(`/users/${id}`, data)
 }
@@ -262,8 +261,14 @@ async function reply(pid, type, content) {
     return post(`/replies`, body)
 }
 
+async function updateAvatar(avatar) {
+    const body = new FormData()
+    body.append("avatar", avatar)
+    return await post("/avatar", body)
+}
+
 export {
     getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
     getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion, 
-    starDiscussion, reply
+    starDiscussion, reply, updateAvatar
 }

@@ -94,6 +94,7 @@
                 </div>
                 <div id="edit-button" class="button">Edit Profile</div>
                 <div id="logout-button" class="button">Logout</div>
+                <div id="update-avatar-button" class="button">Update Avatar</div>
             </div>
         </div>
         <!-- 想看/看过 -->
@@ -102,11 +103,29 @@
                 <li id="want-to-watch-tab" class="tab-item selected">想看</li>
                 <li id="watched-tab" class="tab-item">看过</li>
                 <li id="my-comment-tab" class="tab-item">我的影评</li>
+                <li id="my-comment-tab" class="tab-item">我的短评</li>
                 <li id="movie-list-tab" class="tab-item" style="border-right:0px;">片单</li>
             </ul>
             <!--作为fragment的容器-->
             <div id="pager">
                 
+            </div>
+        </div>
+    </div>
+    <div class="dialog-box">
+        <div class="dialog">
+            <div class="dialog-topbar">
+                <span style="color: #007722;font-size: 18px;">上传头像</span>
+                <span class="dialog-closer">x</span>
+            </div>
+            <div class="dialog-content">
+                <p class="dialog-title">上传图像</p>
+                <a href="javascript:;" class="file">选择文件
+                    <input type="file" id="upload-avatar" accept="image/*">
+                </a>
+            </div>
+            <div class="dialog-tail">
+                <button class="dialog-button" id="submit-button">保存</button>
             </div>
         </div>
     </div>

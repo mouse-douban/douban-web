@@ -90,7 +90,7 @@
 } */
 
 .tab-item {
-    width: 24.5%;
+    width: 19.6%;
     margin-right: 0;
     height: 50px;
     font-size: 20px;
@@ -187,4 +187,118 @@ input:focus {
 movie-card {
     margin: 10px 10px;
     transition: transform .5s, opacity .7s;
+}
+
+.dialog-box {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 5px;
+    width: 38%;
+    height: 30%;
+    box-sizing: border-box;
+}
+
+.dialog-topbar {
+    width: 100%;
+    height: fit-content;
+    padding: 18px;
+    font-weight: lighter;
+    border-radius: 5px 5px 0 0;
+    background-color: #ebf5ea;
+    box-sizing: border-box;
+}
+
+.dialog-closer {
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    text-align: center;
+    color: #BBBBBB;
+}
+
+.dialog-title {
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #494949;
+}
+
+.dialog-tail {
+    width: 100%;
+    height: fit-content;
+    padding: 18px;
+    box-sizing: border-box;
+    border-radius: 0 0 5px 5px;
+    background-color: #e9eef2;
+    text-align: right;
+}
+
+.dialog-content {
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 18px;
+    box-sizing: border-box;
+}
+
+.dialog-button {
+    padding: 5px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all .3s;
+    background-color: #41ac52;
+    border: 0px;
+    color: white;
+    border-radius: 3px;
+}
+
+.dialog-button:hover {
+    background-color: #3f9d3f;
+}
+
+.file {
+    position: relative;
+    display: inline-block;
+    background: #D0EEFF;
+    border: 1px solid #99D3F5;
+    border-radius: 4px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #1E88C7;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.file input {
+    cursor: pointer;
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+
+.file:hover {
+    background: #AADFFD;
+    border-color: #78C3F3;
+    color: #004974;
+    text-decoration: none;
 }

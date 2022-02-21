@@ -152,8 +152,9 @@ switch(data.status) {
 async function addShortComment(type, score, tag, comment) {
     const data = await addComment(localStorage.getItem("movieId"), score, type, comment, tag)
     switch (data.status) {
-        case 20000: {
+        case 20220: {
             alert("成功发布短评")
+            location.reload()
             break
         }
         default: {
@@ -165,8 +166,9 @@ async function addShortComment(type, score, tag, comment) {
 async function addReview(score, name, content) {
     const data = await addReviews(localStorage.getItem("movieId"), score, name, content)
     switch (data.status) {
-        case 20000: {
+        case 20220: {
             alert("成功发布影评")
+            location.reload()
             break
         }
         default: {

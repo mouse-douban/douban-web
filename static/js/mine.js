@@ -1,4 +1,4 @@
-import { getMineInfo, getMovieInfo, getUserMovieList, getUserReviews, getWatchedList, getWishToWatchList, putUserInfo } from "./api.js";
+import { getMineInfo, getMovieInfo, getUserMovieList, getUserReviews, getWatchedList, getWishToWatchList, putUserInfo, updateAvatar } from "./api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./consts.js";
 import { setup } from "./top-bar-status.js";
 import { getAbsolutePath, getUserId, getUserIdFromToken } from "./utils.js";
@@ -30,8 +30,6 @@ const fragEditing = `
 <input id="user-id" type="text">
 <h4>Discription</h4>
 <input id="user-description" type="text">
-<h4>Avatar</h4>
-<input id="user-avatar-edit" type="text">
 <h4>Phone</h4>
 <input id="user-phone" type="text" disabled>
 <h4>Email</h4>
@@ -101,11 +99,11 @@ async function switchTabFragment(tabName) {
             pager.innerHTML = ""
             if (data.status === 20000) {
                 data.data.forEach(async movie => {
-                    const movieInfo = await getMovieInfo(movie.mid).data
+                    const movieInfo = await getMovieInfo(movie.mid)
                     const movieElement = document.createElement("movie-card")
-                    movieElement.setAttribute("src", movieInfo.avatar)
-                    movieElement.setAttribute("movie", movieInfo.name)
-                    movieElement.setAttribute("score", movieInfo.score.score)
+                    movieElement.setAttribute("src", movieInfo.data.avatar)
+                    movieElement.setAttribute("movie", movieInfo.data.name)
+                    movieElement.setAttribute("score", movieInfo.data.score.score)
                     pager.appendChild(movieElement)
                 })
             } else {
@@ -145,6 +143,25 @@ async function switchTabFragment(tabName) {
                     }))
                     movieListElement.setAttribute("data", str)
                     pager.appendChild(movieListElement)
+                })
+            }
+            break
+        }
+        case "我的短评": {
+            const before = await getWishToWatchList(getUserId())
+            const after = await getWatchedList(getUserId())
+            pager.innerHTML = ""
+            if (before.status === 20000 && after.status === 20000) {
+                const all = before.data.concat(after.data)
+                all.forEach(async review => {
+                    const type = review.type === "before" ? "想看" : "看过"
+                    const reviewElement = document.createElement("user-review")
+                    const movieData = await getMovieInfo(review.mid)
+                    reviewElement.setAttribute("content", review.content)
+                    reviewElement.setAttribute("movie", movieData.data.name)
+                    reviewElement.setAttribute("score", review.score)
+                    reviewElement.setAttribute("title", type)
+                    pager.appendChild(reviewElement)
                 })
             }
             break
@@ -198,8 +215,6 @@ function switchProfileEditFragment() {
     const userDescription = document.querySelector("#user-description").textContent
     const email = document.querySelector("#email").textContent
     const phoneNumber = document.querySelector("#phone-number").textContent
-    const _avatar = document.querySelector("#user-avatar").style.background
-    const avatar = _avatar.slice(5, _avatar.length - 2)
     // 更改fragment
     fragmentContainer.innerHTML = fragEditing
     // 更改状态
@@ -210,20 +225,17 @@ function switchProfileEditFragment() {
     const userDescriptionInput = document.querySelector("#user-description")
     const emailInput = document.querySelector("#user-email")
     const phoneNumberInput = document.querySelector("#user-phone")
-    const avatarInput = document.querySelector("#user-avatar-edit")
     userIdInput.value = userId
     userDescriptionInput.value = userDescription
     emailInput.value = email
     phoneNumberInput.value = phoneNumber
-    avatarInput.value = avatar == defAvatar ? "" : avatar
     // 绑定事件
     document.querySelector("#submit-btn").addEventListener("click", async () => {
         // 提交修改
         const username = userIdInput.value
         const description = userDescriptionInput.value
-        const avatar = avatarInput.value
         // 发送请求
-        await putUserInfo(getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN)), username, avatar, description)
+        await putUserInfo(getUserIdFromToken(localStorage.getItem(ACCESS_TOKEN)), username, description)
         switchProfileFragment()
     })
     document.querySelector("#cancel-btn").addEventListener("click", () => {
@@ -237,5 +249,36 @@ function switchProfileFragment() {
     editing = false
     loadUserInfo()
 }
+
+const dialogForgetPass = document.querySelector(".dialog-box")
+const avatarInput = document.querySelector("#upload-avatar")
+// setup dialog
+dialogForgetPass.querySelector(".dialog-closer").addEventListener("click", () => {
+    dialogForgetPass.style.display = "none"
+})
+
+// submit
+dialogForgetPass.querySelector("#submit-button").addEventListener("click", async () => {
+    if (avatarInput.files.length === 0) {
+        alert("请上传头像")
+        return
+    }
+    const data = await updateAvatar(avatarInput.files[0])
+    switch (data.status) {
+        case 20000: {
+            alert("操作成功！")
+            dialogForgetPass.style.display = "none"
+            location.reload()
+            break
+        }
+        default: {
+            alert(data.data.detail)
+        }
+    }
+})
+
+document.querySelector("#update-avatar-button").addEventListener("click", () => {
+    dialogForgetPass.style.display = "block"
+})
 
 
