@@ -263,7 +263,7 @@ async function reply(pid, type, content) {
 
 async function updateAvatar(avatar) {
     const body = new FormData()
-    body.append("avatar", avatar)
+    body.append("img", avatar)
     return await post("/avatar", body)
 }
 
