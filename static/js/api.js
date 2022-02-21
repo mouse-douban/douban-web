@@ -268,7 +268,7 @@ async function updateAvatar(avatar) {
 }
 
 export {
-    getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews, 
-    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion, 
+    getUserInfo, login, getVerifyCode, getMineInfo, putUserInfo, getWatchedList, getWishToWatchList, getMovieInfo, getUserReviews,
+    getUserMovieList, getSubjects, getSubjectById, getCelebrityInfo, addComment, addReviews, search, forget, getDiscussion,
     starDiscussion, reply, updateAvatar
 }

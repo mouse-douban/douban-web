@@ -109,10 +109,8 @@ def subject_insert(tags_param=None):
     map(lambda i: i.join(), lp)
 
 
-def spider_celebrity(db, start, batch_size, start_position):
-    celebrities_tuple = db.fetch_all(f"SELECT celebrities FROM subject LIMIT {batch_size} OFFSET {start}")
-
-    for celebrities in celebrities_tuple[start_position:]:
+def insert_celebrity(db, celebrities_tuple):
+    for celebrities in celebrities_tuple:
         celebrities = json.loads(celebrities[0])
         for cid in celebrities:
             try:
@@ -140,17 +138,28 @@ def spider_celebrity(db, start, batch_size, start_position):
     db.close()
 
 
+def spider_celebrity(db, start, batch_size, start_position):
+    celebrities_tuple = db.fetch_all(f"SELECT celebrities FROM subject LIMIT {batch_size} OFFSET {start}")
+    insert_celebrity(db, celebrities_tuple[start_position:])
+
+
+def spider_celebrity_of_movie(db, id):
+    celebrities_tuple = db.fetch_all(f"SELECT celebrities FROM subject WHERE mid = {id}")
+    insert_celebrity(db, celebrities_tuple)
+
+
 # 豆瓣会封ip...
 # 解决方法就是一直换ip (
 if __name__ == '__main__':
     # 同步电影影人信息
-    pl = []
-    for i in range(0, 8):
-        print(f"start at {155 * i}, end at {155 * i + 155}")
-        p = Process(target=spider_celebrity, args=(sql.DB(), 155 * i, 20, 10))
-        p.start()
-        pl.append(p)
-    map(lambda c: c.join(), pl)
+    # pl = []
+    # for i in range(0, 8):
+    #     print(f"start at {155 * i}, end at {155 * i + 155}")
+    #     p = Process(target=spider_celebrity, args=(sql.DB(), 155 * i, 20, 10))
+    #     p.start()
+    #     pl.append(p)
+    # map(lambda c: c.join(), pl)
+    spider_celebrity_of_movie(sql.DB(), 26147417)
     pass
     # 爬取电影数据
     # subject_insert(["生活"])
