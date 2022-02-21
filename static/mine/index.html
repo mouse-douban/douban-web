@@ -15,6 +15,15 @@
     <script src="../js/mine.js" type="module" defer></script>
 </head>
 <body>
+    <script>
+        // 第三方登录跨域传输数据
+        window.addEventListener("message", function(e) {
+            const access_token = e.data.access_token;
+            const refresh_token = e.data.refresh_token;
+            localStorage.setItem("access_token", access_token);
+            localStorage.setItem("refresh_token", refresh_token);
+        });
+    </script>
     <div id="top-nav-items">
         <ul id="top-nav-ul" style="display:inline-block;">
             <li>

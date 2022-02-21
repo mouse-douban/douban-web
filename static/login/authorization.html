@@ -60,8 +60,12 @@
                 }, time);
             });
         }
-        localStorage.setItem("access_token", "AT")
-        localStorage.setItem("refresh_token", "RT")
+        // 解决跨域数据交互问题
+        window.onload = function() {
+            window.frames[0].postMessage({ access_token: "AT", refresh_token: "RT" }, 'https://douban.skygard.cn');
+        }
+        // localStorage.setItem("access_token", "AT")
+        // localStorage.setItem("refresh_token", "RT")
         // 延迟三秒跳转
         (async function() {
             await delay(3000);
