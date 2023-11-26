@@ -7,7 +7,7 @@ on:
 
 jobs:
   fake:
-    name: Non-Trivial Checks
+    name: Trivial Checks
     runs-on: ubuntu-latest
     steps:
       - run: sleep 12
