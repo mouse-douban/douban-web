@@ -7,8 +7,8 @@ on:
 
 jobs:
   fake:
-    name: Trivial Checks
+    name: Checks
     runs-on: ubuntu-latest
     steps:
       - run: sleep 7
-      - run: echo "Success"
+      - run: exit 1
