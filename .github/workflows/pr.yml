@@ -1,0 +1,14 @@
+name: Trivial Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: { }
+
+jobs:
+  fake:
+    name: Trivial Checks
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 5
+      - run: echo "Success"

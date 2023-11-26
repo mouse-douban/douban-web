@@ -1,0 +1,14 @@
+name: Non-Trivial Checks
+
+on:
+  merge_group:
+    types:
+      - checks_requested
+
+jobs:
+  fake:
+    name: Non-Trivial Checks
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 10
+      - run: echo "Success"
