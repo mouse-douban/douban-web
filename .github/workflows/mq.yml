@@ -10,5 +10,5 @@ jobs:
     name: Checks
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 15
+      - run: sleep 12
       - run: echo "Success"
