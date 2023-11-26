@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: sleep 7
-      - run: exit 1
+      - run: echo "Success"
