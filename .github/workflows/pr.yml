@@ -10,5 +10,5 @@ jobs:
     name: Trivial Checks
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 5
+      - run: sleep 10
       - run: echo "Success"
